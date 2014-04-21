@@ -159,7 +159,7 @@
 		});
 
 		// Data conditions (model):
-		this.get( '/' + base + '/model', function onRequest( request, response ) {
+		this.get( '/' + base + '/conditions/model', function onRequest( request, response ) {
 
 			response.writeHead( 200, {
 				'Content-Type': 'application/json'
