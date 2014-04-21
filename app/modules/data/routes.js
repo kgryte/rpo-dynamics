@@ -140,10 +140,27 @@
 
 		// NOTE: the 'this' context is the application.
 
-		//
-		this.get( '/' + base, function onRequest( request, response ) {
+		// Data conditions:
+		this.get( '/' + base + '/conditions', function onRequest( request, response ) {
 
-			response.send( 'Hello' );
+			response.writeHead( 200, {
+				'Content-Type': 'application/json'
+			});
+
+			response.write( JSON.stringify( MAPPING ) );
+			response.end();
+
+		});
+
+		// Data conditions (model):
+		this.get( '/' + base + '/model', function onRequest( request, response ) {
+
+			response.writeHead( 200, {
+				'Content-Type': 'application/json'
+			});
+
+			response.write( JSON.stringify( model ) );
+			response.end();
 
 		});
 
