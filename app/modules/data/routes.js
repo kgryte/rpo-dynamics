@@ -44,6 +44,12 @@
 (function() {
 	'use strict';
 
+	// MODULES //
+
+	var // Path module:
+		path = require( 'path' );
+		
+
 	// ROUTES //
 
 	var routes = function ( clbk ) {
@@ -51,10 +57,11 @@
 		// NOTE: the 'this' context is the application.
 
 		//
-		// this.get( '/', function onRequest( request, response ) {
+		this.get( '/' + path.basename( __dirname ), function onRequest( request, response ) {
 
+			response.send( 'Hello' );
 
-		// });
+		});
 
 		// Callback:
 		clbk();
