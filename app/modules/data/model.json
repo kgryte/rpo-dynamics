@@ -1,26 +1,58 @@
 [
-	[
-		"wt", "mutant", "none", "sigma"
-	],
-	[
-		"rpo", "rpitc1", "rpitc2", "dna"
-	],
-	[
-		"wt", "pm"
-	],
-	[
-		"rt", "37c"
-	],
-	[
-		"vesicles", "antibody", "biotin"
-	],
-	[
-		"none", "heparin", "glycerol"
-	],
-	[
-		"20ms", "100ms"
-	],
-	[
-		"0", "1", "2"
-	]
+	{
+		"name": "protein",
+		"description": "Protein used in experiment. Options include wild-type, delta jaw mutant, none (e.g., DNA-only), and sigma mutant.",
+		"options": [
+			"wt", "mutant", "none", "sigma"
+		]
+	},
+	{
+		"name": "complex",
+		"description": "DNA-protein complex formed during the experiment. Options include RPo, RPitc1, RPitc2, and DNA-only.",
+		"options": [
+			"rpo", "rpitc1", "rpitc2", "dna"
+		]
+	},
+	{
+		"name": "dna",
+		"description": "DNA used during experiment. Options include wild-type and pre-melted.",
+		"options": [
+			"wt", "pm"
+		]
+	},
+	{
+		"name": "temperature",
+		"description": "Temperature at which experiment was performed. Options include room temperature and 37C.",
+		"options": [
+			"rt", "37c"
+		]
+	},
+	{
+		"name": "immobilization",
+		"description": "Immobilization method used during experiment. Options include vescicle encapsulation, antibody attachment, and biotin.",
+		"options": [
+			"vesicles", "antibody", "biotin"
+		]
+	},
+	{
+		"name": "additives",
+		"description": "Additives included in the experiment. Options include none, heparin, glycerol.",
+		"options": [
+			"none", "heparin", "glycerol"
+		]
+	},
+	{
+		"name": "temporal resolution",
+		"description": "Experimental temporal resolution. Options include 20ms and 100ms",
+		"options": [
+			"20ms", "100ms"
+		]
+	},
+	{
+		"name": "repeat number",
+		"description": "If the experimental conditions have been used before, what repeat is the current experiment? Options include 0, 1, and 2",
+		"options": [
+			"0", "1", "2"
+		]
+	}
 ]

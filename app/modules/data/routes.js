@@ -95,10 +95,16 @@
 
 	(function() {
 
-		var mapper, files, stats, path;
+		var mapper, _model,
+			files, stats, path;
+
+		// Format the model appropriate for mapping:
+		_model = model.map( function ( element ) {
+			return element.options;
+		});
 
 		// Create a new directory mapper:
-		mapper = new Mapper( model );
+		mapper = new Mapper( _model );
 
 		// Get the "file" names:
 		files = fs.readdirSync( __dirname );
