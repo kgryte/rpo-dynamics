@@ -6,13 +6,13 @@ RPo dynamics data and analysis.
 
 ### Getting Started
 
-To get started with RPo Dynamics, first ensure that you have Node.js installed. Second, clone the RPo Dynamics repository. Once cloned, navigate to the directory and install Node modules as specified in the `package.json` file.
+To get started with RPo Dynamics, first ensure that you have Node.js installed. Second, clone the RPo Dynamics repository. Once cloned, navigate to the directory and install Node modules as specified in the `package.json` file. In the terminal, 
 
 ```
 $ npm install
 ```
 
-Next, in the terminal, launch the node application.
+Next, launch the node application.
 
 ```
 $ node server.js
