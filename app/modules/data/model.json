@@ -1,0 +1,26 @@
+[
+	[
+		"wt", "mutant", "none", "sigma"
+	],
+	[
+		"rpo", "rpitc1", "rpitc2", "dna"
+	],
+	[
+		"wt", "pm"
+	],
+	[
+		"rt", "37c"
+	],
+	[
+		"vesicles", "antibody", "biotin"
+	],
+	[
+		"none", "heparin", "glycerol"
+	],
+	[
+		"20ms", "100ms"
+	],
+	[
+		"0", "1", "2"
+	]
+]

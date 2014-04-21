@@ -52,6 +52,9 @@
 		// Filesystem module:
 		fs = require( 'fs' ),
 
+		// Directory model:
+		model = require( './model.json' ),
+
 		// Directory mapper:
 		Mapper = require( __dirname + '/../../utils/dirMapper.js' );
 
@@ -72,7 +75,8 @@
 	* @param {object} response - HTTP respone object
 	*/
 	function getDescription( request, response ) {
-		response.send( 'Description' );
+		var key = request.path.split( '/' )[ 2 ];
+		response.send( MAPPING[ key ] );
 	} // end FUNCTION getDescription()
 
 	/**
@@ -91,7 +95,10 @@
 
 	(function() {
 
-		var files, stats, path;
+		var mapper, files, stats, path;
+
+		// Create a new directory mapper:
+		mapper = new Mapper( model );
 
 		// Get the "file" names:
 		files = fs.readdirSync( __dirname );
@@ -112,6 +119,9 @@
 
 					// Store the directory name:
 					DATA.push( files[ i ] );
+
+					// Update our mapping dictionary:
+					MAPPING[ files[ i ] ] = mapper.getMap( files[ i ] );
 
 				} // end IF directory
 
