@@ -77,7 +77,7 @@
 			}
 
 			// Insert the data into our DATA object:
-			DATA[ key ] = data;
+			DATA[ key ] = JSON.parse( data );
 
 			if ( Object.keys( DATA ).length === total ) {
 				clbk( null, DATA );
