@@ -64,6 +64,17 @@
 		// Figure route:
 		this.get( '/' + base, function onRequest( request, response ) {
 
+			response.writeHead( 200, {
+				'Content-Type': 'text/html'
+			});
+			response.write( '...rpo dynamics figures...' );
+			response.end();
+
+		});
+
+		// Figure route for a particular condition:
+		this.get( '/' + base + '/:condition', function onRequest( request, response ) {
+
 			figure( function ( error, html ) {
 				if ( error ) {
 					response.writeHead( error.status, {
@@ -78,6 +89,7 @@
 				});
 				response.write( html );
 				response.end();
+
 			});
 		});
 
