@@ -75,7 +75,9 @@
 		// Figure route for a particular condition:
 		this.get( '/' + base + '/:condition', function onRequest( request, response ) {
 
-			figure( function ( error, html ) {
+			var condition = request.params.condition;
+
+			figure( condition, function ( error, html ) {
 				if ( error ) {
 					response.writeHead( error.status, {
 						'Content-Type': 'application/json'
@@ -91,6 +93,7 @@
 				response.end();
 
 			});
+
 		});
 
 		// Callback:

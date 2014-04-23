@@ -51,20 +51,27 @@
 		// Module to create a server-side DOM:
 		DOM = require( __dirname + '/../../utils/dom.js' ),
 
-		// Chart partials:
-		partials = require( __dirname + '/../../utils/partials.js' )( __dirname + '/partials' );
+		// Document partials:
+		partials = require( __dirname + '/../../utils/partials.js' )( __dirname + '/partials' ),
+
+		// Module to getData:
+		getData = require( __dirname + '/../../utils/data.js' );
 
 
 	// FIGURE //
 
-	function figure( clbk ) {
+	/**
+	* FUNCTION: figure( id, clbk )
+	*
+	*/
+	function figure( id, clbk ) {
+
+		if ( arguments.length !== 2 ) {
+			throw new Error( 'figure()::insufficient input arguments. Must provide an id and a callback.' );
+		}
 
 		// Initialize a DOM:
-		DOM( partials.index, returnWindow );
-
-		return;
-
-		function returnWindow( error, window ) {
+		DOM( partials.index, function onWindow( error, window ) {
 
 			var document = window.document;
 
@@ -77,15 +84,29 @@
 				return;
 			} // end IF (error)
 
-			// Return the document contents to the callback:
-			if ( clbk ) {
+			// Get data:
+			getData( id, function ( error, data ) {
+
+				if ( error ) {
+					clbk({
+						'status': 500,
+						'message': 'ERROR:internal server error. Unable to process request.'
+					});
+					console.error( error );
+					return;
+				}
+
+				// Return the document contents to the callback:
 				clbk( null, document.innerHTML );
-			}
+
+			});
 
 			// Close the DOM window:
 			// window.close();
 
-		} // end FUNCTION returnWindow()
+		});
+
+		return;
 
 	} // end FIGURE
 		

@@ -58,8 +58,7 @@
 
 	// VARIABLES //
 
-	var DATA = [],
-		MAPPING = {};
+	var MAPPING = {};
 
 
 	// INIT //
@@ -94,9 +93,6 @@
 
 				// Is the "file" actually a directory?
 				if ( stats.isDirectory() ) {
-
-					// Store the directory name:
-					DATA.push( files[ i ] );
 
 					// Update our mapping dictionary:
 					MAPPING[ files[ i ] ] = mapper.getMap( files[ i ] );
