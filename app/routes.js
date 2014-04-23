@@ -44,22 +44,120 @@
 (function() {
 	'use strict';
 
+	// MODULES //
+
+	var // Filesystem module:
+		fs = require( 'fs' ),
+
+		// Directory encoding model:
+		model = require( __dirname + '/../public/data/encoding.json' ),
+
+		// Directory mapper:
+		Mapper = require( __dirname + '/utils/dirMapper.js' );
+
+
+	// VARIABLES //
+
+	var DATA = [],
+		MAPPING = {};
+
+
+	// INIT //
+
+	(function() {
+
+		var mapper, _model,
+			files, stats, path,
+			base = __dirname + '/../public/data' ;
+
+		// Format the model appropriate for mapping:
+		_model = model.map( function ( element ) {
+			return element.options;
+		});
+
+		// Create a new directory mapper:
+		mapper = new Mapper( _model );
+
+		// Get the "file" names:
+		files = fs.readdirSync( base );
+
+		// For each possible file, determine if it is a directory...
+		for ( var i = 0; i < files.length; i++ ) {
+
+			if ( files[ i ][ 0 ] !== '.' ) {
+
+				// Assemble the path:
+				path = base + '/' + files[ i ];
+
+				// Get the file stats:
+				stats = fs.statSync( path );
+
+				// Is the "file" actually a directory?
+				if ( stats.isDirectory() ) {
+
+					// Store the directory name:
+					DATA.push( files[ i ] );
+
+					// Update our mapping dictionary:
+					MAPPING[ files[ i ] ] = mapper.getMap( files[ i ] );
+
+				} // end IF directory
+
+			} // end IF !hidden directory
+
+		} // end FOR i
+
+	})();
+
+
 	// ROUTES //
 
 	var routes = function ( clbk ) {
 
 		// NOTE: the 'this' context is the application.
 
-		//
-		// this.get( '/', function onRequest( request, response ) {
+		// Conditions:
+		this.get( '/conditions', function onRequest( request, response ) {
 
+			response.writeHead( 200, {
+				'Content-Type': 'application/json'
+			});
 
-		// });
+			response.write( JSON.stringify( MAPPING ) );
+			response.end();
+
+		});
+
+		// Base route returns a description:
+		this.get( '/conditions/:condition', function onRequest( request, response ) {
+
+			var condition = request.params.condition;
+
+			response.writeHead( 200, {
+				'Content-Type': 'text/plain'
+			});
+
+			response.write( MAPPING[ condition ] );
+			response.end();
+
+		});
+
+		// Conditions encoding:
+		this.get( '/encoding', function onRequest( request, response ) {
+
+			response.writeHead( 200, {
+				'Content-Type': 'application/json'
+			});
+
+			response.write( JSON.stringify( model ) );
+			response.end();
+
+		});
 
 		// Callback:
 		clbk();
 
-	};
+	}; // end ROUTES
 
 
 	// EXPORTS //

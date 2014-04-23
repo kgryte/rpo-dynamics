@@ -1,6 +1,4 @@
 
-/* STYLES */
-
 /* Box-Sizing */
 *, *:after, *::before {
     -moz-box-sizing: border-box;
@@ -8,9 +6,77 @@
     box-sizing: border-box;
 }
 
-html, body {
-	position: relative;
-	width: 100%;
+body, div, canvas {
 	margin: 0;
 	padding: 0;
 }
+
+body {
+	font-family: 'Cabin', 'Open-Sans', sans-serif;
+    color: #474747;
+	font-weight: normal;
+}
+
+.main {
+	position: relative;
+}
+
+.figure {
+	position: relative;
+}
+
+.canvas {
+	position: relative;
+	top: 0;
+	left: 0;
+}
+
+.graph .background {
+	fill: none;
+	stroke: none;
+}
+
+.graph .area {
+	fill: #474747;
+	stroke: none;
+	fill-opacity: 1;
+}
+
+.graph .line {
+	fill: none;
+	stroke: #474747;
+	stroke-width: 2px;
+	stroke-opacity: 90%;
+}
+
+.graph .column {
+	fill: #474747;
+	stroke: #fff;
+	stroke-width: 2px;
+	stroke-opacity: 90%;
+}
+
+.graph .axis path {
+	fill: none;
+}
+
+.graph .y.axis path {
+	stroke: none;
+}
+
+.graph .x.axis path {
+	stroke: #aaa;
+	stroke-width: 1px;
+}
+
+.graph .axis line {
+	stroke: #aaa;
+	stroke-width: 1px;
+}
+
+.italic {
+	font-style: italic;
+}
+
+
+
