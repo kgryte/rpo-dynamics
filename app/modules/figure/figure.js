@@ -1,6 +1,6 @@
 /**
 *
-*	DATA: figure
+*	FIGURE
 *
 *
 *
@@ -49,13 +49,16 @@
 		d3 = require( 'd3' ),
 
 		// Module to create a server-side DOM:
-		DOM = require( __dirname + '/../../utils/dom.js' ),
+		DOM = require( './../../utils/dom.js' ),
 
 		// Document partials:
-		partials = require( __dirname + '/../../utils/partials.js' )( __dirname + '/partials' ),
+		partials = require( './../../utils/partials.js' )( __dirname + '/partials' ),
 
-		// Module to getData:
-		getData = require( __dirname + '/../../utils/data.js' );
+		// Module to get data:
+		getData = require( './../../utils/data.js' ),
+
+		// Module to generate the figure:
+		generator = require( './generator.js' );
 
 
 	// FIGURE //
@@ -73,7 +76,8 @@
 		// Initialize a DOM:
 		DOM( partials.index, function onWindow( error, window ) {
 
-			var document = window.document;
+			var document = window.document,
+				selection;
 
 			// Any errors?
 			if ( error ) {
@@ -83,6 +87,9 @@
 				});
 				return;
 			} // end IF (error)
+
+			// Get the selection:
+			selection = document.querySelector( '.main' );
 
 			// Get data:
 			getData( id, function ( error, data ) {
@@ -96,13 +103,18 @@
 					return;
 				}
 
-				// Return the document contents to the callback:
-				clbk( null, document.innerHTML );
+				// Generate the figure:
+				generator( document, selection, data, function() {
+
+					// Return the document contents to the callback:
+					clbk( null, document.innerHTML );
+
+					// Close the DOM window:
+					window.close();
+
+				});
 
 			});
-
-			// Close the DOM window:
-			// window.close();
 
 		});
 
