@@ -46,7 +46,10 @@
 	// MODULES //
 
 	var // xfig figure library:
-		xfig = require( './lib/xfig.js' );
+		xfig = require( './lib/xfig.js' ),
+
+		// Histogram generator:
+		Histogram = require( './charts/histogram.js' );
 
 
 	// GENERATOR //
@@ -88,76 +91,8 @@
 		// Create the title element:
 		title.create( 'Title' );
 
-		// [4] Instantiate a new graph generator and configure:
-		graph = xfig.graph( canvas )
-			.width( 500 )
-			.height( 350 )
-			.position({
-				'left': 90,
-				'top': 80
-			})
-			.xMin( 0 )
-			.xMax( 1 )
-			.yMin( 0 );
-
-		// Create the graph:
-		graph.create( 'histogram' );
-
-		// [5] Instantiate a new data generator and configure:
-		data = xfig.data( [ data[ '1' ] ] )
-			.x( function ( d ) { return d.x; } )
-			.y( function ( d ) { return d.y[1] / (d.y[0]+d.y[1]); } );
-
-		// Create edges to define our histogram bins:
-		edges = data.linspace( -0.025, 1.025, 0.05 );
-		
-		// Format the data and histogram the data:
-		data.format( 2 )
-			.histc( function ( d ) { return d[ 1 ]; }, edges );
-
-		// Bind the data instance to the graph:
-		graph.data( data )
-			.yMax( data.max( function ( d ) {
-				return d[ 1 ];
-			}));
-
-		// [6] Instantiate a new histogram generator and configure:
-		histogram = xfig.histogram( graph )
-			.labels( [ 'data 0' ] );
-
-		// Create the histogram:
-		histogram.create();
-
-		// [7] Instantiate a new axes generator and configure:
-		axes = xfig.axes( graph )
-			.yLabel( 'counts' );
-
-		// Create the axes:
-		axes.create();
-
-		// [8] Instantiate a new annotations generator and configure:
-		annotations = xfig.annotations( graph );
-
-		// Create the annotations element:
-		annotations.create();
-
-		// [8.1] Instantiate a new title instance and configure:
-		title = annotations.title()
-			.top( -30 )
-			.left( 250 );
-
-		// Add a (sub)title:
-		title.create( 'Subtitle' );
-
-		// [8.2] Instantiate a new text instance and configure:
-		text = annotations.text()
-			.width( 200 )
-			.height( 100 )
-			.top( 50 )
-			.left( 310 );
-
-		// Add a text annotation:
-		text.create( 'This is another text annotation, which may run multiple lines.' );
+		// [4] Histogram:
+		histogram = Histogram( canvas, data, 500, 350, 90, 80 );
 
 		// Finished:
 		clbk();
