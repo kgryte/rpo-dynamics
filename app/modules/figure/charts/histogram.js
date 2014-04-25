@@ -74,7 +74,7 @@
 		graph.create( 'histogram' );
 
 		// [2] Instantiate a new data generator and configure:
-		data = xfig.data( [ data[ 0 ] ] )
+		data = xfig.data( data )
 			.x( function ( d ) { return d.x; } )
 			.y( function ( d ) { return d.y[1] / (d.y[0]+d.y[1]); } );
 
@@ -83,6 +83,7 @@
 		
 		// Format the data and histogram the data:
 		data.format( 2 )
+			.concat()
 			.histc( function ( d ) { return d[ 1 ]; }, edges );
 
 		// Bind the data instance to the graph:
