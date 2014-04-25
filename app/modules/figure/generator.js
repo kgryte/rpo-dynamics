@@ -48,8 +48,9 @@
 	var // xfig figure library:
 		xfig = require( './lib/xfig.js' ),
 
-		// Histogram generator:
-		Histogram = require( './charts/histogram.js' );
+		// Chart generators:
+		Histogram = require( './charts/histogram.js' ),
+		TimeseriesHistogram = require( './charts/timeseries-histogram.js' );
 
 
 	// GENERATOR //
@@ -75,24 +76,11 @@
 		// Create the canvas:
 		canvas.create();
 
-		// [3] Instantiate a new annotations generator and configure:
-		annotations = xfig.annotations( canvas );
+		// [3] Histogram:
+		Histogram( canvas, data, 500, 350, 90, 80, 'a' );
 
-		// Create the annotations element:
-		annotations.create();
-
-		// [3.1] Instantiate a new title instance and configure:
-		title = annotations.title()
-			.position({
-				'left': 600,
-				'top': 10
-			});
-
-		// Create the title element:
-		title.create( 'Title' );
-
-		// [4] Histogram:
-		histogram = Histogram( canvas, data, 500, 350, 90, 80 );
+		// [4] Timeseries Histogram chart:
+		TimeseriesHistogram( canvas, data, 500, 350, 690, 80, 'b' );
 
 		// Finished:
 		clbk();

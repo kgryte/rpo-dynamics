@@ -58,10 +58,10 @@
 	// FUNCTIONS //
 
 	/**
-	* FUNCTION: onData( DATA, key, total, errFLG, clbk )
+	* FUNCTION: onData( DATA, idx, total, errFLG, clbk )
 	*
 	*/
-	function onData( DATA, key, total, errFLG, clbk ) {
+	function onData( DATA, idx, total, errFLG, clbk ) {
 			
 		return function onData( error, data ) {
 			if ( errFLG ) {
@@ -76,8 +76,8 @@
 				throw new Error( 'data()::unable to load data file: ' + error );
 			}
 
-			// Insert the data into our DATA object:
-			DATA[ key ] = JSON.parse( data );
+			// Insert the data into our DATA array:
+			DATA[ idx ] = JSON.parse( data );
 
 			if ( Object.keys( DATA ).length === total ) {
 				clbk( null, DATA );
@@ -134,7 +134,7 @@
 
 		var files, total, path, errFLG = false,
 
-			DATA = {}, key;
+			DATA, key;
 
 		// Get the path for the provided id:
 		path = INDEX[ id ];
@@ -151,6 +151,9 @@
 
 		total = files.length;
 
+		// Initialize our data array:
+		DATA = new Array( total );
+
 		// For each data file, get its content...
 		for ( var i = 0; i < files.length; i++ ) {
 
@@ -158,7 +161,7 @@
 			key = files[ i ].slice( 0, files[ i ].length - 5 );
 
 			// Get the data:
-			fs.readFile( path + '/' + files[ i ], 'utf8', onData( DATA, key, total, errFLG, clbk ) );
+			fs.readFile( path + '/' + files[ i ], 'utf8', onData( DATA, ( parseInt( key, 10 ) - 1 ), total, errFLG, clbk ) );
 
 		} // end FOR i
 
