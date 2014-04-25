@@ -79,7 +79,7 @@
 			.y( function ( d ) { return d.y[1] / (d.y[0]+d.y[1]); } );
 
 		// Create edges to define our histogram bins:
-		edges = data.linspace( -0.025, 1.025, 0.05 );
+		edges = data.linspace( -0.025, 1.025, 0.02 );
 		
 		// Format the data and histogram the data:
 		data.format( 2 )
