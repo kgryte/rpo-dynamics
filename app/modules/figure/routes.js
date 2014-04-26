@@ -73,7 +73,7 @@
 		});
 
 		// Figure route for a particular condition:
-		this.get( '/' + base + '/:condition', function onRequest( request, response ) {
+		this.get( '/' + base + '/summary/:condition', function onRequest( request, response ) {
 
 			var condition = request.params.condition;
 

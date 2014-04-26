@@ -17,4 +17,5 @@ TODO
 1.  Multipanel line charts of all timeseries for a given condition
 2. 	Multipanel histogram of all conditions
 3. 	Cross condition comparison
-4.  
+4.  Timeseries histogram to timeseries navigation --> requires client-side code
+5. 	

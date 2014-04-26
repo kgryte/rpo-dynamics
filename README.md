@@ -44,7 +44,7 @@ http://127.0.0.1:1337/encoding
 provides the model underlying encoding-decoding. Included in the model is a description of each model element.
 
 ```
-http://127.0.0.1:1337/figure/:id
+http://127.0.0.1:1337/figure/summary/:id
 ```
 
 returns a summary figure for condition set `id`; e.g., `10011000`. Note that the selected timeseries which are displayed are randomly chosen on figure generation. Hence, each figure request (browser refresh) will display a different timeseries collection. The ability to fix which timeseries are displayed may be addressed in the future. For now, consider such randomness a feature, as each request is a random data sample. In which case, we can better state that a particular behavior's "representativeness" is reflected in how frequently the behavior appears in the figure. Obviously, the elephant in the room is how representative the sampled collection is of its parent's collection. We do not address the elephant here.
