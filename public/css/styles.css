@@ -45,13 +45,13 @@ body {
 .graph .line {
 	fill: none;
 	stroke: #474747;
-	stroke-width: 1;
+	stroke-width: 2;
 	stroke-opacity: 90%;
 }
 
 .graph .column {
 	fill: #474747;
-	stroke: #fff;
+	stroke: #aaa;
 	stroke-width: 1;
 	stroke-opacity: 90%;
 }
@@ -74,12 +74,16 @@ body {
 	stroke-width: 1;
 }
 
+.graph .axis .label {
+	font-size: 20px;
+}
+
 .italic {
 	font-style: italic;
 }
 
 .subtitle {
-	font-size: 24px;
+	font-size: 28px;
 	font-weight: 600;
 }
 

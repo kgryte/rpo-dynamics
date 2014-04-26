@@ -50,7 +50,8 @@
 
 		// Chart generators:
 		Histogram = require( './charts/histogram.js' ),
-		TimeseriesHistogram = require( './charts/timeseries-histogram.js' );
+		TimeseriesHistogram = require( './charts/timeseries-histogram.js' ),
+		Multipanel = require( './charts/multipanel.js' );
 
 
 	// GENERATOR //
@@ -77,10 +78,13 @@
 		canvas.create();
 
 		// [3] Histogram:
-		Histogram( canvas, data, 500, 350, 90, 80, 'a' );
+		Histogram( canvas, data, 400, 260, 90, 80, 'a' );
 
 		// [4] Timeseries Histogram chart:
-		TimeseriesHistogram( canvas, data, 500, 350, 690, 80, 'b' );
+		TimeseriesHistogram( canvas, data, 400, 260, 90, 485, 'b' );
+
+		// [5] Multipanel chart:
+		Multipanel( canvas, data, 400, 720, 630, 80, 'c' );
 
 		// Finished:
 		clbk();

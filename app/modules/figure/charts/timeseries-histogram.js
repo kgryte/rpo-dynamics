@@ -132,7 +132,7 @@
 
 		// [5.1] Instantiate a new title instance and configure:
 		title = annotations.title()
-			.top( -80 )
+			.top( -65 )
 			.left( -90 );
 
 		// Add a (sub)title:
