@@ -50,7 +50,10 @@
 		path = require( 'path' ),
 
 		// Summary figure:
-		summary = require( './summary' );
+		summary = require( './summary' ),
+
+		// Timeseries figure:
+		timeseries = require( './timeseries' );
 
 
 	// ROUTES //

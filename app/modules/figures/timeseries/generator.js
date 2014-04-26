@@ -21,7 +21,7 @@
 *
 *
 *	HISTORY:
-*		- 2014/04/23: Created. [AReines].
+*		- 2014/04/25: Created. [AReines].
 *
 *
 *	DEPENDENCIES:
@@ -49,11 +49,7 @@
 		xfig = require( './../lib/xfig.js' ),
 
 		// Chart generators:
-		Histogram = require( './charts/histogram.js' ),
-
-		TimeseriesHistogram = require( './charts/timeseries-histogram.js' ),
-		
-		Multipanel = require( './charts/multipanel.js' );
+		Line = require( './charts/line.js' );
 
 
 	// GENERATOR //
@@ -63,7 +59,7 @@
 	*/
 	var generator = function( document, selection, data, clbk ) {
 
-		var figure, canvas;
+		var figure, canvas, left, top;
 
 		// [1] Instantiate a new figure generator:
 		figure = xfig.figure();
@@ -74,19 +70,17 @@
 		// [2] Instantiate a new canvas generator and configure:
 		canvas = xfig.canvas( figure )
 			.width( 1200 )
-			.height( 2000 );
+			.height( 25000 );
 
 		// Create the canvas:
 		canvas.create();
 
-		// [3] Histogram:
-		Histogram( canvas, data, 400, 260, 90, 80, 'a' );
-
-		// [4] Timeseries Histogram chart:
-		TimeseriesHistogram( canvas, data, 400, 260, 90, 485, 'b' );
-
-		// [5] Multipanel chart:
-		Multipanel( canvas, data, 400, 720, 630, 80, 'c' );
+		// [3] Create a new line chart for each dataset:
+		for ( var i = 0; i < data.length; i++ ) {
+			left = ( i % 2 === 0 ) ? 90 : 630;
+			top = 80 + Math.floor( i / 2 ) * 405;
+			Line( canvas, [ data[ i ] ], 400, 260, left, top, i+1 );
+		}
 
 		// Finished:
 		clbk();

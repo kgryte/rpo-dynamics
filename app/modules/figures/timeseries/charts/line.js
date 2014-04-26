@@ -1,6 +1,6 @@
 /**
 *
-*	CHART: histogram
+*	CHART: line
 *
 *
 *
@@ -21,7 +21,7 @@
 *
 *
 *	HISTORY:
-*		- 2014/04/24: Created. [AReines].
+*		- 2014/04/26: Created. [AReines].
 *
 *
 *	DEPENDENCIES:
@@ -49,14 +49,14 @@
 		xfig = require( './../../lib/xfig.js' );
 
 
-	// HISTOGRAM //
+	// LINE //
 
 	/**
 	*
 	*/
-	var histogram = function( canvas, data, width, height, left, top, subtitle ) {
+	var line = function( canvas, data, width, height, left, top, subtitle ) {
 
-		var graph, histogram, edges, axes, annotations, title, text;
+		var graph, line, axes, annotations, title, text;
 
 		// [1] Instantiate a new graph generator and configure:
 		graph = xfig.graph( canvas )
@@ -66,43 +66,36 @@
 				'left': left,
 				'top': top
 			})
-			.xMin( 0 )
-			.xMax( 1 )
-			.yMin( 0 );
+			.yMin( 0 )
+			.yMax( 1 );
 
 		// Create the graph:
-		graph.create( 'histogram' );
+		graph.create( 'line' );
 
 		// [2] Instantiate a new data generator and configure:
 		data = xfig.data( data )
 			.x( function ( d ) { return d.x; } )
 			.y( function ( d ) { return d.y[1] / (d.y[0]+d.y[1]); } );
 
-		// Create edges to define our histogram bins:
-		edges = data.linspace( -0.01, 1.01, 0.02 );
-		
-		// Format the data and histogram the data:
-		data.format( 2 )
-			.concat()
-			.histc( function ( d ) { return d[ 1 ]; }, edges );
+		// Format the data:
+		data.format( 2 );
 
 		// Bind the data instance to the graph:
 		graph.data( data )
-			.yMax( data.max( function ( d ) {
-				return d[ 1 ];
-			}));
+			.xMin( data.min( function ( d ) { return d[ 0 ]; } ) )
+			.xMax( data.max( function ( d ) { return d[ 0 ]; } ) );
 
-		// [3] Instantiate a new histogram generator and configure:
-		histogram = xfig.histogram( graph )
+		// [3] Instantiate a new line generator and configure:
+		line = xfig.line( graph )
 			.labels( [ 'data 0' ] );
 
-		// Create the histogram:
-		histogram.create();
+		// Create the line graph:
+		line.create();
 
 		// [4] Instantiate a new axes generator and configure:
 		axes = xfig.axes( graph )
-			.xLabel( 'E' )
-			.yLabel( 'counts' );
+			.xLabel( 'time [sec]' )
+			.yLabel( 'E' );
 
 		// Create the axes:
 		axes.create();
@@ -121,11 +114,11 @@
 		// Add a (sub)title:
 		title.create( '<span class="subtitle">' + subtitle + '</span>' );
 
-	}; // end HISTOGRAM
+	}; // end LINE
 
 
 	// EXPORTS //
 
-	module.exports = histogram;
+	module.exports = line;
 
 })();
