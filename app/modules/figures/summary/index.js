@@ -1,6 +1,6 @@
 /**
 *
-*	FIGURE
+*	FIGURE: summary
 *
 *
 *
@@ -49,13 +49,13 @@
 		d3 = require( 'd3' ),
 
 		// Module to create a server-side DOM:
-		DOM = require( './../../utils/dom.js' ),
+		DOM = require( './../../../utils/dom.js' ),
 
 		// Document partials:
-		partials = require( './../../utils/partials.js' )( __dirname + '/partials' ),
+		partials = require( './../../../utils/partials.js' )( __dirname + '/../partials' ),
 
 		// Module to get data:
-		getData = require( './../../utils/data.js' ),
+		getData = require( './../../../utils/data.js' ),
 
 		// Module to generate the figure:
 		generator = require( './generator.js' );

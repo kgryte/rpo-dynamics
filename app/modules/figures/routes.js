@@ -1,6 +1,6 @@
 /**
 *
-*	MODULE: routes
+*	FIGURES: routes
 *
 *
 *
@@ -49,8 +49,8 @@
 	var // Path module:
 		path = require( 'path' ),
 
-		// Figure:
-		figure = require( './figure.js' );
+		// Summary figure:
+		summary = require( './summary' );
 
 
 	// ROUTES //
@@ -72,12 +72,36 @@
 
 		});
 
-		// Figure route for a particular condition:
+		// Summary figure route for a particular condition:
 		this.get( '/' + base + '/summary/:condition', function onRequest( request, response ) {
 
 			var condition = request.params.condition;
 
-			figure( condition, function ( error, html ) {
+			summary( condition, function ( error, html ) {
+				if ( error ) {
+					response.writeHead( error.status, {
+						'Content-Type': 'application/json'
+					});
+					response.write( error );
+					response.end();
+					return;
+				}
+				response.writeHead( 200, {
+					'Content-Type': 'text/html'
+				});
+				response.write( html );
+				response.end();
+
+			});
+
+		});
+
+		// Timeseries figure route for a particular condition:
+		this.get( '/' + base + '/timeseries/:condition', function onRequest( request, response ) {
+
+			var condition = request.params.condition;
+
+			timeseries( condition, function ( error, html ) {
 				if ( error ) {
 					response.writeHead( error.status, {
 						'Content-Type': 'application/json'

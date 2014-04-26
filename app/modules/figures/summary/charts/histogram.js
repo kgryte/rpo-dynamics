@@ -1,6 +1,6 @@
 /**
 *
-*	CHART: timeseries-histogram
+*	CHART: histogram
 *
 *
 *
@@ -46,7 +46,7 @@
 	// MODULES //
 
 	var // xfig figure library:
-		xfig = require( './../lib/xfig.js' );
+		xfig = require( './../../lib/xfig.js' );
 
 
 	// HISTOGRAM //
@@ -56,7 +56,7 @@
 	*/
 	var histogram = function( canvas, data, width, height, left, top, subtitle ) {
 
-		var graph, histogram, edges, axes, annotations, title, text, means;
+		var graph, histogram, edges, axes, annotations, title, text;
 
 		// [1] Instantiate a new graph generator and configure:
 		graph = xfig.graph( canvas )
@@ -67,59 +67,42 @@
 				'top': top
 			})
 			.xMin( 0 )
-			.xMax( 1 );
+			.xMax( 1 )
+			.yMin( 0 );
 
 		// Create the graph:
-		graph.create( 'timeseries-histogram' );
+		graph.create( 'histogram' );
 
 		// [2] Instantiate a new data generator and configure:
 		data = xfig.data( data )
 			.x( function ( d ) { return d.x; } )
-			.y( function ( d ) { return d.y[1] / ( d.y[0]+d.y[1] ); } );
+			.y( function ( d ) { return d.y[1] / (d.y[0]+d.y[1]); } );
 
 		// Create edges to define our histogram bins:
 		edges = data.linspace( -0.01, 1.01, 0.02 );
 		
-		// Transform the data and extract the data to histogram:
+		// Format the data and histogram the data:
 		data.format( 2 )
-			.extract( function ( d ) { return d[ 1 ]; });
-
-		// Calculate each dataset's mean value and sort the datasets based on their means:
-		means = data.mean( function ( d ) { return d; });
-		means = means.map( function ( d, i ) {
-			return [ d, i ];
-		});
-		means.sort( function ( a, b ) {
-			return a[0] < b[0] ? -1 : ( a[0] > b[0] ? 1 : 0 );
-		});
-		means = means.map( function ( d ) {
-			return d[ 1 ];
-		});
-
-		// Calculate the histogram:
-		data.reorder( means )
-			.histc( function ( d ) { return d; }, edges );
+			.concat()
+			.histc( function ( d ) { return d[ 1 ]; }, edges );
 
 		// Bind the data instance to the graph:
 		graph.data( data )
-			.yMin( 0 )
-			.yMax( data.size()[0] )
-			.zMin( 0 )
-			.zMax( data.max( function ( d ) {
+			.yMax( data.max( function ( d ) {
 				return d[ 1 ];
-			}))
-			.zRange( ['#ffffff', '#000000'] );
+			}));
 
 		// [3] Instantiate a new histogram generator and configure:
-		histogram = xfig.timeserieshistogram( graph );
+		histogram = xfig.histogram( graph )
+			.labels( [ 'data 0' ] );
 
 		// Create the histogram:
 		histogram.create();
 
 		// [4] Instantiate a new axes generator and configure:
 		axes = xfig.axes( graph )
-			.xLabel( 'E' )
-			.yLabel( 'molecule' );
+			.yLabel( 'counts' )
+			.xLabel( 'E' );
 
 		// Create the axes:
 		axes.create();

@@ -1,6 +1,6 @@
 /**
 *
-*	MODULE: figure
+*	MODULE: figures
 *
 *
 *
