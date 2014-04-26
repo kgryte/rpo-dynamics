@@ -63,7 +63,8 @@
 				return d.y[1] / ( d.y[0]+d.y[1] );
 			},
 			graphs, line,
-			annotations, title;
+			annotations, title,
+			idx;
 
 		// [1] Instantiate a new multipanel generator and configure:
 		multipanel = xfig.multipanel( canvas )
@@ -76,9 +77,12 @@
 			});
 
 		// [2] For each panel dataset, instantiate a new data generator and configure:
+		idx = [0,1,2].map( function ( id ) {
+			return Math.round( Math.random() * _data_.length );
+		});
 		for ( var i = 0; i < 3; i++ ) {
 
-			data.push( xfig.data( [ _data_[ i ] ] )
+			data.push( xfig.data( [ _data_[ idx[ i ] ] ] )
 				.x( xValue )
 				.y( yValue ) );
 
