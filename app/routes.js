@@ -71,7 +71,9 @@
 
 		// Format the model appropriate for mapping:
 		_model = model.map( function ( element ) {
-			return element.options;
+			return element.options.map( function ( option ) {
+				return option.abbr;
+			});
 		});
 
 		// Create a new directory mapper:

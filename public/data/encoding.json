@@ -1,58 +1,165 @@
 [
 	{
 		"name": "protein",
-		"description": "Protein used in experiment. Options include wild-type, delta jaw mutant, none (e.g., DNA-only), and sigma mutant.",
+		"desc": "Protein used in experiment.",
 		"options": [
-			"wt", "mutant", "none", "sigma"
+			{
+				"abbr": "wt",
+				"name": "Wild-type RNAP",
+				"desc": "wild-type RNAP holoenzyme"
+			},
+			{
+				"abbr": "mutant",
+				"name": "Delta Jaw Mutant",
+				"desc": "delta jaw mutant RNAP holoenzyme"
+			},
+			{
+				"abbr": "none",
+				"name": "(none)",
+				"desc": "no RNAP; DNA only"
+			},
+			{
+				"abbr": "sigma",
+				"name": "Sigma Mutant",
+				"desc": "sigma mutant RNAP holoenzyme"
+			}
 		]
 	},
 	{
 		"name": "complex",
-		"description": "DNA-protein complex formed during the experiment. Options include RPo, RPitc1, RPitc2, and DNA-only.",
+		"desc": "DNA-protein complex formed during the experiment.",
 		"options": [
-			"rpo", "rpitc1", "rpitc2", "dna"
+			{
+				"abbr": "rpo",
+				"name": "RPo",
+				"desc": "RNAP open complex"
+			},
+			{
+				"abbr": "rpitc1",
+				"name": "RPitc1",
+				"desc": "RNAP initial transcription complex capable of synthesizing transcripts of length 1"
+			},
+			{
+				"abbr": "rpitc2",
+				"name": "RPitc2",
+				"desc": "RNAP initial transcription complex capable of synthesizing transcripts of length 2"
+			},
+			{
+				"abbr": "dna",
+				"name": "DNA",
+				"desc": "DNA only"
+			}
 		]
 	},
 	{
 		"name": "dna",
-		"description": "DNA used during experiment. Options include wild-type and pre-melted.",
+		"desc": "DNA used during experiment.",
 		"options": [
-			"wt", "pm"
+			{
+				"abbr": "wt",
+				"name": "lacCons+2",
+				"desc": "lacCons+2 DNA"
+			},
+			{
+				"abbr": "pm",
+				"name": "Pre-melted DNA",
+				"desc": "Pre-melted lacCons variant"
+			}
 		]
 	},
 	{
 		"name": "temperature",
-		"description": "Temperature at which experiment was performed. Options include room temperature and 37C.",
+		"desc": "Temperature at which experiment was performed.",
 		"options": [
-			"rt", "37c"
+			{
+				"abbr": "rt",
+				"name": "23C",
+				"desc": "Room temperature: ~23C"
+			},
+			{
+				"abbr": "37c",
+				"name": "37C",
+				"desc": "Physiological temperature: 37C"
+			}
 		]
 	},
 	{
 		"name": "immobilization",
-		"description": "Immobilization method used during experiment. Options include vescicle encapsulation, antibody attachment, and biotin.",
+		"desc": "Immobilization method used during experiment.",
 		"options": [
-			"vesicles", "antibody", "biotin"
+			{
+				"abbr": "vesicles",
+				"name": "Vesicle Encapsulation",
+				"desc": "Vesicle encapsulation"
+			},
+			{
+				"abbr": "antibody",
+				"name": "Antibody",
+				"desc": "Antibody surface attachement and complex immobilization"
+			},
+			{
+				"abbr": "biotin",
+				"name": "Biotin",
+				"desc": "Biotin complex immobilization"
+			}
 		]
 	},
 	{
 		"name": "additives",
-		"description": "Additives included in the experiment. Options include none, heparin, glycerol.",
+		"desc": "Additives included in the experiment.",
 		"options": [
-			"none", "heparin", "glycerol"
+			{
+				"abbr": "none",
+				"name": "(none)",
+				"desc": "No additives beyond standard imaging buffer were included during experimental observation"
+			},
+			{
+				"abbr": "heparin",
+				"name": "Heparin",
+				"desc": "Heparin, a DNA competitor, was included in the imaging buffer during experimental observation to remove non-specifically bound RNAP-DNA complexes"
+			},
+			{
+				"abbr": "glycerol",
+				"name": "Glycerol",
+				"desc": "Glycerol was added to the imaging buffer to increase viscosity and reduce reaction rates"
+			}
 		]
 	},
 	{
 		"name": "temporal resolution",
-		"description": "Experimental temporal resolution. Options include 20ms and 100ms",
+		"desc": "Experimental temporal resolution.",
 		"options": [
-			"20ms", "100ms"
+			{
+				"abbr": "20ms",
+				"name": "20ms",
+				"desc": "10ms ALEx and 20ms temporal resolution"
+			},
+			{
+				"abbr": "100ms",
+				"name": "100ms",
+				"desc": "50ms ALEx and 100ms temporal resolution"
+			}
 		]
 	},
 	{
 		"name": "repeat number",
-		"description": "If the experimental conditions have been used before, what repeat is the current experiment? Options include 0, 1, and 2",
+		"desc": "If the experimental conditions have been used before, what repeat is the current experiment?",
 		"options": [
-			"0", "1", "2"
+			{
+				"abbr": "0",
+				"name": "Repeat: 0",
+				"desc": "Initial experiment."
+			},
+			{
+				"abbr": "1",
+				"name": "Repeat: 1",
+				"desc": "First repeat experiment."
+			},
+			{
+				"abbr": "2",
+				"name": "Repeat: 2",
+				"desc": "Second repeat experiment"
+			}
 		]
 	}
 ]

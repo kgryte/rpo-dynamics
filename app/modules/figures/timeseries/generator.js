@@ -67,20 +67,21 @@
 		// Create the figure:
 		figure.create( document, selection );
 
-		// [2] Instantiate a new canvas generator and configure:
-		canvas = xfig.canvas( figure )
-			.width( 1200 )
-			.height( 25000 );
-
-		// Create the canvas:
-		canvas.create();
-
-		// [3] Create a new line chart for each dataset:
+		// [2] Create a separate canvas for each dataset and create the line charts:
 		for ( var i = 0; i < data.length; i++ ) {
-			left = ( i % 2 === 0 ) ? 90 : 630;
-			top = 80 + Math.floor( i / 2 ) * 405;
-			Line( canvas, [ data[ i ] ], 400, 260, left, top, i+1 );
-		}
+
+			// [2.0] Instantiate a new canvas generator and configure:
+			canvas = xfig.canvas( figure )
+				.width( 500 )
+				.height( 430 );
+
+			// Create the canvas:
+			canvas.create();
+
+			// [2.1] Create a new line chart:
+			Line( canvas, [ data[ i ] ], 400, 260, 90, 80, i+1 );
+
+		} // end FOR i
 
 		// Finished:
 		clbk();

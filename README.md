@@ -53,6 +53,6 @@ returns a summary figure for condition set `id`; e.g., `10011000`. Note that the
 http://127.0.0.1:1337/figures/timeseries/:id
 ```
 
-returns all timeseries for condition set `id`; e.g., `100110001. The timeseries order matches the file order in the data directories.
+returns all timeseries for condition set `id`; e.g., `10011000`. The timeseries order matches the file order in the data directories.
 
 
