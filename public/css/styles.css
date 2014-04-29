@@ -62,6 +62,14 @@ body {
 	stroke-opacity: 90%;
 }
 
+.graph[data-graph-type="kde"] .area {
+	opacity: 0.25;
+}
+
+.graph .rug .line {
+	stroke: #474747;
+}
+
 .graph .axis path {
 	fill: none;
 }

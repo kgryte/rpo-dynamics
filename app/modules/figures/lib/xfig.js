@@ -2511,7 +2511,7 @@ var Figure = function() {
 * @param {object} selection - DOM element selection, e.g., document.querySelector( '.main' )
 * @returns {object} figure instance
 */
-Figure.prototype.create = function( selection ) {
+Figure.prototype.create = function( document, selection ) {
 	var figure, elements;
 	if ( !arguments.length ) {
 		selection = document.createElement( 'div' );

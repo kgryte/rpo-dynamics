@@ -4,7 +4,7 @@ TODO
 
 ### General
 
-1. 	Implement KDE
+1. 	
 
 
 ### Timeseries

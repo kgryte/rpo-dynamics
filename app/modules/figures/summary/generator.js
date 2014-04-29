@@ -51,6 +51,8 @@
 		// Chart generators:
 		Histogram = require( './charts/histogram.js' ),
 
+		KDE = require( './charts/kde.js' ),
+
 		TimeseriesHistogram = require( './charts/timeseries-histogram.js' ),
 		
 		Multipanel = require( './charts/multipanel.js' );
@@ -79,8 +81,9 @@
 		// Create the canvas:
 		canvas.create();
 
-		// [3] Histogram:
-		Histogram( canvas, data, 400, 260, 90, 80, 'a' );
+		// [3] Histogram / KDE:
+		// Histogram( canvas, data, 400, 260, 90, 80, 'a' );
+		KDE( canvas, data, 400, 260, 90, 80, 'a' );
 
 		// [4] Timeseries Histogram chart:
 		TimeseriesHistogram( canvas, data, 400, 260, 90, 485, 'b' );

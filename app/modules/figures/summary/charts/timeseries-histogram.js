@@ -78,7 +78,7 @@
 			.y( function ( d ) { return d.y[1] / ( d.y[0]+d.y[1] ); } );
 
 		// Create edges to define our histogram bins:
-		edges = data.linspace( -0.01, 1.01, 0.02 );
+		edges = xfig.vector.linspace( -0.01, 1.01, 0.02 );
 		
 		// Transform the data and extract the data to histogram:
 		data.format( 2 )

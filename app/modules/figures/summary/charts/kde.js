@@ -1,6 +1,6 @@
 /**
 *
-*	CHART: histogram
+*	CHART: kde
 *
 *
 *
@@ -49,14 +49,14 @@
 		xfig = require( './../../lib/xfig.js' );
 
 
-	// HISTOGRAM //
+	// KDE //
 
 	/**
 	*
 	*/
-	var histogram = function( canvas, data, width, height, left, top, subtitle ) {
+	var kde = function( canvas, _data_, width, height, left, top, subtitle ) {
 
-		var graph, histogram, edges, axes, annotations, title, text;
+		var graph, data, area, rug, max, axes, annotations, title, text;
 
 		// [1] Instantiate a new graph generator and configure:
 		graph = xfig.graph( canvas )
@@ -71,49 +71,69 @@
 			.yMin( 0 );
 
 		// Create the graph:
-		graph.create( 'histogram' );
+		graph.create( 'kde' );
 
 		// [2] Instantiate a new data generator and configure:
-		data = xfig.data( data )
+		data = xfig.data( _data_ )
 			.x( function ( d ) { return d.x; } )
 			.y( function ( d ) { return d.y[1] / (d.y[0]+d.y[1]); } );
 
-		// Create edges to define our histogram bins:
-		edges = xfig.vector.linspace( -0.01, 1.01, 0.02 );
-		
 		// Format the data and histogram the data:
 		data.format( 2 )
 			.concat()
-			.histc( function ( d ) { return d[ 1 ]; }, edges );
+			.kde( function ( d ) {
+				return d[ 1 ];
+			}, 0, 1 );
 
 		// Bind the data instance to the graph:
+		max = data.max( function ( d ) {
+			return d[ 1 ];
+		});
+		max += max * 0.05;
 		graph.data( data )
-			.yMax( data.max( function ( d ) {
-				return d[ 1 ];
-			}));
+			.yMax( max );
 
-		// [3] Instantiate a new histogram generator and configure:
-		histogram = xfig.histogram( graph )
+		// [3] Instantiate a new area generator and configure:
+		area = xfig.area( graph )
 			.labels( [ 'data 0' ] );
 
-		// Create the histogram:
-		histogram.create();
+		// Create the area chart:
+		area.create();
 
-		// [4] Instantiate a new axes generator and configure:
+		// [4] Instantiate a new data generator and configure:
+		data = xfig.data( _data_ )
+			.x( function ( d ) { return d.x; } )
+			.y( function ( d ) { return d.y[1] / (d.y[0]+d.y[1]); } );
+
+		// Format the data:
+		data.format( 2 )
+			.extract( function ( d ) { return d[ 1 ]; });
+
+		// Bind the data instance to the graph:
+		graph.data( data );
+
+		// [5] Instantiate a new rug chart generator and configure:
+		rug = xfig.rug( graph )
+			.labels( [ 'data 0' ] );
+
+		// Create the rug chart:
+		rug.create();
+
+		// [6] Instantiate a new axes generator and configure:
 		axes = xfig.axes( graph )
 			.xLabel( 'E' )
-			.yLabel( 'counts' );
+			.yLabel( 'density' );
 
 		// Create the axes:
 		axes.create();
 
-		// [5] Instantiate a new annotations generator and configure:
+		// [7] Instantiate a new annotations generator and configure:
 		annotations = xfig.annotations( graph );
 
 		// Create the annotations element:
 		annotations.create();
 
-		// [5.1] Instantiate a new title instance and configure:
+		// [7.1] Instantiate a new title instance and configure:
 		title = annotations.title()
 			.top( -65 )
 			.left( -90 );
@@ -121,11 +141,11 @@
 		// Add a (sub)title:
 		title.create( '<span class="subtitle">' + subtitle + '</span>' );
 
-	}; // end HISTOGRAM
+	}; // end KDE
 
 
 	// EXPORTS //
 
-	module.exports = histogram;
+	module.exports = kde;
 
 })();
