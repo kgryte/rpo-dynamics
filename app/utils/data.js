@@ -64,6 +64,7 @@
 	function onData( DATA, idx, total, errFLG, clbk ) {
 			
 		return function onData( error, data ) {
+			var numData;
 			if ( errFLG ) {
 				return;
 			}
@@ -79,7 +80,8 @@
 			// Insert the data into our DATA array:
 			DATA[ idx ] = JSON.parse( data );
 
-			if ( Object.keys( DATA ).length === total ) {
+			numData = Object.keys( DATA ).length;
+			if ( numData === total ) {
 				clbk( null, DATA );
 			}
 

@@ -5,110 +5,6 @@ var d3 = require( 'd3' ),
 	_ = require( 'lodash' );
 
 
-xfig.figure = function() {
-	return new Figure();
-};
-
-xfig.canvas = function( figure ) {
-	if ( !figure ) {
-		throw new Error( 'canvas()::figure selection not provided. Unable to initialize canvas generator.' );
-	}
-	if ( !( figure instanceof Figure ) ) {
-		throw new Error( 'canvas()::invalid input parameter. Parameter must be a Figure instance.' );
-	}
-	return new Canvas( figure );
-};
-
-xfig.graph = function( canvas ) {
-	if ( !canvas ) {
-		throw new Error( 'graph()::canvas selection not provided. Unable to initialize graph constructor.' );
-	}
-	if ( !( canvas instanceof Canvas ) ) {
-		throw new Error( 'graph()::invalid input parameter. Argument must be a Canvas instance.' );
-	}
-	return new Graph( canvas );
-};
-
-xfig.multipanel = function( canvas ) {
-	if ( !canvas ) {
-		throw new Error( 'multipanel()::canvas not provided. Unable to initialize multipanel constructor.' );
-	}
-	if ( !( canvas instanceof Canvas ) ) {
-		throw new Error( 'multipanel()::invalid input parameter. Input argument must be a Canvas instance.' );
-	}
-	return new Multipanel( canvas );
-};
-
-xfig.data = function( data ) {
-	if ( !data ) {
-		throw new Error( 'data()::data not provided. Unable to initialize data constructor.' );
-	}
-	if ( !( data instanceof Array ) ) {
-		throw new Error( 'data()::invalid input parameter. Input data must be an Array.' );
-	}
-	return new Data( data );
-};
-
-xfig.axes = function( graph ) {
-	if ( !graph ) {
-		throw new Error( 'axes()::graph not provided. Unable to initialize axes constructor.' );
-	}
-	if ( !( graph instanceof Graph ) ) {
-		throw new Error( 'axes()::invalid input parameter. Input argument must be a Graph instance.' );
-	}
-	return new Axes( graph );
-};
-
-xfig.area = function( graph ) {
-	if ( !graph ) {
-		throw new Error( 'area()::graph not provided. Unable to initialize area constructor.' );
-	}
-	if ( !( graph instanceof Graph ) ) {
-		throw new Error( 'area()::invalid input parameter. Input argument must be a Graph instance.' );
-	}
-	return new Area( graph );
-};
-
-xfig.line = function( graph ) {
-	if ( !graph ) {
-		throw new Error( 'line()::graph not provided. Unable to initialize line constructor.' );
-	}
-	if ( !( graph instanceof Graph ) ) {
-		throw new Error( 'line()::invalid input parameter. Input argument must be a Graph instance.' );
-	}
-	return new Line( graph );
-};
-
-xfig.histogram = function( graph ) {
-	if ( !graph ) {
-		throw new Error( 'histogram()::graph not provided. Unable to initialize histogram constructor.' );
-	}
-	if ( !( graph instanceof Graph ) ) {
-		throw new Error( 'histogram()::invalid input parameter. Input argument must be a Graph instance.' );
-	}
-	return new Histogram( graph );
-};
-
-xfig.timeserieshistogram = function( graph ) {
-	if ( !graph ) {
-		throw new Error( 'timeserieshistogram()::graph not provided. Unable to initialize timeseries histogram constructor.' );
-	}
-	if ( !( graph instanceof Graph ) ) {
-		throw new Error( 'timeserieshistogram()::invalid input parameter. Input argument must be a Graph instance.' );
-	}
-	return new TimeseriesHistogram( graph );
-};
-
-xfig.annotations = function( parent ) {
-	if ( !parent ) {
-		throw new Error( 'annotations()::parent instance not provided. Unable to initialize annotations constructor.' );
-	}
-	if ( !( parent instanceof Canvas ) && !( parent instanceof Graph ) && !( parent instanceof Multipanel ) ) {
-		throw new Error( 'annotations()::invalid input parameter. Input argument must be ether a Canvas, Graph, or Multipanel instance.' );
-	}
-	return new Annotations( parent );
-};
-
 // ANNOTATION //
 
 /**
@@ -1987,13 +1883,6 @@ var Data = function( data ) {
 	this._config = {};
 	this._data = data;
 
-	this._xMin = null;
-	this._xMax = null;
-	this._yMin = null;
-	this._yMax = null;
-	this._zMin = null;
-	this._zMax = null;
-
 	// ACCESSORS:
 	this._xValue = function( d ) { return d[ 0 ]; };
 	this._yValue = function( d ) { return d[ 1 ]; };
@@ -2043,30 +1932,6 @@ Data.prototype.format = function( dim ) {
 }; // end METHOD format()
 
 /**
-* METHOD: linspace( min, max, increment )
-*	Generate a linearly spaced vector.
-*
-* @param {number} min - min defines the vector lower bound
-* @param {number} max - max defines the vector upper bound
-* @param {number} increment - distance between successive vector elements
-* @returns {array} a 1-dimensional array
-*/
-Data.prototype.linspace = function ( min, max, increment ) {
-	var numElements, vec = [];
-
-	numElements = Math.round( ( ( max - min ) / increment ) ) + 1;
-
-	vec[ 0 ] = min;
-	vec[ numElements - 1] = max;
-
-	for ( var i = 1; i < numElements - 1; i++ ) {
-		vec[ i ] = min + increment*i;
-	}
-
-	return vec;
-}; // end METHOD linspace()
-
-/**
 * METHOD: min( accessor )
 *	Determines the min data value.
 *
@@ -2110,24 +1975,81 @@ Data.prototype.mean = function( accessor ) {
 		});
 	});
 	return d.map( function ( dataset ) {
-		return mean( dataset );
+		return Vector.mean( dataset );
 	});
 }; // end METHOD mean()
 
 /**
-* FUNCTION: mean( vector )
-*	Calculates the mean value of an input vector.
+* METHOD: variance( accessor )
+*	Calculates sample variance values for an array of arrays.
 *
-* @param {array} vector - 1d array of numeric values
-* @returns {number} mean value
+* @param {function} accessor - data accessor specifying how to access data values
+* @returns {array} 1d array of variance values
 */
-function mean( vector ) {
-	var sum = 0;
-	for ( var i = 0; i < vector.length; i++ ) {
-		sum += vector[ i ];
-	}
-	return sum / vector.length;
-} // end FUNCTION mean()
+Data.prototype.variance = function( accessor ) {
+	var d = this._data.map( function ( dataset ) {
+		return dataset.map( function ( d ) {
+			return accessor( d );
+		});
+	});
+	return d.map( function ( dataset ) {
+		return Vector.variance( dataset );
+	});
+}; // end METHOD variance()
+
+/**
+* METHOD: stdev( accessor )
+*	Calculates sample standard deviation values for an array of arrays.
+*
+* @param {function} accessor - data accessor specifying how to access data values
+* @returns {array} 1d array of standard deviation values
+*/
+Data.prototype.stdev = function( accessor ) {
+	var d = this._data.map( function ( dataset ) {
+		return dataset.map( function ( d ) {
+			return accessor( d );
+		});
+	});
+	return d.map( function ( dataset ) {
+		return Vector.stdev( dataset );
+	});
+}; // end METHOD stdev()
+
+/**
+* METHOD: median( accessor )
+*	Calculates the median values for an array of arrays.
+*
+* @param {function} accessor - data accessor specifying how to access data values
+* @returns {array} 1d array of median values
+*/
+Data.prototype.median = function( accessor ) {
+	var d = this._data.map( function ( dataset ) {
+		return dataset.map( function ( d ) {
+			return accessor( d );
+		});
+	});
+	return d.map( function ( dataset ) {
+		return Vector.median( dataset );
+	});
+}; // end METHOD median()
+
+/**
+* METHOD: sum( accessor )
+*	Calculates sums for an array of arrays.
+*
+* @param {function} accessor - data accessor specifying how to access data values
+* @returns {array} 1d array of sums
+*/
+Data.prototype.sum = function( accessor ) {
+	var d = this._data.map( function ( dataset ) {
+		return dataset.map( function ( d ) {
+			return accessor( d );
+		});
+	});
+	return d.map( function ( dataset ) {
+		return Vector.sum( dataset );
+	});
+}; // end METHOD sum()
 
 /**
 * METHOD: reorder( vector )
@@ -2179,6 +2101,104 @@ Data.prototype.concat = function() {
 }; // end METHOD concat()
 
 /**
+* METHOD: amean( accessor )
+*	Aggregate mean across datasets. The resulting dataset is an array comprising a single vector who length is equal to the length of the first original dataset. NOTE: we assume that the data is a homogeneous data array.
+*
+* @param {function} accessor - accessor function used to extract the data to be aggregated
+* @returns {object} instance object
+*/
+Data.prototype.amean = function( accessor ) {
+	var data = this._data, d = [[]], sum = 0,
+		numData = data.length,
+		numDatum = data[ 0 ].length;
+
+	for ( var j = 0; j < numDatum; j++ ) {
+		sum = 0;
+		for ( var i = 0; i < numData; i++ ) {
+			sum += accessor( data[ i ][ j ] );
+		}
+		d[ 0 ].push( sum / numDatum );
+	}
+	this._data = d;
+	return this;
+}; // end METHOD amean()
+
+/**
+* METHOD: asum( accessor )
+*	Aggregate sum across datasets. The resulting dataset is an array comprising a single vector who length is equal to the length of the first original dataset. NOTE: we assume that the data is a homogeneous data array.
+*
+* @param {function} accessor - accessor function used to extract the data to be aggregated
+* @returns {object} instance object
+*/
+Data.prototype.asum = function( accessor ) {
+	var data = this._data, d = [[]], sum = 0,
+		numData = data.length,
+		numDatum = data[ 0 ].length;
+
+	for ( var j = 0; j < numDatum; j++ ) {
+		sum = 0;
+		for ( var i = 0; i < numData; i++ ) {
+			sum += accessor( data[ i ][ j ] );
+		}
+		d[ 0 ].push( sum );
+	}
+	this._data = d;
+	return this;
+}; // end METHOD asum()
+
+/**
+* METHOD: amin( accessor )
+*	Aggregate min across datasets. The resulting dataset is an array comprising a single vector who length is equal to the length of the first original dataset. NOTE: we assume that the data is a homogeneous data array.
+*
+* @param {function} accessor - accessor function used to extract the data to be aggregated
+* @returns {object} instance object
+*/
+Data.prototype.amin = function( accessor ) {
+	var data = this._data, d = [[]], val, min = Number.POSITIVE_INFINITY,
+		numData = data.length,
+		numDatum = data[ 0 ].length;
+
+	for ( var j = 0; j < numDatum; j++ ) {
+		min = Number.POSITIVE_INFINITY;
+		for ( var i = 0; i < numData; i++ ) {
+			val = accessor( data[ i ][ j ] );
+			if ( val < min ) {
+				min = val;
+			}
+		}
+		d[ 0 ].push( min );
+	}
+	this._data = d;
+	return this;
+}; // end METHOD amin()
+
+/**
+* METHOD: amax( accessor )
+*	Aggregate max across datasets. The resulting dataset is an array comprising a single vector who length is equal to the length of the first original dataset. NOTE: we assume that the data is a homogeneous data array.
+*
+* @param {function} accessor - accessor function used to extract the data to be aggregated
+* @returns {object} instance object
+*/
+Data.prototype.amax = function( accessor ) {
+	var data = this._data, d = [[]], val, max = Number.NEGATIVE_INFINITY,
+		numData = data.length,
+		numDatum = data[ 0 ].length;
+
+	for ( var j = 0; j < numDatum; j++ ) {
+		max = Number.NEGATIVE_INFINITY;
+		for ( var i = 0; i < numData; i++ ) {
+			val = accessor( data[ i ][ j ] );
+			if ( val > max ) {
+				max = val;
+			}
+		}
+		d[ 0 ].push( max );
+	}
+	this._data = d;
+	return this;
+}; // end METHOD amax()
+
+/**
 * METHOD: size()
 *	Determine instance data size. (NOTE: we assume homogenous 2d data array)
 *
@@ -2201,7 +2221,7 @@ Data.prototype.size = function() {
 */
 Data.prototype.histc = function( accessor, edges ) {
 
-	var data = this._data,
+	var self = this,
 		min, max, numEdges = 21, binWidth;
 
 	if ( !accessor ) {
@@ -2209,34 +2229,34 @@ Data.prototype.histc = function( accessor, edges ) {
 	}
 
 	// Convert data to standard representation; needed for non-deterministic accessors:
-	data = d3.range( data.length ).map( function ( id ) {
-		return data[ id ].map( function ( d, i ) {
-			return accessor.call( data[ id ], d, i );
+	this._data = d3.range( this._data.length ).map( function ( id ) {
+		return self._data[ id ].map( function ( d, i ) {
+			return accessor.call( self._data[ id ], d, i );
 		});
 	});
 
 	if ( !edges.length ) {
 		
-		min = this.min( data, function ( d ) {
+		min = this.min( function ( d ) {
 				return d;
 			});
 
-		max = this.max( data, function ( d ) {
+		max = this.max( function ( d ) {
 				return d;
 			});
 
 		binWidth = ( max - min ) / ( numEdges - 1 );
 
-		edges = this.linspace( min, max+1e-16, binWidth );
+		edges = Vector.linspace( min, max+1e-16, binWidth );
 
 	} // end IF (edges)
 
 	// Histogram the data:
-	data = d3.range( data.length ).map( function ( id ) {
+	this._data = d3.range( this._data.length ).map( function ( id ) {
 
 		var counts;
 
-		counts = histc( data[ id ], edges );
+		counts = histc( self._data[ id ], edges );
 
 		// Augment counts to include the edge and binWidth (binWidth is needed in the event of variable bin width ):
 		counts = counts.map( function ( d, i ) {
@@ -2251,8 +2271,6 @@ Data.prototype.histc = function( accessor, edges ) {
 		return counts.slice( 1, counts.length-1 );
 
 	});
-
-	this._data = data;
 
 	return this;
 
@@ -2270,7 +2288,7 @@ Data.prototype.histc = function( accessor, edges ) {
 */
 Data.prototype.hist2c = function( xValue, yValue, xEdges, yEdges ) {
 
-	var data = this._data,
+	var self = this,
 		xNumEdges = 101,
 		yNumEdges = 101,
 		min, max;
@@ -2280,60 +2298,88 @@ Data.prototype.hist2c = function( xValue, yValue, xEdges, yEdges ) {
 	}
 
 	// Convert data to standard representation; needed for non-deterministic accessors:
-	data = d3.range( data.length ).map( function ( id ) {
-		return data[ id ].map( function ( d, i ) {
+	this._data = d3.range( this._data.length ).map( function ( id ) {
+		return self._data[ id ].map( function ( d, i ) {
 			return [
-				xValue.call( data[ id ], d, i ),
-				yValue.call( data[ id ], d, i )
+				xValue.call( self._data[ id ], d, i ),
+				yValue.call( self._data[ id ], d, i )
 			];
 		});
 	});
 
 	if ( !xEdges.length ) {
 		
-		min = this.min( data, function ( d ) {
+		min = this.min( function ( d ) {
 				return d[ 0 ];
 			});
 
-		max = this.max( data, function ( d ) {
+		max = this.max( function ( d ) {
 				return d[ 0 ];
 			});
 
 		binWidth = ( max - min ) / ( xNumEdges - 1 );
 
-		xEdges = this.linspace( min, max+1e-16, binWidth );
+		xEdges = Vector.linspace( min, max+1e-16, binWidth );
 
 	} // end IF (xEdges)
 
 	if ( !yEdges.length ) {
 		
-		min = this.min( data, function ( d ) {
+		min = this.min( function ( d ) {
 				return d[ 1 ];
 			});
 
-		max = this.max( data, function ( d ) {
+		max = this.max( function ( d ) {
 				return d[ 1 ];
 			});
 
 		binWidth = ( max - min ) / ( yNumEdges - 1 );
 
-		yEdges = this.linspace( min, max+1e-16, binWidth );
+		yEdges = Vector.linspace( min, max+1e-16, binWidth );
 
 	} // end IF (yEdges)
 
 	// Histogram the data:
-	data = hist2c( data, xEdges, yEdges );
+	this._data = hist2c( this._data, xEdges, yEdges );
 
 	// Drop the first and last bins as these include values which exceeded the lower and upper bounds:
-	data = data.map( function ( d, i ) {
-		return data[ i ].slice( 1, data[ i ].length - 1 );
+	this._data = this._data.map( function ( d, i ) {
+		return self._data[ i ].slice( 1, self._data[ i ].length - 1 );
 	});
 
-	this._data = data.slice( 1, data.length-1 );
+	this._data = this._data.slice( 1, this._data.length-1 );
 
 	return this;
 
 }; // end METHOD hist2c()
+
+// TODO: permit other kernels; ability to specify number of points; ability to specify estimator.
+
+/**
+* METHOD: kde( accessor )
+*	Calculates the kernel density estimate for each dataset.
+*
+* @param {function} accessor - data accessor specifying the data over which to calculate the KDE
+* @param {number} min - value defining the lower bound for the interval over which to calculate the KDE
+* @param {number} max - value defining the upper bound for the interval over which to calculate the KDE
+*/
+Data.prototype.kde = function( accessor, min, max ) {
+	var data = this._data,
+		kde = new KDE();
+
+	// Configure the KDE generator:
+	kde.kernel( pdf.normal( 0, 1 ) )
+		.x( accessor )
+		.min( min )
+		.max( max )
+		.points( Math.pow( 2, 10 ) );
+
+	// Calculate the bandwidth estimator and evaluate the density:
+	this._data = kde.estimator( data, 'silverman' )
+		.eval( data );
+
+	return this;
+}; // end METHOD kde()
 
 /**
 * METHOD: data()
@@ -2350,7 +2396,7 @@ Data.prototype.data = function() {
 *	x-value accessor setter and getter. If a function is supplied, sets the x-value accessor. If no function is supplied, returns the x-value accessor.
 *
 * @param {function} fcn - x-value accessor
-* @returns {function} x-value accessor
+* @returns {object|function} instance object or x-value accessor
 */
 Data.prototype.x = function( fcn ) {
 	var self = this,
@@ -2369,7 +2415,6 @@ Data.prototype.x = function( fcn ) {
 	});
 
 	return this;
-
 }; // end METHOD x()
 
 /**
@@ -2377,7 +2422,7 @@ Data.prototype.x = function( fcn ) {
 *	y-value accessor setter and getter. If a function is supplied, sets the y-value accessor. If no function is supplied, returns the y-value accessor.
 *
 * @param {function} fcn - y-value accessor
-* @returns {function} y-value accessor
+* @returns {object|function} instance object or y-value accessor
 */
 Data.prototype.y = function( fcn ) {
 	var self = this,
@@ -2396,7 +2441,6 @@ Data.prototype.y = function( fcn ) {
 	});
 
 	return this;
-
 }; // end METHOD y()
 
 /**
@@ -2404,7 +2448,7 @@ Data.prototype.y = function( fcn ) {
 *	z-value accessor setter and getter. If a function is supplied, sets the z-value accessor. If no function is supplied, returns the z-value accessor.
 *
 * @param {function} fcn - z-value accessor
-* @returns {function} z-value accessor
+* @returns {object|function} instance object or z-value accessor
 */
 Data.prototype.z = function( fcn ) {
 	var self = this,
@@ -2423,7 +2467,6 @@ Data.prototype.z = function( fcn ) {
 	});
 
 	return this;
-
 }; // end METHOD z()
 
 /**
@@ -2462,13 +2505,13 @@ var Figure = function() {
 }; // end FUNCTION Figure()
 
 /**
-* METHOD: create( document, selection )
+* METHOD: create( selection )
 *	Creates a new figure element. If a selection is supplied, appends a figure element to a selection. If no selection is supplied, a figure is appended to a newly create HTML element; to access the figure parent, use the parent method.
 *
 * @param {object} selection - DOM element selection, e.g., document.querySelector( '.main' )
 * @returns {object} figure instance
 */
-Figure.prototype.create = function( document, selection ) {
+Figure.prototype.create = function( selection ) {
 	var figure, elements;
 	if ( !arguments.length ) {
 		selection = document.createElement( 'div' );
@@ -4130,6 +4173,206 @@ Line.prototype.config = function() {
 * @returns {object} line children
 */
 Line.prototype.children = function() {
+	return this._children;
+}; // end METHOD children()
+
+// RUG //
+
+/**
+* FUNCTION: Rug( graph )
+*	Rug plot constructor. Creates a new rug instance.
+*
+* @param {object} graph - parent graph instance
+* @returns {object} rug instance
+*/
+var Rug = function( graph ) {
+
+	// INSTANCE ATTRIBUTES //
+
+	this._parent = graph;
+	this._root = undefined;
+	this._children = {};
+	this._config = {
+		"type": "rug",
+		"size": 6,
+		"labels": []
+	};
+
+	// DATA //
+
+	this._data = graph._data;
+
+	// TRANSFORMS //
+
+	this._transforms = {
+		'x': function X( d ) {
+			return graph._xScale( d[ 0 ] );
+		},
+		'y': function Y( d ) {
+			return d[ 1 ];
+		}
+	};
+
+	// GENERATOR //
+
+	this._path = this.path()
+		.x( this._transforms.x )
+		.y( this._transforms.y );
+
+	// REGISTER //
+	if ( graph._config.hasOwnProperty( 'marks' ) ) {
+		graph._config.marks.push( this._config );
+	} else {
+		graph._config.marks = [ this._config ];
+	}
+	if ( graph._children.hasOwnProperty( 'marks' ) ) {
+		graph._children.marks.push( this );
+	} else {
+		graph._children.marks = [ this ];
+	}
+
+	return this;
+
+}; // end FUNCTION Rug()
+
+/**
+* METHOD: create()
+*	Creates a new rug element.
+*
+* @returns {object} instance object
+*/
+Rug.prototype.create = function() {
+
+	var selection = this._parent._root,
+		height = this._parent._config.scales[ 1 ].range.max,
+		labels = this._config.labels,
+		rug, paths,
+		tickSize = this._config.size;
+
+	// Create the marks group:
+	this._root = selection.append( 'svg:g' )
+		.attr( 'property', 'marks' )
+		.attr( 'class', 'marks' )
+		.attr( 'clip-path', 'url(#' + selection.attr( 'data-clipPath' ) + ')' );
+
+	// Create a rug group:
+	rug = this._root.selectAll( '.rug' )
+		.data( this._data )
+	  .enter().append( 'svg:g' )
+		.attr( 'property', 'rug' )
+		.attr( 'class', 'rug' )
+		.attr( 'data-label', function ( d, i ) { return labels[ i ]; })
+		.attr( 'transform', 'translate(0,' + ( height - tickSize ) + ')' );
+
+	// Add rug paths:
+	paths = rug.selectAll( '.line' )
+		.data( function ( d ) {
+			return d.map( function ( d ) {
+				return [ [ d, 0 ], [ d, tickSize ] ];
+			});
+		})
+	  .enter().append( 'svg:path' )
+		.attr( 'property', 'line' )
+		.attr( 'class', 'line' )
+		.attr( 'd', this._path );
+
+	return this;
+
+}; // end METHOD create()
+
+/**
+* METHOD: path()
+*	Retrieves the rug path generator.
+*
+* @returns {function} rug path generator
+*/
+Rug.prototype.path = function() {
+	return d3.svg.line();
+}; // end METHOD path()
+
+/**
+* METHOD: size( value )
+*	Rug tick (tassel) size setter and getter. If a value is supplied, sets the instance tick size. If no value is supplied, returns the instance tick size.
+*
+* @param {number} value - rug tick size
+* @returns {object|number} instance object or rug tick size
+*/
+Rug.prototype.size = function( value ) {
+	var self = this,
+		rules = 'number';
+
+	if ( !arguments.length ) {
+		return this._config.size;
+	}
+	
+	Validator( value, rules, function set( errors ) {
+		if ( errors ) {
+			console.error( errors );
+			throw new Error( 'size()::invalid input argument.' );
+		}
+		self._config.size = value;
+	});
+
+	return this;
+
+}; // end METHOD size()
+
+/**
+* METHOD: labels( arr )
+*	Marks labels setter and getter. If a label array is supplied, sets the marks labels. If no label array is supplied, retrieves the marks labels.
+*
+* @param {array} arr - an array of labels (strings)
+* @returns {object|array} instance object or an array of labels
+*/
+Rug.prototype.labels = function ( arr ) {
+	var self = this,
+		rules = 'array';
+
+	if ( !arguments.length ) {
+		return this._config.labels;
+	}
+	
+	Validator( arr, rules, function set( errors ) {
+		if ( errors ) {
+			console.error( errors );
+			throw new Error( 'labels()::invalid input argument.' );
+		}
+		self._config.labels = arr;
+	});
+
+	return this;
+
+}; // end METHOD labels()
+
+
+/**
+* METHOD: parent()
+*	Returns the rug parent.
+*
+* @returns {object} rug parent
+*/
+Rug.prototype.parent = function() {
+	return this._parent;
+}; // end METHOD parent()
+
+/**
+* METHOD: config()
+*	Returns the rug configuration as a JSON blob.
+*
+* @returns {object} configuration blob
+*/
+Rug.prototype.config = function() {
+	// Prevent direct tampering with the config object:
+	return JSON.parse( JSON.stringify( this._config ) );
+}; // end METHOD config()
+
+/**
+* METHOD: children()
+*	Returns the rug children.
+* 
+* @returns {object} rug children
+*/
+Rug.prototype.children = function() {
 	return this._children;
 }; // end METHOD children()
 
@@ -6094,6 +6337,383 @@ var histc;
 
 
 
+
+
+// KDE //
+
+var KDE = function() {
+
+	this._kernel = pdf.normal( 0, 1 ); // standard normal
+	this._config = {
+		'domain': {
+			'min': 0,
+			'max': 1,
+			'pts': Math.pow( 2, 14 ) // 2^14
+		},
+		'bandwidth': [ 1.06 ] // Silverman's Rule of Thumb (n=1,sigma=1)
+	};
+
+	// ACCESSORS //
+	this._xValue = function ( d ) {
+		return d;
+	};
+
+	return this;
+};
+
+/**
+* METHOD: kernel( fcn )
+*	KDE kernel setter and getter. If a kernel is provided, sets the instance kernel. If no kernel is provided, returns the instance kernel.
+*
+* @param {function} fcn - probability density function serving as the KDE kernel
+* @returns {object|function} instance object or instance kernel
+*/
+KDE.prototype.kernel = function( fcn ) {
+	var self = this,
+		rules = 'function';
+
+	if ( !arguments.length ) {
+		return this._kernel;
+	}
+	
+	Validator( fcn, rules, function set( errors ) {
+		if ( errors ) {
+			console.error( errors );
+			throw new Error( 'kernel()::invalid input argument.' );
+		}
+		self._kernel = fcn;
+	});
+
+	return this;
+}; // end METHOD kernel()
+
+/**
+* METHOD: bandwidth( arr )
+*	KDE bandwidth setter and getter. If a value is provided, sets the instance bandwidth. If no value is provided, returns the instance bandwidth.
+*
+* @param {array} arr - desired instance bandwidth provided as an array; if arr is length 1, then same bandwidth is used across datasets. If arr length > 1, each element is used as the bandwidth for its corresponding dataset
+* @returns {object|array} instance object or instance bandwidth
+*/
+KDE.prototype.bandwidth = function( arr ) {
+	var self = this,
+		rules = 'array';
+
+	if ( !arguments.length ) {
+		return this._config.bandwidth;
+	}
+	
+	Validator( arr, rules, function set( errors ) {
+		if ( errors ) {
+			console.error( errors );
+			throw new Error( 'bandwidth()::invalid input argument.' );
+		}
+		self._config.bandwidth = arr;
+	});
+
+	return this;
+}; // end METHOD bandwidth()
+
+/**
+* METHOD: estimator( data, method )
+*	Computes bandwidth estimates from input data. NOTE: the estimates will override the current bandwidth value.
+*
+* @param {array} data - array of arrays where each nested array is a dataset over which to calculate a bandwidth estimator
+* @param {string} method - estimator method; methods include: Silverman.
+* @returns {object} instance object
+*/
+KDE.prototype.estimator = function( data, method ) {
+	var xValue = this._xValue,
+		methods = {
+			'silverman': kde_estimator_silverman
+		};
+
+	if ( arguments.length !== 2 ) {
+		throw new Error( 'estimator()::incorrect number of input arguments. Provide data and an estimator method.' );
+	}
+
+	method = method.toLowerCase();
+
+	if ( !methods.hasOwnProperty( method ) ) {
+		throw new Error( 'estimator()::unrecognized estimator method: ' + method );
+	}
+
+	// Extract the data:
+	data = data.map( function ( dataset ) {
+		return dataset.map( function ( d ) {
+			return xValue( d );
+		});
+	});
+
+	this._config.bandwidth = data.map( function ( dataset ) {
+		return methods[ method ]( dataset );
+	});
+
+	return this;
+}; // end METHOD estimator()
+
+/**
+* FUNCTION: kde_estimator_silverman( vector )
+*	Use's Silverman's rule of thumb to derive an empirical estimate for an optimal KDE bandwidth selection.
+* Source:
+*	Silverman, B.W. (1998). Density Estimation for Statistics and Data Analysis. London: Chapman & Hall/CRC. p. 48. ISBN 0-412-24620-1.
+*
+* @param {array} vector - 1d array over which to compute the estimate
+* @returns {number} bandwidth estimate
+*/
+function kde_estimator_silverman( vector ) {
+	var stdev, N = vector.length, A;
+
+	// [0] Calculate the sample standard deviation:
+	stdev = Vector.stdev( vector );
+
+	// [1] Calculate the estimator:
+	A = Math.pow( ( 4/(3*N) ), 0.2 );
+	return A * stdev;
+} // end FUNCTION kde_estimator_silverman
+
+/**
+* METHOD: x( fcn )
+*	x-value accessor setter and getter. If a function is supplied, sets the x-value accessor. If no function is supplied, returns the x-value accessor.
+*
+* @param {function} fcn - x-value accessor
+* @returns {object|function} instance object or x-value accessor
+*/
+KDE.prototype.x = function( fcn ) {
+	var self = this,
+		rules = 'function';
+
+	if ( !arguments.length ) {
+		return this._xValue;
+	}
+	
+	Validator( fcn, rules, function set( errors ) {
+		if ( errors ) {
+			console.error( errors );
+			throw new Error( 'x()::invalid input argument.' );
+		}
+		self._xValue = fcn;
+	});
+
+	return this;
+}; // end METHOD x()
+
+/**
+* METHOD: min( value )
+*	Domain min setter and getter. If a value is supplied, defines the instance domain min. If no value is supplied, returns the instance domain min.
+*
+* @param {number} min - desired instance domain min.
+* @returns {object|number} instance object or instance domain min.
+*/
+KDE.prototype.min = function( value ) {
+	var domain = this._config.domain,
+		rules = 'number';
+
+	if ( !arguments.length ) {
+		return domain.min;
+	}
+
+	Validator( value, rules, function set( errors ) {
+		if ( errors ) {
+			console.error( errors );
+			throw new Error( 'min()::invalid input argument. ' );
+		}
+		domain.min = value;
+	});
+	
+	return this;
+
+}; // end METHOD min()
+
+/**
+* METHOD: max( value )
+*	Domain max setter and getter. If a value is supplied, defines the instance domain max. If no value is supplied, returns the instance domain max.
+*
+* @param {number} max - desired instance domain max.
+* @returns {object|number} instance object or instance domain max.
+*/
+KDE.prototype.max = function( value ) {
+	var domain = this._config.domain,
+		rules = 'number';
+
+	if ( !arguments.length ) {
+		return domain.max;
+	}
+
+	Validator( value, rules, function set( errors ) {
+		if ( errors ) {
+			console.error( errors );
+			throw new Error( 'max()::invalid input argument. ' );
+		}
+		domain.max = value;
+	});
+	
+	return this;
+
+}; // end METHOD max()
+
+/**
+* METHOD: domain( arr )
+*	Domain setter and getter. If an array is supplied, sets the instance domain. If no argument is supplied, gets the instance domain.
+*
+* @param {array} arr - 2-element array defining the domain
+* @returns {object|array} instance object or domain
+*/
+KDE.prototype.domain = function( arr ) {
+	var self = this,
+		domain = this._config.domain,
+		rules = 'array';
+
+	if ( !arguments.length ) {
+		return [ domain.min, domain.max ];
+	}
+
+	Validator( arr, rules, function set( errors ) {
+		if ( errors ) {
+			console.error( errors );
+			throw new Error( 'domain()::invalid input argument. ' );
+		}
+		domain.min = arr[ 0 ];
+		domain.max = arr[ 1 ];
+	});
+	
+	return this;
+
+}; // end METHOD domain()
+
+/**
+* METHOD: points( value )
+*	Number of points along the KDE domain setter and getter. If a value is supplied, defines the number of points on the instance domain. If no value is supplied, returns the number of points on the instance domain. Note: the number of points should be a power of 2. If not a power of 2, pts = 2^ceil(log2(pts)).
+*
+* @param {number} value - desired number of points on the KDE domain.
+* @returns {object|number} instance object or number of points.
+*/
+KDE.prototype.points = function( value ) {
+	var domain = this._config.domain,
+		rules = 'number',
+		power;
+
+	if ( !arguments.length ) {
+		return domain.pts;
+	}
+
+	Validator( value, rules, function set( errors ) {
+		if ( errors ) {
+			console.error( errors );
+			throw new Error( 'pts()::invalid input argument. ' );
+		}
+		power = Math.ceil( Math.log( value ) / Math.log( 2 ) );
+		domain.pts = Math.pow( 2, power );
+	});
+	
+	return this;
+
+}; // end METHOD points()
+
+// TODO: use dfft to speed KDE calculation.
+
+/**
+* METHOD: eval( data )
+*	Computes the kernel density estimate.
+*
+* @param {array} data - array of arrays where each nested array is a dataset over which to calculate a KDE
+* @returns {array} array of arrays where each nested array is the KDE for a dataset. Note: the output datasets are NOT guaranteed to be the same length as the input datasets. Density length depends on the number of mesh points over which the density is evaluated.
+*/
+KDE.prototype.eval = function( data ) {
+	var kde = [], density = [], val,
+		x = this._xValue,
+		pdf = this._kernel,
+		bw = this._config.bandwidth,
+		N = this._config.domain.pts,
+		min = this._config.domain.min,
+		max = this._config.domain.max,
+		edges, interval;
+
+	// Create a sampling vector:
+	interval = (max-min) / (N-1);
+	edges = Vector.linspace( min, max, interval );
+
+	// Check if the number of bandwidths matches the data length:
+	if ( data.length !== bw.length ) {
+		for ( var b = 0; b < data.length; b++ ) {
+			bw.push( bw[ 0 ] );
+		}
+	}
+
+	for ( var i = 0; i < data.length; i++ ) {
+
+		// Reset the density for the new dataset:
+		density = new Array( N );
+
+		// Compute a density estimate:
+		for ( var n = 0; n < N; n++ ) {
+
+			// Initialize the density to zero for this interval point:
+			density[ n ] = [ edges[n], 0 ];
+
+			// Given a sampling vector, build the density by evaluating the PDF for each datum and summing:
+			for ( var j = 0; j < data[ i ].length; j++ ) {
+				val = ( x( data[i][j] ) - edges[n] ) / bw[ i ];
+				density[ n ][ 1 ] += pdf( val );
+			}
+			density[ n ][ 1 ] /= ( bw[ i ] * N );
+
+		} // end FOR j
+
+		// Push the dataset density into our KDE array:
+		kde.push( density );
+
+	} // end FOR i
+
+	return kde;
+}; // end METHOD eval()
+
+/**
+* METHOD: config()
+*	Returns the KDE configuration as a JSON blob.
+* 
+* @returns {object} configuration blob
+*/
+KDE.prototype.config = function() {
+	// Prevent direct tampering with the config object:
+	return JSON.parse( JSON.stringify( this._config ) );
+}; // end METHOD config()
+
+
+
+
+// PDF //
+
+var pdf = {
+		'version': '0.0.0' // semvar
+	};
+
+/**
+* METHOD: normal( mu, sigma )
+*	Returns a probability density function for a normal distribution with mean 'mu' and standard deviation 'sigma'.
+*
+* @param {number} mu - distribution mean
+* @param {number} sigma - distribution standard deviation
+* @returns {function} probability density function (PDF)
+*/
+pdf.normal = function( mu, sigma ) {
+	var pi = Math.PI,
+		sqrt = Math.sqrt,
+		exp = Math.exp,
+		A = 1 / ( sigma * sqrt(2*pi) ),
+		B = -1 / ( 2 * sigma*sigma ),
+		C;
+	/**
+	* FUNCTION: normal( x )
+	*	Evaluates the probability distribution function for a normal distribution at input value 'x'.
+	*
+	* @param {number} x - input value
+	* @returns {number} evaluated PDF
+	*/
+	return function normal( x ) {
+		C = x - mu;
+		return A * exp( B * C * C );
+	};
+}; // end METHOD normal()
 /**
 *
 *	FIGURE: validate
@@ -6437,6 +7057,289 @@ var Validator;
 	Validator = validator;
 
 })( _ );
+
+
+// VECTOR //
+
+var Vector = {
+		'version': '0.0.0' // semvar
+	};
+
+/**
+* METHOD: mean( vector )
+*	Calculates the mean value of an input vector.
+*
+* @param {array} vector - 1d array of numeric values
+* @returns {number} mean value
+*/
+Vector.mean = function( vector ) {
+	var sum = 0;
+	for ( var i = 0; i < vector.length; i++ ) {
+		sum += vector[ i ];
+	}
+	return sum / vector.length;
+}; // end METHOD mean()
+
+/**
+* METHOD: variance( vector )
+*	Calculates the sample variance of an input vector.
+*
+* @param {array} vector - 1d array of numeric values
+* @returns {number} variance
+*/
+Vector.variance = function( vector ) {
+	var sum = 0, sum_of_squares = 0,
+		value1, value2,
+		N = vector.length;
+	for ( var i = 0; i < N; i++ ) {
+		sum += vector[ i ];
+		sum_of_squares += vector[ i ]*vector[ i ];
+	}
+	value1 = sum_of_squares / ( N-1 );
+	value2 = sum*sum / ( N*(N-1) );
+	return value1 - value2;
+}; // end METHOD variance()
+
+/**
+* METHOD: stdev( vector )
+*	Calculates the sample standard deviation of an input vector.
+*
+* @param {array} vector - 1d array of numeric values
+* @returns {number} standard deviation
+*/
+Vector.stdev = function( vector ) {
+	var sum = 0, sum_of_squares = 0,
+		value1, value2,
+		N = vector.length;
+	for ( var i = 0; i < N; i++ ) {
+		sum += vector[ i ];
+		sum_of_squares += vector[ i ]*vector[ i ];
+	}
+	value1 = sum_of_squares / ( N-1 );
+	value2 = sum*sum / ( N*(N-1) );
+	return Math.sqrt( value1 - value2 );
+}; // end METHOD stdev()
+
+/**
+* METHOD: median( vector )
+*	Calculates the median value of an input vector.
+*
+* @param {array} vector - 1d array of numeric values
+* @returns {number} median value
+*/
+Vector.median = function( vector ) {
+	var value, id, vec;
+
+	// Create a copy of the input vector:
+	vec = vector.slice();
+
+	// Sort the input vector:
+	vec.sort( function ( a, b ) {
+		return a - b;
+	});
+
+	// Get the middle index:
+	id = Math.floor( vec.length / 2 );
+
+	if ( vec.length % 2 ) {
+		// The number of elements is not evenly divisible by two, hence we have a middle index:
+		return vec[ id ];
+	}
+
+	// Even number of elements, so must take the mean of the two middle values:
+	return ( vec[ id-1 ] + vec[ id ] ) / 2.0;
+
+}; // end METHOD median()
+
+/**
+* METHOD: sum( vector )
+*	Calculates the sum of an input vector.
+*
+* @param {array} vector - 1d array of numeric values
+* @returns {number} sum value
+*/
+Vector.sum = function( vector ) {
+	var value = 0;
+	for ( var i = 0; i < vector.length; i++ ) {
+		value += vector[ i ];
+	}
+	return value;
+}; // end METHOD sum()
+
+/**
+* METHOD: min( vector )
+*	Calculates the min of an input vector.
+*
+* @param {array} vector - 1d array of numeric values
+* @returns {number} min value
+*/
+Vector.min = function( vector ) {
+	var value = Number.POSITIVE_INFINITY;
+	for ( var i = 0; i < vector.length; i++ ) {
+		if ( vector[ i ] < value ) {
+			value = vector[ i ];
+		}
+	}
+	return value;
+}; // end METHOD min()
+
+/**
+* METHOD: max( vector )
+*	Calculates the max of an input vector.
+*
+* @param {array} vector - 1d array of numeric values
+* @returns {number} max value
+*/
+Vector.max = function( vector ) {
+	var value = Number.NEGATIVE_INFINITY;
+	for ( var i = 0; i < vector.length; i++ ) {
+		if ( vector[ i ] > value ) {
+			value = vector[ i ];
+		}
+	}
+	return value;
+}; // end METHOD max()
+
+/**
+* METHOD: linspace( min, max, increment )
+*	Generate a linearly spaced vector.
+*
+* @param {number} min - min defines the vector lower bound
+* @param {number} max - max defines the vector upper bound
+* @param {number} increment - distance between successive vector elements
+* @returns {array} a 1-dimensional array
+*/
+Vector.linspace = function( min, max, increment ) {
+	var numElements, vec = [];
+
+	numElements = Math.round( ( ( max - min ) / increment ) ) + 1;
+
+	vec[ 0 ] = min;
+	vec[ numElements - 1] = max;
+
+	for ( var i = 1; i < numElements - 1; i++ ) {
+		vec[ i ] = min + increment*i;
+	}
+
+	return vec;
+}; // end METHOD linspace()
+
+xfig.figure = function() {
+	return new Figure();
+};
+
+xfig.canvas = function( figure ) {
+	if ( !figure ) {
+		throw new Error( 'canvas()::figure selection not provided. Unable to initialize canvas generator.' );
+	}
+	if ( !( figure instanceof Figure ) ) {
+		throw new Error( 'canvas()::invalid input parameter. Parameter must be a Figure instance.' );
+	}
+	return new Canvas( figure );
+};
+
+xfig.graph = function( canvas ) {
+	if ( !canvas ) {
+		throw new Error( 'graph()::canvas selection not provided. Unable to initialize graph constructor.' );
+	}
+	if ( !( canvas instanceof Canvas ) ) {
+		throw new Error( 'graph()::invalid input parameter. Argument must be a Canvas instance.' );
+	}
+	return new Graph( canvas );
+};
+
+xfig.multipanel = function( canvas ) {
+	if ( !canvas ) {
+		throw new Error( 'multipanel()::canvas not provided. Unable to initialize multipanel constructor.' );
+	}
+	if ( !( canvas instanceof Canvas ) ) {
+		throw new Error( 'multipanel()::invalid input parameter. Input argument must be a Canvas instance.' );
+	}
+	return new Multipanel( canvas );
+};
+
+xfig.data = function( data ) {
+	if ( !data ) {
+		throw new Error( 'data()::data not provided. Unable to initialize data constructor.' );
+	}
+	if ( !( data instanceof Array ) ) {
+		throw new Error( 'data()::invalid input parameter. Input data must be an Array.' );
+	}
+	return new Data( data );
+};
+
+xfig.axes = function( graph ) {
+	if ( !graph ) {
+		throw new Error( 'axes()::graph not provided. Unable to initialize axes constructor.' );
+	}
+	if ( !( graph instanceof Graph ) ) {
+		throw new Error( 'axes()::invalid input parameter. Input argument must be a Graph instance.' );
+	}
+	return new Axes( graph );
+};
+
+xfig.area = function( graph ) {
+	if ( !graph ) {
+		throw new Error( 'area()::graph not provided. Unable to initialize area constructor.' );
+	}
+	if ( !( graph instanceof Graph ) ) {
+		throw new Error( 'area()::invalid input parameter. Input argument must be a Graph instance.' );
+	}
+	return new Area( graph );
+};
+
+xfig.line = function( graph ) {
+	if ( !graph ) {
+		throw new Error( 'line()::graph not provided. Unable to initialize line constructor.' );
+	}
+	if ( !( graph instanceof Graph ) ) {
+		throw new Error( 'line()::invalid input parameter. Input argument must be a Graph instance.' );
+	}
+	return new Line( graph );
+};
+
+xfig.rug = function( graph ) {
+	if ( !graph ) {
+		throw new Error( 'rug()::graph not provided. Unable to initialize rug constructor.' );
+	}
+	if ( !( graph instanceof Graph ) ) {
+		throw new Error( 'rug()::invalid input parameter. Input argument must be a Graph instance.' );
+	}
+	return new Rug( graph );
+};
+
+xfig.histogram = function( graph ) {
+	if ( !graph ) {
+		throw new Error( 'histogram()::graph not provided. Unable to initialize histogram constructor.' );
+	}
+	if ( !( graph instanceof Graph ) ) {
+		throw new Error( 'histogram()::invalid input parameter. Input argument must be a Graph instance.' );
+	}
+	return new Histogram( graph );
+};
+
+xfig.timeserieshistogram = function( graph ) {
+	if ( !graph ) {
+		throw new Error( 'timeserieshistogram()::graph not provided. Unable to initialize timeseries histogram constructor.' );
+	}
+	if ( !( graph instanceof Graph ) ) {
+		throw new Error( 'timeserieshistogram()::invalid input parameter. Input argument must be a Graph instance.' );
+	}
+	return new TimeseriesHistogram( graph );
+};
+
+xfig.annotations = function( parent ) {
+	if ( !parent ) {
+		throw new Error( 'annotations()::parent instance not provided. Unable to initialize annotations constructor.' );
+	}
+	if ( !( parent instanceof Canvas ) && !( parent instanceof Graph ) && !( parent instanceof Multipanel ) ) {
+		throw new Error( 'annotations()::invalid input parameter. Input argument must be ether a Canvas, Graph, or Multipanel instance.' );
+	}
+	return new Annotations( parent );
+};
+
+xfig.vector = Vector;
+
 if ( typeof define === "function" && define.amd ) {
 	define( xfig );
 } else if ( typeof module === "object" && module.exports ) {
