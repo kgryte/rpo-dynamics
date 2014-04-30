@@ -101,28 +101,28 @@
 		area.create();
 
 		// [4] Instantiate a new data generator and configure:
-		data = xfig.data( _data_ )
-			.x( function ( d ) { return d.x; } )
-			.y( function ( d ) { return d.y[1] / (d.y[0]+d.y[1]); } );
+		// data = xfig.data( _data_ )
+		// 	.x( function ( d ) { return d.x; } )
+		// 	.y( function ( d ) { return d.y[1] / (d.y[0]+d.y[1]); } );
 
-		// Format the data:
-		data.format( 2 )
-			.extract( function ( d ) { return d[ 1 ]; });
+		// // Format the data:
+		// data.format( 2 )
+		// 	.extract( function ( d ) { return d[ 1 ]; });
 
-		// Bind the data instance to the graph:
-		graph.data( data );
+		// // Bind the data instance to the graph:
+		// graph.data( data );
 
-		// [5] Instantiate a new rug chart generator and configure:
-		rug = xfig.rug( graph )
-			.labels( [ 'data 0' ] );
+		// // [5] Instantiate a new rug chart generator and configure:
+		// rug = xfig.rug( graph )
+		// 	.labels( [ 'data 0' ] );
 
-		// Create the rug chart:
-		rug.create();
+		// // Create the rug chart:
+		// rug.create();
 
 		// [6] Instantiate a new axes generator and configure:
 		axes = xfig.axes( graph )
 			.xLabel( 'E' )
-			.yLabel( 'density' );
+			.yLabel( 'density [au]' );
 
 		// Create the axes:
 		axes.create();

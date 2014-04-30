@@ -27,7 +27,7 @@ body {
 
 .canvas {
 	float: left;
-	
+
 	position: relative;
 	top: 0;
 	left: 0;
@@ -68,6 +68,7 @@ body {
 
 .graph .rug .line {
 	stroke: #474747;
+	opacity: 0.1;
 }
 
 .graph .axis path {

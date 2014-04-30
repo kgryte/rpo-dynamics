@@ -17,7 +17,7 @@ TODO
 1.  Multiple timeseries -->  dynamically resize based on parent size (wrap in container); sortable; ability to sort based on mean, variance --> sort in-browser using data attributes: data-mean, data-variance, etc.
 2. 	Small-multiple timeseries-histogram across all conditions
 3. 	Selection cross-condition comparison
-4.  Multiple histograms across all conditions
+4.  Small-multiple histograms across all conditions
 5. 	Hist2d timeseries across all conditions (is this actually valuable? really only when aligned.)
 6. 	
 
