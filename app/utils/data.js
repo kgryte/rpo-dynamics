@@ -82,7 +82,7 @@
 
 			numData = Object.keys( DATA ).length;
 			if ( numData === total ) {
-				clbk( null, DATA );
+				clbk( null );
 			}
 
 		}; // end FUNCTION onData()
@@ -132,42 +132,65 @@
 	* FUNCTION: data( id, clbk )
 	*
 	*/
-	var data = function( id, clbk ) {
+	var data = function( ids, clbk ) {
 
 		var files, total, path, errFLG = false,
 
-			DATA, key;
+			DATA = {}, key,
 
-		// Get the path for the provided id:
-		path = INDEX[ id ];
+			numData = ids.length, counter = 0;
 
-		if ( !path ) {
-			throw new Error( 'data()::dataset does not exist. ID not found in directory list.' );
-		}
+		for ( var id = 0; id < ids.length; id++ ) {
 
-		// Get the file names:
-		files = fs.readdirSync( path )
-			.filter( function ( file ) {
-				return file.substr( -5 ) === '.json';
-			});
+			// Get the path for the provided id:
+			path = INDEX[ ids[ id ] ];
 
-		total = files.length;
+			if ( !path ) {
+				throw new Error( 'data()::dataset does not exist. ID not found in directory list.' );
+			}
 
-		// Initialize our data array:
-		DATA = new Array( total );
+			// Get the file names:
+			files = fs.readdirSync( path )
+				.filter( function ( file ) {
+					return file.substr( -5 ) === '.json';
+				});
 
-		// For each data file, get its content...
-		for ( var i = 0; i < files.length; i++ ) {
+			total = files.length;
 
-			// Get the name of the file:
-			key = files[ i ].slice( 0, files[ i ].length - 5 );
+			// Initialize a new data array:
+			DATA[ ids[ id ] ] = new Array( total );
 
-			// Get the data:
-			fs.readFile( path + '/' + files[ i ], 'utf8', onData( DATA, ( parseInt( key, 10 ) - 1 ), total, errFLG, clbk ) );
+			// For each data file, get its content...
+			for ( var i = 0; i < files.length; i++ ) {
+
+				// Get the name of the file:
+				key = files[ i ].slice( 0, files[ i ].length - 5 );
+
+				// Get the data:
+				fs.readFile( path + '/' + files[ i ], 'utf8', onData( DATA[ ids[ id ] ], ( parseInt( key, 10 ) - 1 ), total, errFLG, returnData ) );
+
+			} // end FOR i
 
 		} // end FOR i
 
 		return;
+
+		// FUNCTIONS //
+
+		function returnData( error ) {
+			if ( error ) {
+				errFLG = true;
+				clbk({
+					'status': 500,
+					'message': 'ERROR:internal server error. Unable to load data file. '
+				});
+				throw new Error( 'data()::unable to load data file: ' + error );
+			}
+			if ( ++counter === numData ) {
+				clbk( null, DATA );
+			}
+
+		}
 
 	}; // end DATA
 

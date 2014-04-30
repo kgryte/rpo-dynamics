@@ -92,7 +92,7 @@
 			selection = document.querySelector( '.main' );
 
 			// Get data:
-			getData( id, function ( error, data ) {
+			getData( [ id ], function ( error, data ) {
 
 				if ( error ) {
 					clbk({
@@ -104,7 +104,7 @@
 				}
 
 				// Generate the figure:
-				generator( document, selection, data, function() {
+				generator( document, selection, data[ id ], function() {
 
 					// Return the document contents to the callback:
 					clbk( null, document.innerHTML );
