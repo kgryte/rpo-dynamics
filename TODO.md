@@ -4,7 +4,7 @@ TODO
 
 ### General
 
-1. 	Move directory mapping from main routes to utils
+1. 	
 2. 	Polish multiple condition request and data formatting
 
 

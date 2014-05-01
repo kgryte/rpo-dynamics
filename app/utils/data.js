@@ -58,23 +58,29 @@
 	// FUNCTIONS //
 
 	/**
+	* FUNCTION: filter( file )
+	*
+	*/
+	function filter( file ) {
+		return file.substr( -5 ) === '.json';
+	} // end FUNCTION filter()
+
+	/**
 	* FUNCTION: onData( DATA, idx, total, errFLG, clbk )
 	*
 	*/
-	function onData( DATA, idx, total, errFLG, clbk ) {
+	function onData( DATA, idx, total, clbk ) {
 			
 		return function onData( error, data ) {
 			var numData;
-			if ( errFLG ) {
-				return;
-			}
 			if ( error ) {
-				errFLG = true;
 				clbk({
 					'status': 500,
-					'message': 'ERROR:internal server error. Unable to load data file. '
+					'message': 'ERROR:internal server error. Unable to load data file.',
+					'error': error
 				});
-				throw new Error( 'data()::unable to load data file: ' + error );
+				console.error( 'data()::unable to load data file: ', error.stack );
+				return;
 			}
 
 			// Insert the data into our DATA array:
@@ -134,63 +140,70 @@
 	*/
 	var data = function( ids, clbk ) {
 
-		var files, total, path, errFLG = false,
+		var files, total, path,
 
-			DATA = {}, key,
+			DATA = {}, key, callback,
 
 			numData = ids.length, counter = 0;
 
-		for ( var id = 0; id < ids.length; id++ ) {
+		for ( var i = 0; i < ids.length; i++ ) {
 
 			// Get the path for the provided id:
-			path = INDEX[ ids[ id ] ];
+			path = INDEX[ ids[ i ] ];
 
 			if ( !path ) {
-				throw new Error( 'data()::dataset does not exist. ID not found in directory list.' );
+				clbk({
+					'status': 404,
+					'message': 'ERROR:dataset doest not exist. ID not found in directory list.'
+				});
+				return;
 			}
 
 			// Get the file names:
 			files = fs.readdirSync( path )
-				.filter( function ( file ) {
-					return file.substr( -5 ) === '.json';
-				});
+				.filter( filter );
 
 			total = files.length;
 
 			// Initialize a new data array:
-			DATA[ ids[ id ] ] = new Array( total );
+			DATA[ ids[ i ] ] = new Array( total );
 
 			// For each data file, get its content...
-			for ( var i = 0; i < files.length; i++ ) {
+			for ( var j = 0; j < files.length; j++ ) {
 
 				// Get the name of the file:
-				key = files[ i ].slice( 0, files[ i ].length - 5 );
+				key = files[ j ].slice( 0, files[ j ].length - 5 );
+
+				// Get the callback:
+				callback = onData(
+					DATA[ ids[ i ] ],
+					parseInt( key, 10 ) - 1,
+					total,
+					onError
+				);
 
 				// Get the data:
-				fs.readFile( path + '/' + files[ i ], 'utf8', onData( DATA[ ids[ id ] ], ( parseInt( key, 10 ) - 1 ), total, errFLG, returnData ) );
+				fs.readFile( path + '/' + files[ j ], 'utf8', callback );
 
-			} // end FOR i
+			} // end FOR j
 
 		} // end FOR i
 
 		return;
 
-		// FUNCTIONS //
-
-		function returnData( error ) {
+		/**
+		* FUNCTION: onError( error )
+		*
+		*/
+		function onError( error ) {
 			if ( error ) {
-				errFLG = true;
-				clbk({
-					'status': 500,
-					'message': 'ERROR:internal server error. Unable to load data file. '
-				});
-				throw new Error( 'data()::unable to load data file: ' + error );
+				clbk( error );
+				return;
 			}
 			if ( ++counter === numData ) {
 				clbk( null, DATA );
 			}
-
-		}
+		} // end FUNCTION onError()
 
 	}; // end DATA
 

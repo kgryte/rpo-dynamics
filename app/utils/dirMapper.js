@@ -92,7 +92,8 @@
 
 		// CHECK!!!
 		if ( parts.length !== this._model.length ) {
-			throw new Error( 'getKey()::incompatible map. Ensure that the map corresponds to the instance model.' );
+			console.error( 'getKey()::incompatible map. Ensure that the map corresponds to the instance model.' );
+			return;
 		}
 
 		// For each condition, get the mapping:

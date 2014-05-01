@@ -60,16 +60,13 @@
 			},
 			'html': html,
 			done: function( errors, window ) {
-
 				if ( errors ) {
 					console.error( 'ERROR:unable to generate server-side- DOM: ' + errors );
 					clbk( errors, null );
 					return;
 				}
-
 				// Pass the window to the callback:
 				clbk( null, window );
-
 			}
 		});
 

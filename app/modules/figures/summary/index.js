@@ -70,7 +70,8 @@
 	function figure( id, clbk ) {
 
 		if ( arguments.length !== 2 ) {
-			throw new Error( 'figure()::insufficient input arguments. Must provide an id and a callback.' );
+			console.error( 'figure()::insufficient input arguments. Must provide an id and a callback.' );
+			return;
 		}
 
 		// Initialize a DOM:
@@ -83,8 +84,10 @@
 			if ( error ) {
 				clbk({
 					'status': 500,
-					'message': 'ERROR:internal server error. Unable to generate server-side DOM.'
+					'message': 'ERROR:internal server error. Unable to generate server-side DOM.',
+					'error': error
 				});
+				console.error( error.stack );
 				return;
 			} // end IF (error)
 
@@ -95,11 +98,7 @@
 			getData( [ id ], function ( error, data ) {
 
 				if ( error ) {
-					clbk({
-						'status': 500,
-						'message': 'ERROR:internal server error. Unable to process request.'
-					});
-					console.error( error );
+					clbk( error );
 					return;
 				}
 

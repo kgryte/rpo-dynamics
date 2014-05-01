@@ -49,13 +49,9 @@
 		fs = require( 'fs' );
 
 
-	// VARIABLES //
-
-	var modules;
-
-
-	//
-	modules = function ( clbk ) {
+	// METHOD //
+	
+	var modules = function ( clbk ) {
 
 		// NOTE: the 'this' context is the application.
 
