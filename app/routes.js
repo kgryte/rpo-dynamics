@@ -46,66 +46,11 @@
 
 	// MODULES //
 
-	var // Filesystem module:
-		fs = require( 'fs' ),
+	var // Condition mapping:
+		MAPPING = require( './utils/mapping.js' ),
 
 		// Directory encoding model:
-		model = require( __dirname + '/../public/data/encoding.json' ),
-
-		// Directory mapper:
-		Mapper = require( __dirname + '/utils/dirMapper.js' );
-
-
-	// VARIABLES //
-
-	var MAPPING = {};
-
-
-	// INIT //
-
-	(function() {
-
-		var mapper, _model,
-			files, stats, path,
-			base = __dirname + '/../public/data' ;
-
-		// Format the model appropriate for mapping:
-		_model = model.map( function ( element ) {
-			return element.options.map( function ( option ) {
-				return option.abbr;
-			});
-		});
-
-		// Create a new directory mapper:
-		mapper = new Mapper( _model );
-
-		// Get the "file" names:
-		files = fs.readdirSync( base );
-
-		// For each possible file, determine if it is a directory...
-		for ( var i = 0; i < files.length; i++ ) {
-
-			if ( files[ i ][ 0 ] !== '.' ) {
-
-				// Assemble the path:
-				path = base + '/' + files[ i ];
-
-				// Get the file stats:
-				stats = fs.statSync( path );
-
-				// Is the "file" actually a directory?
-				if ( stats.isDirectory() ) {
-
-					// Update our mapping dictionary:
-					MAPPING[ files[ i ] ] = mapper.getMap( files[ i ] );
-
-				} // end IF directory
-
-			} // end IF !hidden directory
-
-		} // end FOR i
-
-	})();
+		model = require( './../public/data/encoding.json' );
 
 
 	// ROUTES //
