@@ -79,7 +79,7 @@
 			}
 
 			// Log that the server is running...
-			console.info( 'INFO:server initialized. Server is listening for requests on port: ' + PORT + '...' );
+			console.info( 'INFO:' + process.title + ':server initialized. Server is listening for requests on port: ' + PORT + '...' );
 
 			// Callback:
 			clbk();

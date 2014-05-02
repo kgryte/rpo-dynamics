@@ -4,8 +4,13 @@ TODO
 
 ### General
 
-1. 	
-2. 	Polish multiple condition request and data formatting
+1. 	MVA
+2. 	Condition comparision route: :condition/compare/:condition
+3. 	
+4. 	Update app boilerplate
+5. 	
+6. 	
+
 
 
 ### Timeseries

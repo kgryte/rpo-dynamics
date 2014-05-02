@@ -45,11 +45,15 @@
 	// MODULES //
 
 	var // Main application:
-		app = require( './app' );
+		app = require( './app' ),
+
+		// Package information:
+		pkginfo = require( 'pkginfo' );
 
 	// PROCESS //
 
-	console.info( 'INFO:node process id: ' + process.pid + '...' );
+	process.title = pkginfo.read( require.main ).package.name;
+	console.info( 'INFO:'+ process.title + ':node process id: ' + process.pid + '...' );
 
 	// BOOT //
 

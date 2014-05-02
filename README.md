@@ -6,7 +6,9 @@ RPo dynamics data and analysis.
 
 ### Getting Started
 
-To get started with RPo Dynamics, first ensure that you have Node.js installed. Second, clone the RPo Dynamics repository. Once cloned, navigate to the directory and install Node modules as specified in the `package.json` file. In the terminal, 
+To get started with RPo Dynamics, ensure that you have [Node.js](http://nodejs.org/) installed. If you have [Homebrew](http://brew.sh/) installed on Mac OSX, this is [straightforward](http://shapeshed.com/setting-up-nodejs-and-npm-on-mac-osx/). A recently released tool called [Cakebrew](http://www.cakebrew.com/) provides GUI for installing packages, similar to the [Github client](https://mac.github.com/) for repositories. For other platforms, consult the documentation provided by [Joyent](https://github.com/joyent/node/wiki/Installing-Node.js-via-package-manager#ubuntu-mint). 
+
+If you have a [Github](https://help.github.com/articles/set-up-git) account, simply clone the RPo Dynamics repository to a local directory of your choosing. Once cloned, navigate to the directory and install Node modules specified in the `package.json` file. In the terminal, 
 
 ```
 $ npm install
