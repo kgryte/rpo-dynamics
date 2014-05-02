@@ -5,7 +5,7 @@ TODO
 ### General
 
 1. 	MVA
-2. 	Condition comparision route: :condition/compare/:condition
+2. 	
 3. 	
 4. 	Update app boilerplate
 5. 	

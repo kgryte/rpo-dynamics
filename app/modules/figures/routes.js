@@ -53,7 +53,10 @@
 		summary = require( './summary' ),
 
 		// Timeseries figure:
-		timeseries = require( './timeseries' );
+		timeseries = require( './timeseries' ),
+
+		// Distribution comparison:
+		compare = require( './compare' );
 
 
 	// ROUTES //
@@ -80,7 +83,7 @@
 
 			var condition = request.params.condition;
 
-			summary( condition, function ( error, html ) {
+			summary( condition, function onFigure( error, html ) {
 				if ( error ) {
 					response.writeHead( error.status, {
 						'Content-Type': 'application/json'
@@ -104,7 +107,7 @@
 
 			var condition = request.params.condition;
 
-			timeseries( condition, function ( error, html ) {
+			timeseries( condition, function onFigure( error, html ) {
 				if ( error ) {
 					response.writeHead( error.status, {
 						'Content-Type': 'application/json'
@@ -118,9 +121,31 @@
 				});
 				response.write( html );
 				response.end();
-
 			});
 
+		});
+
+		// Distribution comparison figure route for a condition pair:
+		this.get( '/' + base + '/distribution/:condition1/compare/:condition2', function onRequest( request, response ) {
+
+			var condition1 = request.params.condition1,
+				condition2 = request.params.condition2;
+
+			compare( condition1, condition2, function onFigure( error, html ) {
+				if ( error ) {
+					response.writeHead( error.status, {
+						'Content-Type': 'application/json'
+					});
+					response.write( error );
+					response.end();
+					return;
+				}
+				response.writeHead( 200, {
+					'Content-Type': 'text/html'
+				});
+				response.write( html );
+				response.end();
+			});
 		});
 
 		// Callback:
