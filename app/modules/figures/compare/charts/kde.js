@@ -56,7 +56,7 @@
 	*/
 	var kde = function( canvas, _data_, width, height, left, top, subtitle ) {
 
-		var graph, data, area, rug, max, axes, annotations, title, text;
+		var graph, data, area, max, axes, annotations, title, text;
 
 		// [1] Instantiate a new graph generator and configure:
 		graph = xfig.graph( canvas )
@@ -117,10 +117,12 @@
 		// [5.1] Instantiate a new title instance and configure:
 		title = annotations.title()
 			.top( -65 )
-			.left( -90 );
+			.left( -90 )
+			.width( width )
+			.height( 40 );
 
 		// Add a (sub)title:
-		title.create( '<span class="subtitle">' + subtitle + '</span>' );
+		title.create( '<span class="subtitle desc">' + subtitle + '</span>' );
 
 	}; // end KDE
 

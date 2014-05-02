@@ -1,7 +1,7 @@
 RPO Dynamics
 ============
 
-RPo dynamics data and analysis.
+[RPo dynamics](http://www.ncbi.nlm.nih.gov/pubmed/23274143) data and analysis.
 
 
 ### Getting Started

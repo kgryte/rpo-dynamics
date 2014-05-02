@@ -93,10 +93,8 @@
 			// Get the selection:
 			selection = document.querySelector( '.main' );
 
-			// TODO: get data from multiple ids.
-
 			// Get data:
-			getData( [ id ], function ( error, data ) {
+			getData( [ id1, id2 ], function ( error, data ) {
 
 				if ( error ) {
 					clbk( error );
@@ -104,7 +102,7 @@
 				}
 
 				// Generate the figure:
-				generator( document, selection, data[ id ], function() {
+				generator( document, selection, data, function() {
 
 					// Return the document contents to the callback:
 					clbk( null, document.innerHTML );

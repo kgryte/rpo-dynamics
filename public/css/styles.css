@@ -102,5 +102,9 @@ body {
 	font-weight: 600;
 }
 
+.subtitle.desc {
+	font-size: 14px;
+	text-align: center;
+}
 
 
