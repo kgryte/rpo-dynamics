@@ -131,6 +131,8 @@
 		// Distributions:
 		this.get( '/' + base + '/distributions', function onRequest( request, response ) {
 
+			response.setTimeout( 0 );
+
 			distributions( function onFigure( error, html ) {
 				if ( error ) {
 					response.writeHead( error.status, {

@@ -74,7 +74,7 @@
 		datasets = Object.keys( data );
 
 		// [3] Create a separate canvas for each dataset and create the KDE charts:
-		for ( var i = 0; i < 16; i++ ) { //datasets.length; i++ ) {
+		for ( var i = 0; i < datasets.length; i++ ) {
 
 			d = data[ datasets[ i ] ];
 
