@@ -71,7 +71,7 @@
 	(function() {
 
 		var files, stats, path,
-			base = __dirname + '/../../public/data' ;
+			base = __dirname + '/../../public/data/raw' ;
 
 		// Get the "file" names:
 		files = fs.readdirSync( base );

@@ -67,7 +67,7 @@
 
 		var mapper, _model,
 			files, stats, path,
-			base = __dirname + '/../../public/data' ;
+			base = __dirname + '/../../public/data/raw' ;
 
 		// Format the model appropriate for mapping:
 		_model = model.map( function ( element ) {

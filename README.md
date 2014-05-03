@@ -63,6 +63,6 @@ returns all timeseries for condition set `id`; e.g., `10011000`. The timeseries 
 http://127.0.0.1:1337/figures/distributions/10011000/compare/00011000
 ```
 
-returns a figure comparing the distribution for one condition set, .e.g., `10110001, with the distribution of another condition set, e.g., `00011000`. The figure includes a [kernel density estimate](http://en.wikipedia.org/wiki/Kernel_density_estimation) (KDE) and timeseries histogram for each condition set.
+returns a figure comparing the distribution for one condition set, .e.g., `10110001`, with the distribution of another condition set, e.g., `00011000`. The figure includes a [kernel density estimate](http://en.wikipedia.org/wiki/Kernel_density_estimation) (KDE) and timeseries histogram for each condition set.
 
 
