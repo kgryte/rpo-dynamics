@@ -65,36 +65,6 @@
 		return file.substr( -5 ) === '.json';
 	} // end FUNCTION filter()
 
-	/**
-	* FUNCTION: onData( DATA, idx, total, errFLG, clbk )
-	*
-	*/
-	function onData( DATA, idx, total, clbk ) {
-			
-		return function onData( error, data ) {
-			var numData;
-			if ( error ) {
-				clbk({
-					'status': 500,
-					'message': 'ERROR:internal server error. Unable to load data file.',
-					'error': error
-				});
-				console.error( 'data()::unable to load data file: ', error.stack );
-				return;
-			}
-
-			// Insert the data into our DATA array:
-			DATA[ idx ] = JSON.parse( data );
-
-			numData = Object.keys( DATA ).length;
-			if ( numData === total ) {
-				clbk( null );
-			}
-
-		}; // end FUNCTION onData()
-
-	} // end FUNCTION onData()
-
 
 	// INIT //
 
@@ -135,26 +105,24 @@
 	// DATA //
 
 	/**
-	* FUNCTION: data( id, clbk )
+	* FUNCTION: data( ids, clbk )
 	*
 	*/
 	var data = function( ids, clbk ) {
 
-		var files, total, path,
-
-			DATA = {}, key, callback,
-
-			numData = ids.length, counter = 0;
+		var files, total, path, DATA = {}, id, data, key, idx;
 
 		for ( var i = 0; i < ids.length; i++ ) {
 
+			id = ids[ i ];
+
 			// Get the path for the provided id:
-			path = INDEX[ ids[ i ] ];
+			path = INDEX[ id ];
 
 			if ( !path ) {
 				clbk({
 					'status': 404,
-					'message': 'ERROR:dataset doest not exist. ID not found in directory list.'
+					'message': 'ERROR:dataset does not exist. ID not found in directory list.'
 				});
 				return;
 			}
@@ -166,7 +134,7 @@
 			total = files.length;
 
 			// Initialize a new data array:
-			DATA[ ids[ i ] ] = new Array( total );
+			DATA[ id ] = new Array( total );
 
 			// For each data file, get its content...
 			for ( var j = 0; j < files.length; j++ ) {
@@ -174,36 +142,22 @@
 				// Get the name of the file:
 				key = files[ j ].slice( 0, files[ j ].length - 5 );
 
-				// Get the callback:
-				callback = onData(
-					DATA[ ids[ i ] ],
-					parseInt( key, 10 ) - 1,
-					total,
-					onError
-				);
+				// Determine the index: (NOTE: we assume the files have numeric names and are number sequentially, beginning with 1.)
+				idx = parseInt( key, 10 ) - 1;
 
 				// Get the data:
-				fs.readFile( path + '/' + files[ j ], 'utf8', callback );
+				data = fs.readFileSync( path + '/' + files[ j ], 'utf8' );
+
+				// Parse the data:
+				DATA[ id ][ idx ] = JSON.parse( data );
 
 			} // end FOR j
 
 		} // end FOR i
 
-		return;
+		clbk( null, DATA );
 
-		/**
-		* FUNCTION: onError( error )
-		*
-		*/
-		function onError( error ) {
-			if ( error ) {
-				clbk( error );
-				return;
-			}
-			if ( ++counter === numData ) {
-				clbk( null, DATA );
-			}
-		} // end FUNCTION onError()
+		return;
 
 	}; // end DATA
 

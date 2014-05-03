@@ -5,8 +5,8 @@ TODO
 ### General
 
 1. 	MVA
-2. 	
-3. 	
+2. 	Move lib and partials out of figures directory and into same level as modules
+3. 	Clean-up KDE code (i.e., deal with rug plot)
 4. 	Update app boilerplate
 5. 	
 6. 	
@@ -23,7 +23,7 @@ TODO
 1.  Multiple timeseries -->  dynamically resize based on parent size (wrap in container); sortable; ability to sort based on mean, variance --> sort in-browser using data attributes: data-mean, data-variance, etc.
 2. 	Small-multiple timeseries-histogram across all conditions
 3. 	Repeats comparision (multipanel, or avg hist with variance overlay)
-4.  Small-multiple histograms across all conditions
+4.  Small-multiple histograms/KDE across all conditions
 5. 	Hist2d timeseries across all conditions (is this actually valuable? really only when aligned.)
 6. 	
 

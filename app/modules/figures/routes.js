@@ -56,7 +56,10 @@
 		timeseries = require( './timeseries' ),
 
 		// Distribution comparison:
-		compare = require( './compare' );
+		compare = require( './compare' ),
+
+		// Distributions:
+		distributions = require( './distributions' );
 
 
 	// ROUTES //
@@ -125,8 +128,28 @@
 
 		});
 
+		// Distributions:
+		this.get( '/' + base + '/distributions', function onRequest( request, response ) {
+
+			distributions( function onFigure( error, html ) {
+				if ( error ) {
+					response.writeHead( error.status, {
+						'Content-Type': 'application/json'
+					});
+					response.write( error );
+					response.end();
+					return;
+				}
+				response.writeHead( 200, {
+					'Content-Type': 'text/html'
+				});
+				response.write( html );
+				response.end();
+			});
+		});
+
 		// Distribution comparison figure route for a condition pair:
-		this.get( '/' + base + '/distribution/:condition1/compare/:condition2', function onRequest( request, response ) {
+		this.get( '/' + base + '/distributions/:condition1/compare/:condition2', function onRequest( request, response ) {
 
 			var condition1 = request.params.condition1,
 				condition2 = request.params.condition2;
