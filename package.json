@@ -10,7 +10,8 @@
     "jsdom": "~0.10.5",
     "d3": "~3.4.6",
     "lodash": "~2.4.1",
-    "pkginfo": "~0.3.0"
+    "pkginfo": "~0.3.0",
+    "JSONStream": "~0.7.3"
   },
   "devDependencies": {
     "gulp": "~3.6.0",
