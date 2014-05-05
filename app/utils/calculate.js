@@ -63,15 +63,31 @@
 	var parser = JSONStream.parse( '*' );
 
 	parser.on( 'data', function onData( data ) {
-		return [ data.x ];
+		return data.x;
 	});
 
-	var stringify = JSONStream.stringify();
+	parser.on( 'finish', function onFinish() {
+		console.log( 'done' );
+	});
+
+	parser.on( 'end', function onEnd() {
+		console.log( 'end' );
+	});
+
+	parser.on( 'error', function onError( error ) {
+		console.error( error );
+	});
+
+	var stringify = JSONStream.stringify( '[\n\t', ',\n\t', '\n]\n' );
 
 	// CALCULATE //
 
 	var calculate = function() {
 		var write = fs.createWriteStream( dest + '00000010/1.json' );
+
+		write.on( 'error', function onError( error ) {
+			console.error( error );
+		});
 
 		fs.createReadStream( path + '/00000010/1.json' )
 			.pipe( parser )
