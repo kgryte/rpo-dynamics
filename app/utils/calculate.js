@@ -49,7 +49,10 @@
 		fs = require( 'fs' ),
 
 		//
-		JSONStream = require( 'JSONStream' );
+		JSONStream = require( 'JSONStream' ),
+
+		// 
+		eventStream = require( 'event-stream' );
 
 
 	// VARIABLES //
@@ -61,19 +64,7 @@
 	// STREAMS //
 
 	var parser = JSONStream.parse( '*' );
-
-	parser.on( 'data', function onData( data ) {
-		return data.x;
-	});
-
-	parser.on( 'finish', function onFinish() {
-		console.log( 'done' );
-	});
-
-	parser.on( 'end', function onEnd() {
-		console.log( 'end' );
-	});
-
+	
 	parser.on( 'error', function onError( error ) {
 		console.error( error );
 	});
@@ -91,6 +82,9 @@
 
 		fs.createReadStream( path + '/00000010/1.json' )
 			.pipe( parser )
+			.pipe( eventStream.mapSync( function onData( data ) {
+				return [ data.x, data.y[ 1 ] / ( data.y[ 0 ] + data.y[ 1 ] ) ];
+			}))
 			.pipe( stringify )
 			.pipe( write );
 	}; // end FUNCTION calculate()

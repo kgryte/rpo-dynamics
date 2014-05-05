@@ -11,7 +11,8 @@
     "d3": "~3.4.6",
     "lodash": "~2.4.1",
     "pkginfo": "~0.3.0",
-    "JSONStream": "~0.7.3"
+    "JSONStream": "~0.7.3",
+    "event-stream": "~3.1.5"
   },
   "devDependencies": {
     "gulp": "~3.6.0",
