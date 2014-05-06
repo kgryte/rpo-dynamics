@@ -48,10 +48,10 @@
 	var // Filesystem module:
 		fs = require( 'fs' ),
 
-		//
+		// Module to stream JSON objects:
 		JSONStream = require( 'JSONStream' ),
 
-		// 
+		// Module allowing for event data transformation:
 		eventStream = require( 'event-stream' );
 
 
@@ -74,20 +74,46 @@
 	// CALCULATE //
 
 	var calculate = function() {
-		var write = fs.createWriteStream( dest + '00000010/1.json' );
+		var write1 = fs.createWriteStream( dest + '00000010/1a.json' );
 
-		write.on( 'error', function onError( error ) {
+		write1.on( 'error', function onError( error ) {
 			console.error( error );
+		});
+
+		write1.on( 'finish', function onEnd() {
+			console.log( 'write 1 is done' );
+		});
+
+		fs.createReadStream( path + '/00000010/1.json' )
+			.pipe( parser )
+			.pipe( eventStream.map( function onData( data, callback ) {
+				var dat = [ data.x, data.y[ 1 ] / ( data.y[ 0 ] + data.y[ 1 ] ) ];
+				callback( null, dat );
+			}))
+			.pipe( stringify )
+			.pipe( write1 );
+
+	}; // end FUNCTION calculate()
+
+	function nextCalc() {
+		var write2 = fs.createWriteStream( dest + '00000010/1b.json' );
+
+		write2.on( 'error', function onError( error ) {
+			console.error( error );
+		});
+
+		write2.on( 'finish', function onEnd() {
+			console.log( 'write 2 is done' );
 		});
 
 		fs.createReadStream( path + '/00000010/1.json' )
 			.pipe( parser )
 			.pipe( eventStream.mapSync( function onData( data ) {
-				return [ data.x, data.y[ 1 ] / ( data.y[ 0 ] + data.y[ 1 ] ) ];
+				return [ data.x, data.y[ 0 ] ];
 			}))
 			.pipe( stringify )
-			.pipe( write );
-	}; // end FUNCTION calculate()
+			.pipe( write2 );
+	}
 
 	
 	// EXPORTS //
