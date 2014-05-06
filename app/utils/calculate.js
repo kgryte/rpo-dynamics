@@ -57,64 +57,213 @@
 
 	// VARIABLES //
 
-	var path = __dirname + '/../../public/data/raw',
+	var path = __dirname + '/../../public/data/raw/',
 		dest = __dirname + '/../../public/data/metrics/';
 
 
-	// STREAMS //
+	// FUNCTIONS //
 
-	var parser = JSONStream.parse( '*' );
-	
-	parser.on( 'error', function onError( error ) {
-		console.error( error );
-	});
+	/**
+	* FUNCTION: getParser()
+	*	Returns a transform stream to parse a JSON stream.
+	*
+	* @returns {object} JSON stream parser
+	*/
+	function getParser() {
+		var stream = JSONStream.parse( '*' );
+		stream.on( 'error', function onError( error ) {
+			console.error( error.stack );
+		});
+		return stream;
+	} // end FUNCTION getParser()
 
-	var stringify = JSONStream.stringify( '[\n\t', ',\n\t', '\n]\n' );
+	/**
+	* FUNCTION: getStringifier()
+	*	Returns a transform stream to stringify data as a JSON array.
+	* 
+	* @returns {object} JSON stream stringifier
+	*/
+	function getStringifier() {
+		var stream = JSONStream.stringify( '[\n\t', ',\n\t', '\n]\n' );
+		stream.on( 'error', function onError( error ) {
+			console.error( error.stack );
+		});
+		return stream;
+	} // end FUNCTION getStringifier()
+
+	/**
+	* FUNCTION: getTransformer( func )
+	*	Provided a data transformation function, returns an event stream which applies the transformation to piped data.
+	*
+	* @param {function} func - data transformation function
+	* @returns {object} JSON transform stream
+	*/
+	function getTransformer( func ) {
+		if ( !arguments.length ) {
+			throw new Error( 'getTransformer()::insufficient input arguments. Must provide a transformation function.' );
+		}
+		var stream = eventStream.map( function onData( data, callback ) {
+			callback( null, func( data ) );
+		});
+		stream.on( 'error', function onError( error ) {
+			console.error( error.stack );
+		});
+		return stream;
+	} // end FUNCTION getTransformer()
+
+	/**
+	* FUNCTION: getWriter( dest, name )
+	*	Returns a writable stream which outputs to a provided destination.
+	*
+	* @param {string} dest - output destination
+	* @param {string} name - (optional) stream name
+	* @returns {object} writable stream
+	*/
+	function getWriter( dest, name ) {
+		if ( !arguments.length ) {
+			throw new Error( 'getWriteStream()::insufficient input arguments. Must provide an output file destination.' );
+		}
+		var stream = fs.createWriteStream( dest );
+		stream.on( 'error', function onError( error ) {
+			var err = {
+					'status': 500,
+					'message': 'internal server error. Error encountered while attempting to write data.',
+					'error': error
+				};
+			console.error( error.stack );
+			if ( name ) {
+				throw new Error( name + '::' + err.message );
+			}
+		});
+		stream.on( 'finish', function onEnd() {
+			if ( name ) {
+				console.log( name + '::writable stream is finished...' );
+			}
+		});
+		return stream;
+	} // end FUNCTION getWriter()
+
+	/**
+	* FUNCTION: xValue( d )
+	*	x-value accessor.
+	*
+	* @param {object} d - datum
+	* @returns {number} x-value
+	*/
+	function xValue( d ) {
+		return d.x;
+	} // end FUNCTION tValue()
+
+	/**
+	* FUNCTION: yValue( d, i )
+	*	y-value accessor.
+	*
+	* @param {object} d - datum
+	* @param {number} i - y-value index
+	* @returns {number} y-value
+	*/
+	function yValue( d, i ) {
+		return d.y[ i ];
+	} // end FUNCTION yValue()
+
+	/**
+	* FUNCTION: raw_efficiency( data )
+	*	Calculates the (uncorrected) transfer efficiency between donor and acceptor fluorophores.
+	*
+	* @see [Journal Paper]{@link http://www.ncbi.nlm.nih.gov/pmc/articles/PMC1282518/}
+	*
+	* @param {object} data - data object containing intensity values
+	* @returns {number} (uncorrected) calculated transfer efficiency
+	*/
+	function raw_efficiency( data ) {
+		var // Donor-excitation donor-emission intensity: 
+			dexdem = yValue( data, 0 ),
+			// Donor-excitation acceptor-emission intensity:
+			dexaem = yValue( data, 1 ),
+			// Total donor-excitation emission intensity:
+			total = dexdem + dexaem;
+		// Calculated transfer efficiency:
+		return dexaem / total;
+	} // end FUNCTION raw_efficiency()
+
+	/**
+	* FUNCTION: raw_stoichiometry( data )
+	*	Calculates the (uncorrected) stoichiometric ratio between donor and acceptor fluorophores.
+	*
+	* @see [Journal Paper]{@link http://www.ncbi.nlm.nih.gov/pmc/articles/PMC1282518/}
+	*
+	* @param {object} data - data object containing intensity values
+	* @returns {number} (uncorrected) calculated stoichiometry
+	*/
+	function raw_stoichiometry( data ) {
+		var // Donor-excitation donor-emission intensity: 
+			dexdem = yValue( data, 0 ),
+			// Donor-excitation acceptor-emission intensity: 
+			dexaem = yValue( data, 1 ),
+			// Acceptor-excitation acceptor-emission intensity: 
+			aexaem = yValue( data, 2 ),
+			// Total donor-excitation emission intensity:
+			num = dexdem + dexaem,
+			// Total emission intensity:
+			denom = num + aexaem;
+		// Calculated stoichiometry ratio:
+		return num / denom;
+	} // end FUNCTION raw_stoichiometry()
+
 
 	// CALCULATE //
 
 	var calculate = function() {
-		var write1 = fs.createWriteStream( dest + '00000010/1a.json' );
 
-		write1.on( 'error', function onError( error ) {
-			console.error( error );
-		});
+		var metrics = {
+				'E': {
+					'dest': dest + '00000010/1.efficiency.json',
+					'name': '00000010::FRET',
+					func: function( data ) {
+						return [
+							xValue( data ),
+							raw_efficiency( data )
+						];
+					}
+				},
+				'S': {
+					'dest': dest + '00000010/1.stoichiometry.json',
+					'name': '00000010::stoichiometry',
+					func: function( data ) {
+						return [
+							xValue( data ),
+							raw_stoichiometry( data )
+						];
+					}
+				}
+			},
+			keys, metric, write,
+			data;
 
-		write1.on( 'finish', function onEnd() {
-			console.log( 'write 1 is done' );
-		});
+		// Create the raw data readstream:
+		data = fs.createReadStream( path + '00000010/1.json' )
+			.pipe( getParser() );
 
-		fs.createReadStream( path + '/00000010/1.json' )
-			.pipe( parser )
-			.pipe( eventStream.map( function onData( data, callback ) {
-				var dat = [ data.x, data.y[ 1 ] / ( data.y[ 0 ] + data.y[ 1 ] ) ];
-				callback( null, dat );
-			}))
-			.pipe( stringify )
-			.pipe( write1 );
+		// Get the metric names:
+		keys = Object.keys( metrics );
+
+		// Write out the metrics:
+		for ( var i = 0; i < keys.length; i++ ) {
+
+			// Get the metric config:
+			metric = metrics[ keys[ i ] ];
+
+			// Create the write stream:
+			write = getWriter( metric.dest, metric.name );
+
+			// Pipe the data stream:
+			data.pipe( getTransformer( metric.func ) )
+				.pipe( getStringifier() )
+				.pipe( write );
+
+		} // end FOR i
 
 	}; // end FUNCTION calculate()
-
-	function nextCalc() {
-		var write2 = fs.createWriteStream( dest + '00000010/1b.json' );
-
-		write2.on( 'error', function onError( error ) {
-			console.error( error );
-		});
-
-		write2.on( 'finish', function onEnd() {
-			console.log( 'write 2 is done' );
-		});
-
-		fs.createReadStream( path + '/00000010/1.json' )
-			.pipe( parser )
-			.pipe( eventStream.mapSync( function onData( data ) {
-				return [ data.x, data.y[ 0 ] ];
-			}))
-			.pipe( stringify )
-			.pipe( write2 );
-	}
-
 	
 	// EXPORTS //
 

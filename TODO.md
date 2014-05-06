@@ -9,7 +9,7 @@ TODO
 3. 	Clean-up KDE code (i.e., deal with rug plot)
 4. 	Update app boilerplate
 5. 	Speed up histogram, KDE calculation. Consider just calculating and storing these files in another directory. Have raw and analyzed data.
-6. 	
+6. 	Should AexDem values be included? (oh dear! would allow for corrections)
 
 
 
