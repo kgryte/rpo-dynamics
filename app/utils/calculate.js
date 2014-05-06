@@ -217,7 +217,7 @@
 
 		var metrics = {
 				'E': {
-					'dest': dest + '00000010/1.efficiency.json',
+					'dest': dest + '00000010/1.efficiency.timeseries.json',
 					'name': '00000010::FRET',
 					func: function( data ) {
 						return [
@@ -227,7 +227,7 @@
 					}
 				},
 				'S': {
-					'dest': dest + '00000010/1.stoichiometry.json',
+					'dest': dest + '00000010/1.stoichiometry.timeseries.json',
 					'name': '00000010::stoichiometry',
 					func: function( data ) {
 						return [

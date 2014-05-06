@@ -10,7 +10,27 @@ TODO
 4. 	Update app boilerplate
 5. 	Speed up histogram, KDE calculation. Consider just calculating and storing these files in another directory. Have raw and analyzed data.
 6. 	Should AexDem values be included? (oh dear! would allow for corrections)
+7. 	Calculate over all directories and files
 
+
+### Streams
+
+1. 	Online histogram
+	- Individual dataset
+		- Init counts vector
+		- Find bin for each datum
+		- Update counts vector
+		- On end, write file
+	- All datasets
+		- Use combined stream to create a single concat file
+		- Stream concat file and calculate histogram as done for individual dataset
+2. 	Online KDE
+	- In the meantime, buffer an entire file and calculate in one go; save to file
+3. 	Online MVA
+4. 	Online timeseries-histogram
+	- All datasets
+		- Assemble individual histograms into single file
+5. 	
 
 
 ### Timeseries
