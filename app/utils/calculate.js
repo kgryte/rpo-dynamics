@@ -45,8 +45,11 @@
 
 	// MODULES //
 
-	var // Filesystem module:
-		fs = require( 'fs' ),
+	var // Drop-in replacement for filesystem module:
+		fs = require( './graceful-fs' ),
+
+		// Module to recursively remove directories and their contents:
+		rimraf = require( 'rimraf' ),
 
 		// Module to stream JSON objects:
 		JSONStream = require( 'JSONStream' ),
@@ -57,11 +60,42 @@
 
 	// VARIABLES //
 
-	var path = __dirname + '/../../public/data/raw/',
-		dest = __dirname + '/../../public/data/metrics/';
+	var PATH = __dirname + '/../../public/data/raw/',
+		DEST = __dirname + '/../../public/data/metrics/',
+		INDEX = {};
 
+
+	// METRICS //
+
+	var METRICS = {
+			'efficiency.timeseries': {
+				func: function( data ) {
+					return [
+						xValue( data ),
+						raw_efficiency( data )
+					];
+				}
+			},
+			'stoichiometry.timeseries': {
+				func: function( data ) {
+					return [
+						xValue( data ),
+						raw_stoichiometry( data )
+					];
+				}
+			}
+		};
+			
 
 	// FUNCTIONS //
+
+	/**
+	* FUNCTION: filter( file )
+	*
+	*/
+	function filter( file ) {
+		return file.substr( -5 ) === '.json';
+	} // end FUNCTION filter()
 
 	/**
 	* FUNCTION: getParser()
@@ -144,6 +178,58 @@
 	} // end FUNCTION getWriter()
 
 	/**
+	* FUNCTION: transformData( dir, filename )
+	*	Read a file from a directory and transforms the data contents. Transformations are performed according to metric functions.
+	*
+	* @param {string} dir - directory name
+	* @param {string} filename - filename
+	*/
+	function transformData( dir, filename ) {
+		var keys, metric,
+			output, file, path, dest, name,
+			write,
+			data;
+
+		// Get the file path:
+		path = PATH + dir + '/' + filename;
+
+		// Remove the extension from filename:
+		file = filename.substr( 0, filename.length-5 );
+
+		// Set the destination:
+		dest = DEST + dir + '/' + file + '.';
+
+		// Create the raw data readstream:
+		data = fs.createReadStream( path )
+			.pipe( getParser() );
+
+		// Get the metric names:
+		keys = Object.keys( METRICS );
+
+		// Write out the metrics:
+		for ( var i = 0; i < keys.length; i++ ) {
+
+			// Get the metric config:
+			metric = METRICS[ keys[ i ] ];
+
+			// Generate the output filename:
+			output = dest + keys[ i ] + '.json';
+
+			// Generate a stream name:
+			name = dir + '::' + keys[ i ];
+
+			// Create the write stream:
+			write = getWriter( output, name );
+
+			// Pipe the data stream:
+			data.pipe( getTransformer( metric.func ) )
+				.pipe( getStringifier() )
+				.pipe( write );
+
+		} // end FOR i
+	} // end FUNCTION transformData()
+
+	/**
 	* FUNCTION: xValue( d )
 	*	x-value accessor.
 	*
@@ -210,59 +296,133 @@
 		return num / denom;
 	} // end FUNCTION raw_stoichiometry()
 
+	/**
+	* FUNCTION: rmdir( dir, clbk )
+	*	Checks if a directory exists. If so, removes the directory.
+	*
+	* @param {string} dir - directory to be removed
+	* @param {function} clbk - Callback to be invoked after removing a directory.
+	*/
+	function rmdir( dir, clbk ) {
+		fs.exists( dir, function onExist( exists ) {
+			if ( exists ) {
+				fs.rmdir( dir, function onError( error ) {
+					if ( error ) {
+						throw new Error( 'rmdir()::unable to remove directory.' );
+					}
+					clbk();
+				});
+				return;
+			}
+			clbk();
+		});
+	} // end FUNCTION rmdir()
+
+	/**
+	* FUNCTION: mkdir( dir, clbk )
+	*	Checks if a directory exists. If not, creates the directory.
+	*
+	* @param {string} dir - directory to be created
+	* @param {function} clbk - Callback to be invoked after creating a directory.
+	*/
+	function mkdir( dir, clbk ) {
+		fs.exists( dir, function onExist( exists ) {
+			if ( !exists ) {
+				fs.mkdir( dir, function onError( error ) {
+					if ( error ) {
+						throw new Error( 'mkdir()::unable to create directory.' );
+					}
+					clbk();
+				});
+				return;
+			}
+			clbk();
+		});
+	} // end FUNCTION mkdir()
+
+	/**
+	* FUNCTION: run()
+	*	Runs the transformations across all datasets.
+	*
+	*/
+	function run() {
+		var dirs = Object.keys( INDEX ),
+			files;
+
+		for ( var i = 0; i < dirs.length; i++ ) {
+			files = INDEX[ dirs[ i ] ];
+			mkdir( DEST+dirs[ i ], onDir( dirs[ i ], files ) );
+		}
+		return;
+
+		/**
+		* FUNCTION: onDir( name, files )
+		*	Encloses a directory name and an array of directory contents and returns a callback.
+		*
+		* @param {string} name - directory name
+		* @param {array} files - array of filenames
+		* @returns {function} callback to be invoked upon create a directory.
+		*/
+		function onDir( name, files ) {
+			return function onDir() {
+				for ( var i = 0; i < files.length; i++ ) {
+					transformData( name, files[ i ] );
+				}
+			};
+		} // end FUNCTION onDir()
+	} // end FUNCTION run()
+
+
+	// INIT //
+
+	(function init() {
+
+		var dirs, files, stats, path;
+
+		// Get the directory names:
+		dirs = fs.readdirSync( PATH );
+
+		// For each possible directory, determine if it is a directory...
+		for ( var i = 0; i < dirs.length; i++ ) {
+
+			if ( dirs[ i ][ 0 ] !== '.' ) {
+
+				// Assemble the path:
+				path = PATH + '/' + dirs[ i ];
+
+				// Get the file/directory stats:
+				stats = fs.statSync( path );
+
+				// Is the "directory" actually a directory?
+				if ( stats.isDirectory() ) {
+
+					// Get the file names within the directory, filtering for *.json files:
+					files = fs.readdirSync( path )
+						.filter( filter );
+
+					// Store the directory and the associated data files in a hash:
+					INDEX[ dirs[ i ] ] = files;
+
+				} // end IF directory
+
+			} // end IF !hidden directory
+
+		} // end FOR i
+
+	})();
+
 
 	// CALCULATE //
 
 	var calculate = function() {
-
-		var metrics = {
-				'E': {
-					'dest': dest + '00000010/1.efficiency.timeseries.json',
-					'name': '00000010::FRET',
-					func: function( data ) {
-						return [
-							xValue( data ),
-							raw_efficiency( data )
-						];
-					}
-				},
-				'S': {
-					'dest': dest + '00000010/1.stoichiometry.timeseries.json',
-					'name': '00000010::stoichiometry',
-					func: function( data ) {
-						return [
-							xValue( data ),
-							raw_stoichiometry( data )
-						];
-					}
-				}
-			},
-			keys, metric, write,
-			data;
-
-		// Create the raw data readstream:
-		data = fs.createReadStream( path + '00000010/1.json' )
-			.pipe( getParser() );
-
-		// Get the metric names:
-		keys = Object.keys( metrics );
-
-		// Write out the metrics:
-		for ( var i = 0; i < keys.length; i++ ) {
-
-			// Get the metric config:
-			metric = metrics[ keys[ i ] ];
-
-			// Create the write stream:
-			write = getWriter( metric.dest, metric.name );
-
-			// Pipe the data stream:
-			data.pipe( getTransformer( metric.func ) )
-				.pipe( getStringifier() )
-				.pipe( write );
-
-		} // end FOR i
-
+		// Remove all previous data transformations, if any, before running transforms:
+		rimraf( DEST, function onRemove() {
+			// Create the top-level destination directory:
+			mkdir( DEST, function onCreate() {
+				// Run the transforms:
+				run();
+			});
+		});
 	}; // end FUNCTION calculate()
 	
 	// EXPORTS //
