@@ -297,28 +297,6 @@
 	} // end FUNCTION raw_stoichiometry()
 
 	/**
-	* FUNCTION: rmdir( dir, clbk )
-	*	Checks if a directory exists. If so, removes the directory.
-	*
-	* @param {string} dir - directory to be removed
-	* @param {function} clbk - Callback to be invoked after removing a directory.
-	*/
-	function rmdir( dir, clbk ) {
-		fs.exists( dir, function onExist( exists ) {
-			if ( exists ) {
-				fs.rmdir( dir, function onError( error ) {
-					if ( error ) {
-						throw new Error( 'rmdir()::unable to remove directory.' );
-					}
-					clbk();
-				});
-				return;
-			}
-			clbk();
-		});
-	} // end FUNCTION rmdir()
-
-	/**
 	* FUNCTION: mkdir( dir, clbk )
 	*	Checks if a directory exists. If not, creates the directory.
 	*
