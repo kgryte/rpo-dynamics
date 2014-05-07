@@ -178,13 +178,13 @@
 	} // end FUNCTION getWriter()
 
 	/**
-	* FUNCTION: transformData( dir, filename )
-	*	Read a file from a directory and transforms the data contents. Transformations are performed according to metric functions.
+	* FUNCTION: calculateMetrics( dir, filename )
+	*	Read a file from a directory and calculates metrics from the data contents. Calculations are performed according to metric functions.
 	*
 	* @param {string} dir - directory name
 	* @param {string} filename - filename
 	*/
-	function transformData( dir, filename ) {
+	function calculateMetrics( dir, filename ) {
 		var keys, metric,
 			output, file, path, dest, name,
 			write,
@@ -227,7 +227,7 @@
 				.pipe( write );
 
 		} // end FOR i
-	} // end FUNCTION transformData()
+	} // end FUNCTION calculateMetrics()
 
 	/**
 	* FUNCTION: xValue( d )
@@ -344,7 +344,7 @@
 		function onDir( name, files ) {
 			return function onDir() {
 				for ( var i = 0; i < files.length; i++ ) {
-					transformData( name, files[ i ] );
+					calculateMetrics( name, files[ i ] );
 				}
 			};
 		} // end FUNCTION onDir()
