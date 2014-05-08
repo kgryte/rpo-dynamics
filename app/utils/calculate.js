@@ -55,7 +55,10 @@
 		JSONStream = require( 'JSONStream' ),
 
 		// Module allowing for event data transformation:
-		eventStream = require( 'event-stream' );
+		eventStream = require( 'event-stream' ),
+
+		// Module for creating sink streams:
+		Sink = require( 'pipette' ).Sink;
 
 
 	// VARIABLES //
@@ -93,14 +96,14 @@
 			'efficiency.histogram': {
 				transform: function( data ) {
 					return [
-						raw_efficiency( data );
+						raw_efficiency( data )
 					];
 				}
 			},
 			'stoichiometry.histogram': {
 				transform: function( data ) {
 					return [
-						raw_efficiency( data );
+						raw_stoichiometry( data )
 					];
 				}
 			}
@@ -262,7 +265,7 @@
 		var keys, stat,
 			output, file, path, dest, name,
 			write,
-			data;
+			data, source, sink;
 
 		// Get the file path:
 		path = PATH + dir + '/' + filename;
@@ -296,8 +299,14 @@
 			write = getWriter( output, name );
 
 			// Pipe the data stream:
-			data.pipe( getTransformer( stat.transform ) )
-				.pipe( getStringifier() )
+			source = data.pipe( getTransformer( stat.transform ) )
+				.pipe( getStringifier() );
+
+			sink = new Sink( source );
+
+			sink.pipe( eventStream.mapSync( function onData ( data ) {
+					return data;
+				}))
 				.pipe( write );
 
 		} // end FOR i
@@ -401,7 +410,7 @@
 		var dirs = Object.keys( INDEX ),
 			files;
 
-		for ( var i = 0; i < dirs.length; i++ ) {
+		for ( var i = 0; i < 1; i++ ) {
 			files = INDEX[ dirs[ i ] ];
 			mkdir( DEST.stats+dirs[ i ], onDir( dirs[ i ], files ) );
 		}
@@ -417,7 +426,7 @@
 	*/
 	function onDir( name, files ) {
 		return function onDir() {
-			for ( var i = 0; i < files.length; i++ ) {
+			for ( var i = 0; i < 1; i++ ) {
 				calculateStats( DEST.stats, name, files[ i ] );
 			}
 		};
