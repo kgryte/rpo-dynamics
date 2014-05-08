@@ -61,26 +61,46 @@
 	// VARIABLES //
 
 	var PATH = __dirname + '/../../public/data/raw/',
-		DEST = __dirname + '/../../public/data/metrics/',
+		DEST = {
+			'metrics': __dirname + '/../../public/data/metrics/',
+			'stats': __dirname + '/../../public/data/stats/',
+			'summary': __dirname + '/../../public/data/summary/'
+		},
 		INDEX = {};
 
 
-	// METRICS //
+	// METRICS | STATS | SUMMARY //
 
 	var METRICS = {
-			'efficiency.timeseries': {
-				func: function( data ) {
+			// 'efficiency.timeseries': {
+			// 	transform: function( data ) {
+			// 		return [
+			// 			xValue( data ),
+			// 			raw_efficiency( data )
+			// 		];
+			// 	}
+			// },
+			// 'stoichiometry.timeseries': {
+			// 	transform: function( data ) {
+			// 		return [
+			// 			xValue( data ),
+			// 			raw_stoichiometry( data )
+			// 		];
+			// 	}
+			// }
+		},
+		STATS = {
+			'efficiency.histogram': {
+				transform: function( data ) {
 					return [
-						xValue( data ),
-						raw_efficiency( data )
+						raw_efficiency( data );
 					];
 				}
 			},
-			'stoichiometry.timeseries': {
-				func: function( data ) {
+			'stoichiometry.histogram': {
+				transform: function( data ) {
 					return [
-						xValue( data ),
-						raw_stoichiometry( data )
+						raw_efficiency( data );
 					];
 				}
 			}
@@ -178,13 +198,14 @@
 	} // end FUNCTION getWriter()
 
 	/**
-	* FUNCTION: calculateMetrics( dir, filename )
+	* FUNCTION: calculateMetrics( DEST, dir, filename )
 	*	Read a file from a directory and calculates metrics from the data contents. Calculations are performed according to metric functions.
 	*
+	* @param {string} DEST - directory destination
 	* @param {string} dir - directory name
 	* @param {string} filename - filename
 	*/
-	function calculateMetrics( dir, filename ) {
+	function calculateMetrics( DEST, dir, filename ) {
 		var keys, metric,
 			output, file, path, dest, name,
 			write,
@@ -222,12 +243,65 @@
 			write = getWriter( output, name );
 
 			// Pipe the data stream:
-			data.pipe( getTransformer( metric.func ) )
+			data.pipe( getTransformer( metric.transform ) )
 				.pipe( getStringifier() )
 				.pipe( write );
 
 		} // end FOR i
 	} // end FUNCTION calculateMetrics()
+
+	/**
+	* FUNCTION: calculateStats( DEST, dir, filename )
+	*	Read a file from a directory and calculates statistics from the data contents. Calculations are performed according to stats functions.
+	*
+	* @param {string} DEST - directory destination
+	* @param {string} dir - directory name
+	* @param {string} filename - filename
+	*/
+	function calculateStats( DEST, dir, filename ) {
+		var keys, stat,
+			output, file, path, dest, name,
+			write,
+			data;
+
+		// Get the file path:
+		path = PATH + dir + '/' + filename;
+
+		// Remove the extension from filename:
+		file = filename.substr( 0, filename.length-5 );
+
+		// Set the destination:
+		dest = DEST + dir + '/' + file + '.';
+
+		// Create the raw data readstream:
+		data = fs.createReadStream( path )
+			.pipe( getParser() );
+
+		// Get the stat names:
+		keys = Object.keys( STATS );
+
+		// Write out the stats:
+		for ( var i = 0; i < keys.length; i++ ) {
+
+			// Get the stat config:
+			stat = STATS[ keys[ i ] ];
+
+			// Generate the output filename:
+			output = dest + keys[ i ] + '.json';
+
+			// Generate a stream name:
+			name = dir + '::' + keys[ i ];
+
+			// Create the write stream:
+			write = getWriter( output, name );
+
+			// Pipe the data stream:
+			data.pipe( getTransformer( stat.transform ) )
+				.pipe( getStringifier() )
+				.pipe( write );
+
+		} // end FOR i
+	} // end FUNCTION calculateStats()
 
 	/**
 	* FUNCTION: xValue( d )
@@ -329,26 +403,25 @@
 
 		for ( var i = 0; i < dirs.length; i++ ) {
 			files = INDEX[ dirs[ i ] ];
-			mkdir( DEST+dirs[ i ], onDir( dirs[ i ], files ) );
+			mkdir( DEST.stats+dirs[ i ], onDir( dirs[ i ], files ) );
 		}
-		return;
-
-		/**
-		* FUNCTION: onDir( name, files )
-		*	Encloses a directory name and an array of directory contents and returns a callback.
-		*
-		* @param {string} name - directory name
-		* @param {array} files - array of filenames
-		* @returns {function} callback to be invoked upon create a directory.
-		*/
-		function onDir( name, files ) {
-			return function onDir() {
-				for ( var i = 0; i < files.length; i++ ) {
-					calculateMetrics( name, files[ i ] );
-				}
-			};
-		} // end FUNCTION onDir()
 	} // end FUNCTION run()
+
+	/**
+	* FUNCTION: onDir( name, files )
+	*	Encloses a directory name and an array of directory contents and returns a callback.
+	*
+	* @param {string} name - directory name
+	* @param {array} files - array of filenames
+	* @returns {function} callback to be invoked upon create a directory.
+	*/
+	function onDir( name, files ) {
+		return function onDir() {
+			for ( var i = 0; i < files.length; i++ ) {
+				calculateStats( DEST.stats, name, files[ i ] );
+			}
+		};
+	} // end FUNCTION onDir()
 
 
 	// INIT //
@@ -394,13 +467,13 @@
 
 	var calculate = function() {
 		// Remove all previous data transformations, if any, before running transforms:
-		rimraf( DEST, function onRemove() {
+		// rimraf( DEST, function onRemove() {
 			// Create the top-level destination directory:
-			mkdir( DEST, function onCreate() {
+			mkdir( DEST.stats, function onCreate() {
 				// Run the transforms:
 				run();
 			});
-		});
+		// });
 	}; // end FUNCTION calculate()
 	
 	// EXPORTS //
