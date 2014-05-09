@@ -12,9 +12,19 @@ body, div, canvas {
 }
 
 body {
-	font-family: 'Cabin', 'Open-Sans', sans-serif;
+	font-family: sans-serif;
     color: #474747;
 	font-weight: normal;
+	background-color: #fff;
+}
+
+.clearfix:before, .clearfix:after {
+	content: "";
+	display: table;
+}
+
+.clearfix:after {
+	clear: both;
 }
 
 .main {
