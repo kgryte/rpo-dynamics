@@ -309,6 +309,8 @@
 				}))
 				.pipe( write );
 
+			// Do histogram stuff here.
+
 		} // end FOR i
 	} // end FUNCTION calculateStats()
 

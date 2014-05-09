@@ -8,9 +8,13 @@ TODO
 2. 	Move lib and partials out of figures directory and into same level as modules
 3. 	Clean-up KDE code (i.e., deal with rug plot)
 4. 	Update app boilerplate
+	- Move server.js to bin directory
+	- Update utils/server.js
+	- read over to see if all up-to-date
 5. 	Speed up histogram, KDE calculation. Consider just calculating and storing these files in another directory. Have raw and analyzed data.
 6. 	Should AexDem values be included? (oh dear! would allow for corrections)
 7. 	Calculate over all directories and files
+8. 	Move server.js to bin directory
 
 
 ### Streams
