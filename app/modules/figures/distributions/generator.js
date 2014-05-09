@@ -70,6 +70,10 @@
 		// Create the figure:
 		figure.create( document, selection );
 
+		// Select the figure element and set a data attribute:
+		selection.querySelector( '.figure' )
+			.setAttribute( 'data-sortable', 1 );
+
 		// [2] Get the datasets:
 		datasets = Object.keys( data );
 

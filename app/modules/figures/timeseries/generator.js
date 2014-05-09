@@ -67,6 +67,10 @@
 		// Create the figure:
 		figure.create( document, selection );
 
+		// Select the figure element and set a data attribute:
+		selection.querySelector( '.figure' )
+			.setAttribute( 'data-sortable', 1 );
+
 		// [2] Create a separate canvas for each dataset and create the line charts:
 		for ( var i = 0; i < data.length; i++ ) {
 
