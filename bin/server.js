@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 /**
 *
 *	SERVER
@@ -45,7 +46,7 @@
 	// MODULES //
 
 	var // Main application:
-		app = require( './app' ),
+		app = require( './../app' ),
 
 		// Package information:
 		pkginfo = require( 'pkginfo' );

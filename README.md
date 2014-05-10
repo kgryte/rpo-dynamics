@@ -28,13 +28,26 @@ Once cloned, navigate to the directory and install Node modules specified in the
 $ npm install
 ```
 
-Next, launch the node application.
+Next, launch the node application. Depending on your Node installation, the application is executable:
 
 ```
-$ node server.js
+bin/server.js
+```
+
+If you receive a permissions error, update permissions as follows:
+
+```
+chmod +x bin/server.js
+```
+
+Otherwise, you can explicitly run the application as a Node process:
+
+```
+$ node bin/server.js
 ```
 
 The application should be listening on PORT 1337. If you have other applications using this port, you can change the port in `app/utils/server.js`.
+
 
 
 ### Routes
@@ -84,6 +97,7 @@ http://127.0.0.1:1337/figures/distributions/10011000/compare/00011000
 returns a figure comparing the distribution for one condition set, .e.g., `10110001`, with the distribution of another condition set, e.g., `00011000`. The figure includes a KDE and timeseries histogram for each condition set.
 
 
+
 ### Images
 
 To generate static images, ensure that you have [Phantomjs](http://phantomjs.org/) installed. If you use [Homebrew](http://brew.sh/),
@@ -109,14 +123,14 @@ phantomjs scripts/rasterize.js http://127.0.0.1:1337/figures/summary/10011000 pu
 will generate an image which is twice the size of the previous image.
 
 
-===
+============
 ## Copyright
 
 
 Copyright &copy; 2014. Athan Reines.
 
 
-===
+==========
 ## License
 
 

@@ -15,6 +15,8 @@ TODO
 6. 	Should AexDem values be included? (oh dear! would allow for corrections)
 7. 	Calculate over all directories and files
 8. 	Move server.js to bin directory
+9. 	Makefile
+10. Remove jQuery dependence and move to ui-component sortable
 
 
 ### Streams
