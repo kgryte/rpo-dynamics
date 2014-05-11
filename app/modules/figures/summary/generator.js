@@ -46,7 +46,7 @@
 	// MODULES //
 
 	var // xfig figure library:
-		xfig = require( './../lib/xfig.js' ),
+		xfig = require( './../../../lib/xfig.js' ),
 
 		// Chart generators:
 		Histogram = require( './charts/histogram.js' ),

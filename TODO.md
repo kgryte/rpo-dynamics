@@ -5,18 +5,22 @@ TODO
 ### General
 
 1. 	MVA
-2. 	Move lib and partials out of figures directory and into same level as modules
+2. 	
 3. 	Clean-up KDE code (i.e., deal with rug plot)
 4. 	Update app boilerplate
 	- Move server.js to bin directory / make executable
 	- Update utils/server.js
 	- read over to see if all up-to-date
+	- Remove dynamic route name
 5. 	Speed up histogram, KDE calculation. Consider just calculating and storing these files in another directory. Have raw and analyzed data.
 6. 	Should AexDem values be included? (oh dear! would allow for corrections)
 7. 	Calculate over all directories and files
-8. 	
+8. 	Make timeseries calculation a node script executed from terminal; not from a route!
 9. 	Makefile
 10. Remove jQuery dependence and move to ui-component sortable --> more difficult than expected; only want sort on drop; not during drag.
+11. Upload sigma mutant data
+12. Confirm that wt protein data is correct
+
 
 
 ### Streams
@@ -46,10 +50,10 @@ TODO
 
 ### Figures
 
-1.  Multiple timeseries -->  dynamically resize based on parent size (wrap in container); ability to sort based on mean, variance --> sort in-browser using data attributes: data-mean, data-variance, etc.
+1.  Multiple timeseries -->  dynamically resize based on parent size (wrap in container); ability to sort based on mean, variance --> sort in-browser using data attributes: data-mean, data-variance, etc. --> see isotope.js
 2. 	Small-multiple timeseries-histogram across all conditions
 3. 	Repeats comparision (multipanel, or avg hist with variance overlay)
-4.  Small-multiple histograms/KDE across all conditions
+4.  Scatterplot matrix-style figure but with KDE overlays
 5. 	Hist2d timeseries across all conditions (is this actually valuable? really only when aligned.)
 6. 	
 

@@ -52,7 +52,7 @@
 		DOM = require( './../../../utils/dom.js' ),
 
 		// Document partials:
-		partials = require( './../../../utils/partials.js' )( __dirname + '/../partials' ),
+		partials = require( './../../../utils/partials.js' )( __dirname + '/../../../partials' ),
 
 		// Module to get data:
 		getData = require( './../../../utils/data.js' ),

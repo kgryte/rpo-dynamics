@@ -69,12 +69,10 @@
 
 	var routes = function ( clbk ) {
 
-		var base = path.basename( __dirname );
-
 		// NOTE: the 'this' context is the application.
 
 		// Figure route:
-		this.get( '/' + base, function onRequest( request, response ) {
+		this.get( '/figures', function onRequest( request, response ) {
 
 			response.writeHead( 200, {
 				'Content-Type': 'text/html'
@@ -85,7 +83,7 @@
 		});
 
 		// Summary figure route for a particular condition:
-		this.get( '/' + base + '/summary/:condition', function onRequest( request, response ) {
+		this.get( '/figures/summary/:condition', function onRequest( request, response ) {
 
 			var condition = request.params.condition;
 
@@ -109,7 +107,7 @@
 		});
 
 		// Timeseries figure route for a particular condition:
-		this.get( '/' + base + '/timeseries/:condition', function onRequest( request, response ) {
+		this.get( '/figures/timeseries/:condition', function onRequest( request, response ) {
 
 			var condition = request.params.condition;
 
@@ -132,7 +130,7 @@
 		});
 
 		// Distributions:
-		this.get( '/' + base + '/distributions', function onRequest( request, response ) {
+		this.get( '/figures/distributions', function onRequest( request, response ) {
 
 			response.setTimeout( 0 );
 
@@ -154,7 +152,7 @@
 		});
 
 		// Distribution comparison figure route for a condition pair:
-		this.get( '/' + base + '/distributions/:condition1/compare/:condition2', function onRequest( request, response ) {
+		this.get( '/figures/distributions/:condition1/compare/:condition2', function onRequest( request, response ) {
 
 			var condition1 = request.params.condition1,
 				condition2 = request.params.condition2;
@@ -177,7 +175,7 @@
 		});
 
 		// Distribution overlay figure route for a condition pair:
-		this.get( '/' + base + '/distributions/:condition1/overlay/:condition2', function onRequest( request, response ) {
+		this.get( '/figures/distributions/:condition1/overlay/:condition2', function onRequest( request, response ) {
 
 			var condition1 = request.params.condition1,
 				condition2 = request.params.condition2;
