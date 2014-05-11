@@ -15,8 +15,9 @@ TODO
 5. 	Speed up histogram, KDE calculation. Consider just calculating and storing these files in another directory. Have raw and analyzed data.
 6. 	Should AexDem values be included? (oh dear! would allow for corrections)
 7. 	Calculate over all directories and files
-8. 	Make timeseries calculation a node script executed from terminal; not from a route!
+8. 	
 9. 	Makefile
+	- Make calculating all metrics/statistics part of the build process?
 10. Remove jQuery dependence and move to ui-component sortable --> more difficult than expected; only want sort on drop; not during drag.
 11. Upload sigma mutant data
 12. Confirm that wt protein data is correct

@@ -100,16 +100,6 @@
 
 		});
 
-		// Calculations:
-		this.get( '/calculate', function onRequest( request, response ) {
-			calculate();
-			response.writeHead( 200, {
-				'Content-Type': 'text/plain'
-			});
-			response.write( 'Ok' );
-			response.end();
-		});
-
 		// Callback:
 		clbk();
 

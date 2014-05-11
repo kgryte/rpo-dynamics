@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 /**
 *
 *	UTILS: calculate
@@ -22,6 +23,7 @@
 *
 *	HISTORY:
 *		- 2014/05/03: Created. [AReines].
+*		- 2014/05/12: Made executable. [AReines].
 *
 *
 *	DEPENDENCIES:
@@ -29,7 +31,7 @@
 *
 *
 *	LICENSE:
-*		
+*		MIT
 *
 *	Copyright (c) 2014. Athan Reines.
 *
@@ -46,7 +48,7 @@
 	// MODULES //
 
 	var // Drop-in replacement for filesystem module:
-		fs = require( './graceful-fs' ),
+		fs = require( './../app/utils/graceful-fs' ),
 
 		// Module to recursively remove directories and their contents:
 		rimraf = require( 'rimraf' ),
@@ -63,11 +65,11 @@
 
 	// VARIABLES //
 
-	var PATH = __dirname + '/../../public/data/raw/',
+	var PATH = __dirname + '/../public/data/raw/',
 		DEST = {
-			'metrics': __dirname + '/../../public/data/metrics/',
-			'stats': __dirname + '/../../public/data/stats/',
-			'summary': __dirname + '/../../public/data/summary/'
+			'metrics': __dirname + '/../public/data/metrics/',
+			'stats': __dirname + '/../public/data/stats/',
+			'summary': __dirname + '/../public/data/summary/'
 		},
 		INDEX = {};
 
@@ -485,8 +487,9 @@
 		// });
 	}; // end FUNCTION calculate()
 	
-	// EXPORTS //
 
-	module.exports = calculate;
+	// RUN //
+
+	calculate();
 
 })();
