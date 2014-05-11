@@ -62,7 +62,9 @@
 	*/
 	var generator = function( document, selection, data, clbk ) {
 
-		var figure, datasets, d = [], canvas, left, top;
+		var figure, canvas, left, top,
+			datasets, d = [],
+			colors = [ 'pink', 'blue' ], title = [];
 
 		// [1] Instantiate a new figure generator:
 		figure = xfig.figure();
@@ -75,6 +77,7 @@
 
 		for ( var i = 0; i < datasets.length; i++  ) {
 			d.push( data[ datasets[ i ] ] );
+			title.push( '<span class="'+ colors[ i ] + '">' + mapping[ datasets[ i ] ] + '</span>');
 		}
 
 		// [3] Instantiate a new canvas generator and configure:
@@ -86,7 +89,7 @@
 		canvas.create();
 
 		// [4] Create a new KDE overlay chart:
-		KDE( canvas, d, 800, 520, 90, 80, '' );
+		KDE( canvas, d, 800, 520, 90, 80, title.join( ' | ' ) );
 
 		// Finished:
 		clbk();

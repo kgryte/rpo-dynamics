@@ -76,8 +76,17 @@ body {
 	stroke-opacity: 90%;
 }
 
-.graph[data-graph-type="kde"] .area {
+.graph[data-graph-type="kde"] .area,
+.graph[data-graph-type="kde-overlay"] .area {
 	opacity: 0.25;
+}
+
+.graph[data-graph-type="kde-overlay"] .area[data-label="data 0"] {
+	fill: #F17CB0;
+}
+
+.graph[data-graph-type="kde-overlay"] .area[data-label="data 1"] {
+	fill: #5DA5DA;
 }
 
 .graph .rug .line {
@@ -121,4 +130,10 @@ body {
 	text-align: center;
 }
 
+.blue {
+	color: #5DA5DA;
+}
 
+.pink {
+	color: #F17CB0;
+}

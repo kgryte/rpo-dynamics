@@ -81,7 +81,7 @@
 			.yMin( 0 );
 
 		// Create the graph:
-		graph.create( 'kde' );
+		graph.create( 'kde-overlay' );
 
 		// [2] For each dataset, create a data object...
 		for ( var i = 0; i < _data_.length; i++ ) {
