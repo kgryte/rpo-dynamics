@@ -35,6 +35,10 @@ body {
 	position: relative;
 }
 
+	.figure[data-sortable="1"] .canvas {
+		cursor: move;
+	}
+
 .canvas {
 	float: left;
 
