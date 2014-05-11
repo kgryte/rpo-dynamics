@@ -96,6 +96,11 @@ http://127.0.0.1:1337/figures/distributions/10011000/compare/00011000
 
 returns a figure comparing the distribution for one condition set, .e.g., `10110001`, with the distribution of another condition set, e.g., `00011000`. The figure includes a KDE and timeseries histogram for each condition set.
 
+```
+http://127.0.0.1:1337/figures/distributions/10011000/overlay/00011000
+```
+
+returns a figure overlaying the distribution for one condition set, .e.g, `00011000`, on top of another condition set's distribution, e.g., `10011000`. The distributions are calculated as a KDE. 
 
 
 ### Images

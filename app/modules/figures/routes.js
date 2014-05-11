@@ -58,6 +58,9 @@
 		// Distribution comparison:
 		compare = require( './compare' ),
 
+		// Overlay:
+		overlay = require( './overlay' ),
+
 		// Distributions:
 		distributions = require( './distributions' );
 
@@ -157,6 +160,29 @@
 				condition2 = request.params.condition2;
 
 			compare( condition1, condition2, function onFigure( error, html ) {
+				if ( error ) {
+					response.writeHead( error.status, {
+						'Content-Type': 'application/json'
+					});
+					response.write( error );
+					response.end();
+					return;
+				}
+				response.writeHead( 200, {
+					'Content-Type': 'text/html'
+				});
+				response.write( html );
+				response.end();
+			});
+		});
+
+		// Distribution overlay figure route for a condition pair:
+		this.get( '/' + base + '/distributions/:condition1/overlay/:condition2', function onRequest( request, response ) {
+
+			var condition1 = request.params.condition1,
+				condition2 = request.params.condition2;
+
+			overlay( condition1, condition2, function onFigure( error, html ) {
 				if ( error ) {
 					response.writeHead( error.status, {
 						'Content-Type': 'application/json'

@@ -78,7 +78,7 @@
 			.x( function ( d ) { return d.x; } )
 			.y( function ( d ) { return d.y[1] / (d.y[0]+d.y[1]); } );
 
-		// Format the data and histogram the data:
+		// Format the data and KDE the data:
 		data.format( 2 )
 			.concat()
 			.kde( function ( d ) {

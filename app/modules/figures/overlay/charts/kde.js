@@ -56,7 +56,17 @@
 	*/
 	var kde = function( canvas, _data_, width, height, left, top, subtitle ) {
 
-		var graph, data, area, max, axes, annotations, title, text;
+		var graph, area, axes, annotations, title, text,
+			data = [], max = 0, _max,
+			xValue = function( d ) {
+				return d.x;
+			},
+			yValue = function( d ) {
+				return d.y[1] / (d.y[0]+d.y[1]);
+			},
+			value = function ( d ) {
+				return d[ 1 ];
+			};
 
 		// [1] Instantiate a new graph generator and configure:
 		graph = xfig.graph( canvas )
@@ -73,32 +83,45 @@
 		// Create the graph:
 		graph.create( 'kde' );
 
-		// [2] Instantiate a new data generator and configure:
-		data = xfig.data( _data_ )
-			.x( function ( d ) { return d.x; } )
-			.y( function ( d ) { return d.y[1] / (d.y[0]+d.y[1]); } );
+		// [2] For each dataset, create a data object...
+		for ( var i = 0; i < _data_.length; i++ ) {
 
-		// Format the data and KDE the data:
-		data.format( 2 )
-			.concat()
-			.kde( function ( d ) {
-				return d[ 1 ];
-			}, 0, 1 );
+			// Instantiate a new data generator and configure:
+			data.push( xfig.data( _data_[ i ] )
+				.x( xValue )
+				.y( yValue ) );
 
-		// Bind the data instance to the graph:
-		max = data.max( function ( d ) {
-			return d[ 1 ];
-		});
+			// Format the data and KDE the data:
+			data[ i ].format( 2 )
+				.concat()
+				.kde( value, 0, 1 );
+
+			// Calculate the max value so our chart is properly scaled:
+			_max = data[ i ].max( value );
+
+			if ( _max > max ) {
+				max = _max;
+			}
+
+		} // end FOR i
+
 		max += max * 0.05;
-		graph.data( data )
-			.yMax( max );
+		graph.yMax( max );
 
-		// [3] Instantiate a new area generator and configure:
-		area = xfig.area( graph )
-			.labels( [ 'data 0' ] );
+		// [3] For each data object, bind data to the graph and create an area chart...
+		for ( var j = 0; j < data.length; j++ ) {
 
-		// Create the area chart:
-		area.create();
+			// Bind data to the graph:
+			graph.data( data[ j ] );
+			
+			// Instantiate a new area generator and configure:
+			area = xfig.area( graph )
+				.labels( [ 'data ' + j ] );
+
+			// Create the area chart:
+			area.create();
+
+		} // end FOR j
 
 		// [4] Instantiate a new axes generator and configure:
 		axes = xfig.axes( graph )

@@ -21,7 +21,7 @@
 *
 *
 *	HISTORY:
-*		- 2014/05/01: Created. [AReines].
+*		- 2014/05/11: Created. [AReines].
 *
 *
 *	DEPENDENCIES:
@@ -52,8 +52,7 @@
 		mapping = require( './../../../utils/mapping.js' ),
 
 		// Chart generators:
-		KDE = require( './charts/kde.js' ),
-		TimeseriesHistogram = require( './charts/timeseries-histogram.js' );
+		KDE = require( './charts/kde.js' );
 
 
 	// GENERATOR //
@@ -63,7 +62,7 @@
 	*/
 	var generator = function( document, selection, data, clbk ) {
 
-		var figure, datasets, d, canvas, left, top;
+		var figure, datasets, d = [], canvas, left, top;
 
 		// [1] Instantiate a new figure generator:
 		figure = xfig.figure();
@@ -74,26 +73,20 @@
 		// [2] Get the datasets:
 		datasets = Object.keys( data );
 
-		// [3] Create a separate canvas for each dataset and create the line charts:
-		for ( var i = 0; i < datasets.length; i++ ) {
+		for ( var i = 0; i < datasets.length; i++  ) {
+			d.push( data[ datasets[ i ] ] );
+		}
 
-			d = data[ datasets[ i ] ];
+		// [3] Instantiate a new canvas generator and configure:
+		canvas = xfig.canvas( figure )
+			.width( 1000 )
+			.height( 700 );
 
-			// [3.0] Instantiate a new canvas generator and configure:
-			canvas = xfig.canvas( figure )
-				.width( 500 )
-				.height( 1000 );
+		// Create the canvas:
+		canvas.create();
 
-			// Create the canvas:
-			canvas.create();
-
-			// [3.1] Create a new KDE chart:
-			KDE( canvas, d, 400, 260, 90, 80, mapping[ datasets[ i ] ] );
-
-			// [3.2] Create a new timeseries histogram chart:
-			TimeseriesHistogram( canvas, d, 400, 260, 90, 485, '' );
-
-		} // end FOR i
+		// [4] Create a new KDE overlay chart:
+		KDE( canvas, d, 800, 520, 90, 80, '' );
 
 		// Finished:
 		clbk();
