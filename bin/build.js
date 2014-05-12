@@ -59,6 +59,9 @@
 		// Module for creating sink streams:
 		Sink = require( 'pipette' ).Sink,
 
+		// Read stream:
+		readStream = require( './../app/utils/streams/file_read.js' ),
+
 		// JSON stream parser:
 		parser = require( './../app/utils/streams/json_parse.js' ),
 
@@ -124,7 +127,7 @@
 		file = filename.substr( 0, filename.length-5 );
 
 		// Create the raw data readstream:
-		data = fs.createReadStream( path )
+		data = readStream( path )
 			.pipe( parser() );
 
 		// Send the data off to calculate metrics:
