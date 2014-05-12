@@ -1,4 +1,4 @@
-RPO Dynamics
+RPo Dynamics
 ============
 
 [RPo dynamics](http://www.ncbi.nlm.nih.gov/pubmed/23274143) data and analysis.
@@ -8,41 +8,41 @@ RPO Dynamics
 
 To get started with RPo Dynamics, ensure that you have [Node.js](http://nodejs.org/) installed. If you have [Homebrew](http://brew.sh/) installed on Mac OSX, installing Node is [straightforward](http://shapeshed.com/setting-up-nodejs-and-npm-on-mac-osx/). In the terminal,
 
-```
-brew install node
+``` bash
+$ brew install node
 ```
 
 A recently released tool called [Cakebrew](http://www.cakebrew.com/) provides a GUI for installing packages, similar to the [Github client](https://mac.github.com/) for repositories. For other platforms, consult the documentation provided by [Joyent](https://github.com/joyent/node/wiki/Installing-Node.js-via-package-manager#ubuntu-mint). 
 
 If you have a [Github](https://help.github.com/articles/set-up-git) account, clone the RPo Dynamics repository to a local directory of your choosing. 
 
-```
-git clone https://github.com/kgryte/rpo-dynamics.git
+``` bash
+$ git clone https://github.com/kgryte/rpo-dynamics.git
 ```
 
 If you are not a [Github member](https://github.com/pricing), a less desirable but still possible way to create a local copy is to download the zip file. 
 
-Once cloned, navigate to the directory and install Node modules specified in the `package.json` file. 
+Once cloned, navigate to the directory and install the Node modules specified in the `package.json` file. 
 
-```
+``` bash
 $ npm install
 ```
 
 Next, launch the node application. Depending on your Node installation, the application is executable:
 
-```
-bin/server.js
+``` bash
+$ bin/server.js
 ```
 
 If you receive a permissions error, update permissions as follows:
 
-```
-chmod +x bin/server.js
+``` bash
+$ chmod +x bin/server.js
 ```
 
 Otherwise, you can explicitly run the application as a Node process:
 
-```
+``` bash
 $ node bin/server.js
 ```
 
@@ -107,35 +107,28 @@ returns a figure overlaying the distribution for one condition set, .e.g, `00011
 
 To generate static images, ensure that you have [Phantomjs](http://phantomjs.org/) installed. If you use [Homebrew](http://brew.sh/),
 
-```
-brew install phantomjs
+``` bash
+$ brew install phantomjs
 ```
 
 Once installed, ensure that you have the Node server running and open a new terminal instance. From the top-level application directory,
 
-```
-phantomjs scripts/rasterize.js http://127.0.0.1:1337/figures/summary/10011000 public/img/1001100.summary.png 1200px*900px
+``` bash
+$ phantomjs scripts/rasterize.js http://127.0.0.1:1337/figures/summary/10011000 public/img/1001100.summary.png 1200px*900px
 ```
 
 which will render a webpage and return create a PNG. The image size is defined by the third argument. In this case, the webpage selection is 1200px by 900px. The PNG is output to the directory `public/img`.
 
 You can specify a zoom factor. For example, 
 
-```
-phantomjs scripts/rasterize.js http://127.0.0.1:1337/figures/summary/10011000 public/img/1001100.summary.png 2400px*1800px 2
+``` bash
+$ phantomjs scripts/rasterize.js http://127.0.0.1:1337/figures/summary/10011000 public/img/1001100.summary.png 2400px*1800px 2
 ```
 
 will generate an image which is twice the size of the previous image.
 
+---
 
-============
-## Copyright
-
-
-Copyright &copy; 2014. Athan Reines.
-
-
-==========
 ## License
 
 
@@ -152,5 +145,13 @@ Should you use this body of work in any publication, please cite the following:
 ```
 
 (...include BibTeX...)
+
+
+---
+
+## Copyright
+
+
+Copyright &copy; 2014. Athan Reines.
 
 

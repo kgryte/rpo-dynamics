@@ -50,10 +50,7 @@
 		MAPPING = require( './utils/mapping.js' ),
 
 		// Directory encoding model:
-		model = require( './../public/data/encoding.json' ),
-
-		// Module for performing calculations:
-		calculate = require( './utils/calculate.js' );
+		model = require( './../public/data/encoding.json' );
 
 
 	// ROUTES //
