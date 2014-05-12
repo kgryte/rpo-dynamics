@@ -2,6 +2,9 @@
 # Directories #
 ###############
 node_modules/
+public/data/metrics/
+public/data/stats/
+public/data/summary/
 
 # Compiled source #
 ###################
