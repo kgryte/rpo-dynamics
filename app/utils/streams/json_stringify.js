@@ -54,7 +54,7 @@
 	* FUNCTION: getStringifier()
 	*	Returns a transform stream to stringify data as a JSON array.
 	* 
-	* @returns {object} JSON stream stringifier
+	* @returns {stream} JSON stream stringifier
 	*/
 	function getStringifier() {
 		var stream = JSONStream.stringify( '[\n\t', ',\n\t', '\n]\n' );

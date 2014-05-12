@@ -1,6 +1,6 @@
 /**
 *
-*	STREAM: efficiency
+*	STREAM: stoichiometry
 *
 *
 *
@@ -58,7 +58,7 @@
 	*/
 	function Stream() {
 
-		this.name = 'efficiency';
+		this.name = 'stoichiometry';
 		this.type = 'timeseries';
 
 		// ACCESSORS:
@@ -70,6 +70,9 @@
 		};
 		this._yValue1 = function( d ) {
 			return d.y[ 1 ];
+		};
+		this._yValue2 = function( d ) {
+			return d.y[ 2 ];
 		};
 
 		return this;
@@ -121,23 +124,42 @@
 	}; // end METHOD y1()
 
 	/**
+	* METHOD: y2( fcn )
+	*	y-value (acceptor excitation, acceptor emission) accessor setter and getter. If a function is supplied, sets the y-value accessor. If no function is supplied, returns the y-value accessor.
+	*
+	* @param {function} fcn - y-value accessor
+	* @returns {object|function} instance object or y-value accessor
+	*/
+	Stream.prototype.y2 = function ( fcn ) {
+		if ( !arguments.length ) {
+			return this._yValue2;
+		}
+		this._yValue2 = fcn;
+		return this;
+	}; // end METHOD y2()
+
+	/**
 	* METHOD: metric( data )
-	*	Calculates the (uncorrected) transfer efficiency between donor and acceptor fluorophores.
+	*	Calculates the (uncorrected) stoichiometric ratio between donor and acceptor fluorophores.
 	*
 	* @see [Journal Paper]{@link http://www.ncbi.nlm.nih.gov/pmc/articles/PMC1282518/}
 	*
 	* @param {object} data - data object containing intensity values
-	* @returns {number} (uncorrected) calculated transfer efficiency
+	* @returns {number} (uncorrected) calculated stoichiometry
 	*/
 	Stream.prototype.metric = function ( data ) {
 		var // Donor-excitation donor-emission intensity: 
 			dexdem = this._yValue0( data ),
 			// Donor-excitation acceptor-emission intensity: 
 			dexaem = this._yValue1( data ),
+			// Acceptor-excitation acceptor-emission intensity: 
+			aexaem = this._yValue2( data ),
 			// Total donor-excitation emission intensity:
-			total = dexdem + dexaem;
-		// Calculated transfer efficiency:
-		return dexaem / total;
+			num = dexdem + dexaem,
+			// Total emission intensity:
+			denom = num + aexaem;
+		// Calculated stoichiometry ratio:
+		return num / denom;
 	}; // end METHOD metric()
 
 	/**
@@ -165,12 +187,11 @@
 
 	/**
 	* METHOD: stream()
-	*	Returns a JSON data transform stream for calculating the FRET efficiency.
+	*	Returns a JSON data transform stream for calculating the stoichiometry.
 	*/
 	Stream.prototype.stream = function() {
 		return transformer( this.transform() );
 	}; // end METHOD stream()
-
 
 
 	// EXPORTS //

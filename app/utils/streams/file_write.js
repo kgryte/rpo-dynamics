@@ -51,14 +51,14 @@
 	// STREAM //
 
 	/**
-	* FUNCTION: getWriter( dest, name )
+	* FUNCTION: getWriter( dest, clbk )
 	*	Returns a writable stream which outputs to a provided destination.
 	*
 	* @param {string} dest - output destination
-	* @param {string} name - (optional) stream name
-	* @returns {object} writable stream
+	* @param {function} clbk - (optional) callback to invoke after finishing writing a stream. Function should take one input argument: [ error ]. If no errors, error is null.
+	* @returns {stream} writable stream
 	*/
-	function getWriter( dest, name ) {
+	function getWriter( dest, clbk ) {
 		if ( !arguments.length ) {
 			throw new Error( 'getWriter()::insufficient input arguments. Must provide an output file destination.' );
 		}
@@ -70,13 +70,13 @@
 					'error': error
 				};
 			console.error( error.stack );
-			if ( name ) {
-				throw new Error( name + '::' + err.message );
+			if ( clbk ) {
+				clbk( err );
 			}
 		});
 		stream.on( 'finish', function onEnd() {
-			if ( name ) {
-				console.log( name + '::writable stream is finished...' );
+			if ( clbk ) {
+				clbk();
 			}
 		});
 		return stream;

@@ -55,7 +55,7 @@
 	*	Provided a data transformation function, returns an event stream which applies the transformation to piped data.
 	*
 	* @param {function} func - data transformation function
-	* @returns {object} JSON transform stream
+	* @returns {stream} JSON transform stream
 	*/
 	function getTransformer( func ) {
 		if ( !arguments.length ) {

@@ -54,7 +54,7 @@
 	* FUNCTION: getParser()
 	*	Returns a transform stream to parse a JSON stream.
 	*
-	* @returns {object} JSON stream parser
+	* @returns {stream} JSON stream parser
 	*/
 	function getParser() {
 		var stream = JSONStream.parse( '*' );

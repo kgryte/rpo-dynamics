@@ -56,45 +56,29 @@
 		// Module to stream JSON objects:
 		JSONStream = require( 'JSONStream' ),
 
-		// Module allowing for event data transformation:
-		eventStream = require( 'event-stream' ),
-
 		// Module for creating sink streams:
-		Sink = require( 'pipette' ).Sink;
+		Sink = require( 'pipette' ).Sink,
+
+		// JSON stream parser:
+		parser = require( './../app/utils/streams/json_parse.js' ),
+
+		// Metric streams:
+		metrics = require( './../app/utils/streams/metrics' );
 
 
 	// VARIABLES //
 
-	var PATH = __dirname + '/../public/data/raw/',
+	var BASE = __dirname + '/../public/data',
+		PATH = BASE + '/raw',
 		DEST = {
-			'metrics': __dirname + '/../public/data/metrics/',
-			'stats': __dirname + '/../public/data/stats/',
-			'summary': __dirname + '/../public/data/summary/'
+			'metrics': BASE + '/metrics',
+			'stats': BASE + '/stats',
+			'summary': BASE + '/summary'
 		},
 		INDEX = {};
 
 
-	// METRICS | STATS | SUMMARY //
-
-	var METRICS = {
-			// 'efficiency.timeseries': {
-			// 	transform: function( data ) {
-			// 		return [
-			// 			xValue( data ),
-			// 			raw_efficiency( data )
-			// 		];
-			// 	}
-			// },
-			// 'stoichiometry.timeseries': {
-			// 	transform: function( data ) {
-			// 		return [
-			// 			xValue( data ),
-			// 			raw_stoichiometry( data )
-			// 		];
-			// 	}
-			// }
-		},
-		STATS = {
+	var STATS = {
 			'efficiency.histogram': {
 				transform: function( data ) {
 					return [
@@ -123,86 +107,6 @@
 	} // end FUNCTION filter()
 
 	/**
-	* FUNCTION: getParser()
-	*	Returns a transform stream to parse a JSON stream.
-	*
-	* @returns {object} JSON stream parser
-	*/
-	function getParser() {
-		var stream = JSONStream.parse( '*' );
-		stream.on( 'error', function onError( error ) {
-			console.error( error.stack );
-		});
-		return stream;
-	} // end FUNCTION getParser()
-
-	/**
-	* FUNCTION: getStringifier()
-	*	Returns a transform stream to stringify data as a JSON array.
-	* 
-	* @returns {object} JSON stream stringifier
-	*/
-	function getStringifier() {
-		var stream = JSONStream.stringify( '[\n\t', ',\n\t', '\n]\n' );
-		stream.on( 'error', function onError( error ) {
-			console.error( error.stack );
-		});
-		return stream;
-	} // end FUNCTION getStringifier()
-
-	/**
-	* FUNCTION: getTransformer( func )
-	*	Provided a data transformation function, returns an event stream which applies the transformation to piped data.
-	*
-	* @param {function} func - data transformation function
-	* @returns {object} JSON transform stream
-	*/
-	function getTransformer( func ) {
-		if ( !arguments.length ) {
-			throw new Error( 'getTransformer()::insufficient input arguments. Must provide a transformation function.' );
-		}
-		var stream = eventStream.map( function onData( data, callback ) {
-			callback( null, func( data ) );
-		});
-		stream.on( 'error', function onError( error ) {
-			console.error( error.stack );
-		});
-		return stream;
-	} // end FUNCTION getTransformer()
-
-	/**
-	* FUNCTION: getWriter( dest, name )
-	*	Returns a writable stream which outputs to a provided destination.
-	*
-	* @param {string} dest - output destination
-	* @param {string} name - (optional) stream name
-	* @returns {object} writable stream
-	*/
-	function getWriter( dest, name ) {
-		if ( !arguments.length ) {
-			throw new Error( 'getWriteStream()::insufficient input arguments. Must provide an output file destination.' );
-		}
-		var stream = fs.createWriteStream( dest );
-		stream.on( 'error', function onError( error ) {
-			var err = {
-					'status': 500,
-					'message': 'internal server error. Error encountered while attempting to write data.',
-					'error': error
-				};
-			console.error( error.stack );
-			if ( name ) {
-				throw new Error( name + '::' + err.message );
-			}
-		});
-		stream.on( 'finish', function onEnd() {
-			if ( name ) {
-				console.log( name + '::writable stream is finished...' );
-			}
-		});
-		return stream;
-	} // end FUNCTION getWriter()
-
-	/**
 	* FUNCTION: calculateMetrics( DEST, dir, filename )
 	*	Read a file from a directory and calculates metrics from the data contents. Calculations are performed according to metric functions.
 	*
@@ -211,175 +115,23 @@
 	* @param {string} filename - filename
 	*/
 	function calculateMetrics( DEST, dir, filename ) {
-		var keys, metric,
-			output, file, path, dest, name,
-			write,
-			data;
+		var file, path, data;
 
 		// Get the file path:
-		path = PATH + dir + '/' + filename;
+		path = PATH + '/' + dir + '/' + filename;
 
 		// Remove the extension from filename:
 		file = filename.substr( 0, filename.length-5 );
 
-		// Set the destination:
-		dest = DEST + dir + '/' + file + '.';
-
 		// Create the raw data readstream:
 		data = fs.createReadStream( path )
-			.pipe( getParser() );
+			.pipe( parser() );
 
-		// Get the metric names:
-		keys = Object.keys( METRICS );
-
-		// Write out the metrics:
-		for ( var i = 0; i < keys.length; i++ ) {
-
-			// Get the metric config:
-			metric = METRICS[ keys[ i ] ];
-
-			// Generate the output filename:
-			output = dest + keys[ i ] + '.json';
-
-			// Generate a stream name:
-			name = dir + '::' + keys[ i ];
-
-			// Create the write stream:
-			write = getWriter( output, name );
-
-			// Pipe the data stream:
-			data.pipe( getTransformer( metric.transform ) )
-				.pipe( getStringifier() )
-				.pipe( write );
-
-		} // end FOR i
+		// Send the data off to calculate metrics:
+		metrics( data, DEST+'/'+dir, file, function onEnd() {
+			console.log( file + '::metrics finished...' );
+		});
 	} // end FUNCTION calculateMetrics()
-
-	/**
-	* FUNCTION: calculateStats( DEST, dir, filename )
-	*	Read a file from a directory and calculates statistics from the data contents. Calculations are performed according to stats functions.
-	*
-	* @param {string} DEST - directory destination
-	* @param {string} dir - directory name
-	* @param {string} filename - filename
-	*/
-	function calculateStats( DEST, dir, filename ) {
-		var keys, stat,
-			output, file, path, dest, name,
-			write,
-			data, source, sink;
-
-		// Get the file path:
-		path = PATH + dir + '/' + filename;
-
-		// Remove the extension from filename:
-		file = filename.substr( 0, filename.length-5 );
-
-		// Set the destination:
-		dest = DEST + dir + '/' + file + '.';
-
-		// Create the raw data readstream:
-		data = fs.createReadStream( path )
-			.pipe( getParser() );
-
-		// Get the stat names:
-		keys = Object.keys( STATS );
-
-		// Write out the stats:
-		for ( var i = 0; i < keys.length; i++ ) {
-
-			// Get the stat config:
-			stat = STATS[ keys[ i ] ];
-
-			// Generate the output filename:
-			output = dest + keys[ i ] + '.json';
-
-			// Generate a stream name:
-			name = dir + '::' + keys[ i ];
-
-			// Create the write stream:
-			write = getWriter( output, name );
-
-			// Pipe the data stream:
-			source = data.pipe( getTransformer( stat.transform ) )
-				.pipe( getStringifier() );
-
-			sink = new Sink( source );
-
-			sink.pipe( eventStream.mapSync( function onData ( data ) {
-					return data;
-				}))
-				.pipe( write );
-
-		} // end FOR i
-	} // end FUNCTION calculateStats()
-
-	/**
-	* FUNCTION: xValue( d )
-	*	x-value accessor.
-	*
-	* @param {object} d - datum
-	* @returns {number} x-value
-	*/
-	function xValue( d ) {
-		return d.x;
-	} // end FUNCTION tValue()
-
-	/**
-	* FUNCTION: yValue( d, i )
-	*	y-value accessor.
-	*
-	* @param {object} d - datum
-	* @param {number} i - y-value index
-	* @returns {number} y-value
-	*/
-	function yValue( d, i ) {
-		return d.y[ i ];
-	} // end FUNCTION yValue()
-
-	/**
-	* FUNCTION: raw_efficiency( data )
-	*	Calculates the (uncorrected) transfer efficiency between donor and acceptor fluorophores.
-	*
-	* @see [Journal Paper]{@link http://www.ncbi.nlm.nih.gov/pmc/articles/PMC1282518/}
-	*
-	* @param {object} data - data object containing intensity values
-	* @returns {number} (uncorrected) calculated transfer efficiency
-	*/
-	function raw_efficiency( data ) {
-		var // Donor-excitation donor-emission intensity: 
-			dexdem = yValue( data, 0 ),
-			// Donor-excitation acceptor-emission intensity:
-			dexaem = yValue( data, 1 ),
-			// Total donor-excitation emission intensity:
-			total = dexdem + dexaem;
-		// Calculated transfer efficiency:
-		return dexaem / total;
-	} // end FUNCTION raw_efficiency()
-
-	/**
-	* FUNCTION: raw_stoichiometry( data )
-	*	Calculates the (uncorrected) stoichiometric ratio between donor and acceptor fluorophores.
-	*
-	* @see [Journal Paper]{@link http://www.ncbi.nlm.nih.gov/pmc/articles/PMC1282518/}
-	*
-	* @param {object} data - data object containing intensity values
-	* @returns {number} (uncorrected) calculated stoichiometry
-	*/
-	function raw_stoichiometry( data ) {
-		var // Donor-excitation donor-emission intensity: 
-			dexdem = yValue( data, 0 ),
-			// Donor-excitation acceptor-emission intensity: 
-			dexaem = yValue( data, 1 ),
-			// Acceptor-excitation acceptor-emission intensity: 
-			aexaem = yValue( data, 2 ),
-			// Total donor-excitation emission intensity:
-			num = dexdem + dexaem,
-			// Total emission intensity:
-			denom = num + aexaem;
-		// Calculated stoichiometry ratio:
-		return num / denom;
-	} // end FUNCTION raw_stoichiometry()
 
 	/**
 	* FUNCTION: mkdir( dir, clbk )
@@ -414,7 +166,7 @@
 
 		for ( var i = 0; i < 1; i++ ) {
 			files = INDEX[ dirs[ i ] ];
-			mkdir( DEST.stats+dirs[ i ], onDir( dirs[ i ], files ) );
+			mkdir( DEST.metrics+'/'+dirs[ i ], onDir( dirs[ i ], files ) );
 		}
 	} // end FUNCTION run()
 
@@ -429,7 +181,7 @@
 	function onDir( name, files ) {
 		return function onDir() {
 			for ( var i = 0; i < 1; i++ ) {
-				calculateStats( DEST.stats, name, files[ i ] );
+				calculateMetrics( DEST.metrics, name, files[ i ] );
 			}
 		};
 	} // end FUNCTION onDir()
@@ -480,7 +232,7 @@
 		// Remove all previous data transformations, if any, before running transforms:
 		// rimraf( DEST, function onRemove() {
 			// Create the top-level destination directory:
-			mkdir( DEST.stats, function onCreate() {
+			mkdir( DEST.metrics, function onCreate() {
 				// Run the transforms:
 				run();
 			});
@@ -493,3 +245,63 @@
 	calculate();
 
 })();
+
+
+/**
+* FUNCTION: calculateStats( DEST, dir, filename )
+*	Read a file from a directory and calculates statistics from the data contents. Calculations are performed according to stats functions.
+*
+* @param {string} DEST - directory destination
+* @param {string} dir - directory name
+* @param {string} filename - filename
+*/
+function calculateStats( DEST, dir, filename ) {
+	var keys, stat,
+		output, file, path, dest, name,
+		write,
+		data, source, sink;
+
+	// Get the file path:
+	path = PATH + dir + '/' + filename;
+
+	// Remove the extension from filename:
+	file = filename.substr( 0, filename.length-5 );
+
+	// Set the destination:
+	dest = DEST + dir + '/' + file + '.';
+
+	// Create the raw data readstream:
+	data = fs.createReadStream( path )
+		.pipe( getParser() );
+
+	// Get the stat names:
+	keys = Object.keys( STATS );
+
+	// Write out the stats:
+	for ( var i = 0; i < keys.length; i++ ) {
+
+		// Get the stat config:
+		stat = STATS[ keys[ i ] ];
+
+		// Generate the output filename:
+		output = dest + keys[ i ] + '.json';
+
+		// Generate a stream name:
+		name = dir + '::' + keys[ i ];
+
+		// Create the write stream:
+		write = getWriter( output, name );
+
+		// Pipe the data stream:
+		source = data.pipe( getTransformer( stat.transform ) )
+			.pipe( getStringifier() );
+
+		sink = new Sink( source );
+
+		sink.pipe( eventStream.mapSync( function onData ( data ) {
+				return data;
+			}))
+			.pipe( write );
+
+	} // end FOR i
+} // end FUNCTION calculateStats()

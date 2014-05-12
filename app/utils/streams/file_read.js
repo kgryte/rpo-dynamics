@@ -51,14 +51,13 @@
 	// STREAM //
 
 	/**
-	* FUNCTION: getReader( path, name )
+	* FUNCTION: getReader( path )
 	*	Returns a readable stream which reads from a file.
 	*
 	* @param {string} path - file path
-	* @param {string} name - (optional) stream name
-	* @returns {object} readable stream
+	* @returns {stream} readable stream
 	*/
-	function getReader( path, name ) {
+	function getReader( path ) {
 		if ( !arguments.length ) {
 			throw new Error( 'getReader()::insufficient input arguments. Must provide an input file path.' );
 		}
@@ -70,9 +69,6 @@
 					'error': error
 				};
 			console.error( error.stack );
-			if ( name ) {
-				throw new Error( name + '::' + err.message );
-			}
 		});
 		return stream;
 	} // end FUNCTION getReader()
