@@ -28,21 +28,31 @@ Once cloned, navigate to the directory and install the Node modules specified in
 $ npm install
 ```
 
-Next, launch the node application. Depending on your Node installation, the application is executable:
+Set permissions for executable scripts as follows:
+
+``` bash
+$ chmod +x bin/server.js
+$ chmod +x bin/calculate.js
+```
+
+Next, run the build script, which calculates metrics and statistics from the raw intensity data.
+
+``` bash
+$ bin/build.js
+```
+
+Note that the build process may take a minute or two.
+
+Once the build has completed, launch the node application.
 
 ``` bash
 $ bin/server.js
 ```
 
-If you receive a permissions error, update permissions as follows:
+If the build or application scripts error, you can explicitly run the scripts as Node processes:
 
 ``` bash
-$ chmod +x bin/server.js
-```
-
-Otherwise, you can explicitly run the application as a Node process:
-
-``` bash
+$ node bin/build.js
 $ node bin/server.js
 ```
 
