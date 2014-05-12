@@ -58,7 +58,7 @@
 	*/
 	function Stream() {
 
-		this.name = 'stoichiometry';
+		this.name = 'uncorrected.stoichiometry';
 		this.type = 'timeseries';
 
 		// ACCESSORS:

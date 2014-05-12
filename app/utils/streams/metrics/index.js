@@ -116,7 +116,7 @@
 		// Cycle through metrics and stream...
 		for ( var i = 0; i < numMetrics; i++ ) {
 		
-			// Instantiate a metric instance:
+			// Instantiate a metric instance and configure:
 			metric = new METRICS[ i ]();
 
 			// Generate the output filename:

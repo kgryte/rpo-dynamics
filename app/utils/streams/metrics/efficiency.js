@@ -58,7 +58,7 @@
 	*/
 	function Stream() {
 
-		this.name = 'efficiency';
+		this.name = 'uncorrected.efficiency';
 		this.type = 'timeseries';
 
 		// ACCESSORS:
@@ -170,7 +170,6 @@
 	Stream.prototype.stream = function() {
 		return transformer( this.transform() );
 	}; // end METHOD stream()
-
 
 
 	// EXPORTS //
