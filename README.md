@@ -112,6 +112,12 @@ http://127.0.0.1:1337/distributions/10011000/overlay/00011000
 
 returns a figure overlaying the distribution for one condition set, .e.g, `00011000`, on top of another condition set's distribution, e.g., `10011000`. The distributions are calculated as a KDE. 
 
+```
+http://127.0.0.1:1337/figures/2
+```
+
+returns manuscript Figure 2. The figure includes raw intensity timeseries, a corresponding FRET efficiency timeseries, and two KDEs for control conditions `00001000` and `00001100`.
+
 
 ### Images
 

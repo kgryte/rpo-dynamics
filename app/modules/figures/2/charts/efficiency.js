@@ -1,6 +1,6 @@
 /**
 *
-*	CHART: kde
+*	CHART: line
 *
 *
 *
@@ -21,7 +21,7 @@
 *
 *
 *	HISTORY:
-*		- 2014/04/24: Created. [AReines].
+*		- 2014/05/12: Created. [AReines].
 *
 *
 *	DEPENDENCIES:
@@ -49,14 +49,15 @@
 		xfig = require( './../../../../lib/xfig.js' );
 
 
-	// KDE //
+	// LINE //
 
 	/**
+	* FUNCTION: line( canvas, data, widget, height, left, top, subtitle )
 	*
 	*/
-	var kde = function( canvas, data, width, height, left, top, subtitle ) {
+	var line = function( canvas, data, width, height, left, top, subtitle ) {
 
-		var graph, area, max, axes, annotations, title, text;
+		var graph, line, axes, annotations, title, text;
 
 		// [1] Instantiate a new graph generator and configure:
 		graph = xfig.graph( canvas )
@@ -66,32 +67,28 @@
 				'left': left,
 				'top': top
 			})
-			.xMin( 0 )
-			.xMax( 1 )
-			.yMin( 0 );
+			.yMin( 0 )
+			.yMax( 1 );
 
 		// Create the graph:
-		graph.create( 'kde' );
+		graph.create( 'line' );
 
 		// [2] Bind the data instance to the graph:
-		max = data.max( function ( d ) {
-			return d[ 1 ];
-		});
-		max += max * 0.05;
 		graph.data( data )
-			.yMax( max );
+			.xMin( data.min( function ( d ) { return d[ 0 ]; } ) )
+			.xMax( data.max( function ( d ) { return d[ 0 ]; } ) );
 
-		// [3] Instantiate a new area generator and configure:
-		area = xfig.area( graph )
+		// [3] Instantiate a new line generator and configure:
+		line = xfig.line( graph )
 			.labels( [ 'data 0' ] );
 
-		// Create the area chart:
-		area.create();
+		// Create the line graph:
+		line.create();
 
 		// [4] Instantiate a new axes generator and configure:
 		axes = xfig.axes( graph )
-			.xLabel( 'E' )
-			.yLabel( 'density [au]' );
+			.xLabel( 'time [sec]' )
+			.yLabel( 'E' );
 
 		// Create the axes:
 		axes.create();
@@ -105,18 +102,16 @@
 		// [5.1] Instantiate a new title instance and configure:
 		title = annotations.title()
 			.top( -65 )
-			.left( -90 )
-			.width( width )
-			.height( 40 );
+			.left( -90 );
 
 		// Add a (sub)title:
 		title.create( '<span class="subtitle">' + subtitle + '</span>' );
 
-	}; // end KDE
+	}; // end LINE
 
 
 	// EXPORTS //
 
-	module.exports = kde;
+	module.exports = line;
 
 })();

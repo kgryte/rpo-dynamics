@@ -89,6 +89,14 @@ body {
 	fill: #5DA5DA;
 }
 
+.graph[data-graph-type="line"] .line[data-label="dexdem"] {
+	stroke-opacity: 40%;
+}
+
+.graph[data-graph-type="line"] .line[data-label="dexaem"] {
+	stroke-opacity: 90%;
+}
+
 .graph .rug .line {
 	stroke: #474747;
 	opacity: 0.1;
