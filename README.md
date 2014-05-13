@@ -118,6 +118,12 @@ http://127.0.0.1:1337/figures/2
 
 returns manuscript Figure 2. The figure includes raw intensity timeseries, a corresponding FRET efficiency timeseries, and two KDEs for control conditions `00001000` and `00001100`.
 
+```
+http://127.0.0.1:1337/figures/4
+```
+
+returns manuscript Figure 4. The figure includes KDEs for conditions `00001000`, `00011000`, `00101000`, `00111000`. The first two conditions correspond to wild-type RNAP and DNA at 21C and 37C, respectively. The latter two conditions correspond to wild-type RNAP and pre-melted DNA at 21C and 37C, respectively.
+
 
 ### Images
 
