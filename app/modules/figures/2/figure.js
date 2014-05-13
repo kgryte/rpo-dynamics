@@ -66,7 +66,7 @@
 	*/
 	function figure( clbk ) {
 
-		var ids = [];
+		var ids = [ '00001000', '00001100' ];
 
 		// Initialize a DOM:
 		DOM( partials.index, function onWindow( error, window ) {

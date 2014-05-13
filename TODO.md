@@ -22,7 +22,7 @@ TODO
 11. Upload sigma mutant data
 12. Confirm that wt protein data is correct
 13. Create explicit figure routes; e.g., figure/1, figure/2, figure/3, etc.
-14. 
+14. Update code documentation
 
 
 

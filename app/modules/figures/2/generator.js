@@ -49,17 +49,22 @@
 		xfig = require( './../../../lib/xfig.js' ),
 
 		// Module to decode dataset:
-		mapping = require( './../../../utils/mapping.js' );
+		mapping = require( './../../../utils/mapping.js' ),
+
+		// Chart generators:
+		KDE = require( './charts/kde.js' );
 
 
 	// GENERATOR //
 
 	/**
+	* FUNCTION: generator( document, selection, data, clbk )
 	*
 	*/
 	var generator = function( document, selection, data, clbk ) {
 
-		var figure, canvas;
+		var figure, canvas,
+			datasets = Object.keys( data );
 
 		// [1] Instantiate a new figure generator:
 		figure = xfig.figure();
@@ -69,11 +74,17 @@
 
 		// [2] Instantiate a new canvas generator and configure:
 		canvas = xfig.canvas( figure )
-			.width( 500 )
-			.height( 1000 );
+			.width( 1000 )
+			.height( 800 );
 
 		// Create the canvas:
 		canvas.create();
+
+		// [3] Generate the KDE for the first dataset:
+		KDE( canvas, data[ datasets[ 0 ] ], 400, 260, 90, 80, 'a' );
+
+		// [4] Generate the KDE for the second dataset:
+		KDE( canvas, data[ datasets[ 1 ] ], 400, 260, 630, 80, 'b' );
 
 		// Finished:
 		clbk();
