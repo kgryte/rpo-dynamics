@@ -49,7 +49,10 @@
 		xfig = require( './../../../lib/xfig.js' ),
 
 		// Module to decode dataset:
-		mapping = require( './../../../utils/mapping.js' );
+		mapping = require( './../../../utils/mapping.js' ),
+
+		// Chart generators:
+		KDE = require( './charts/kde.js' );
 
 
 	// GENERATOR //
@@ -59,7 +62,20 @@
 	*/
 	var generator = function( document, selection, data, clbk ) {
 
-		var figure, canvas;
+		var figure, canvas,
+			datasets = Object.keys( data ),
+			d,
+			xValue = function ( d ) {
+				return d.x;
+			},
+			yValue = function ( d ) {
+				return d.y[1] / (d.y[0]+d.y[1]);
+			},
+			value = function ( d ) {
+				return d[ 1 ];
+			},
+			labels = [ 'a', '', 'b', '' ],
+			left, top;
 
 		// [1] Instantiate a new figure generator:
 		figure = xfig.figure();
@@ -69,11 +85,30 @@
 
 		// [2] Instantiate a new canvas generator and configure:
 		canvas = xfig.canvas( figure )
-			.width( 500 )
-			.height( 1000 );
+			.width( 1200 )
+			.height( 800 );
 
 		// Create the canvas:
 		canvas.create();
+
+		// [3] Assemble our datasets and generate a KDE:
+		for ( var i = 0; i < datasets.length; i++ ) {
+
+			// [3.0] Format the data:
+			d = xfig.data( data[ datasets[ i ] ] )
+				.x( xValue )
+				.y( yValue )
+				.format( 2 )
+				.concat()
+				.kde( value, 0, 1 );
+
+			// [3.1] KDE:
+
+			left = 90 + ( 540 * (i%2) );
+			top = 80 + ( 405 * Math.floor( i / 2 ) );
+
+			KDE( canvas, d, 400, 260, left, top, labels[ i ] );
+		}
 
 		// Finished:
 		clbk();
