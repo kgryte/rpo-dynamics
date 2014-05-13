@@ -5,7 +5,7 @@ TODO
 ### General
 
 1. 	MVA
-2. 	
+2. 	Use Casper.js to capture just the figure element
 3. 	Clean-up KDE code (i.e., deal with rug plot)
 4. 	Update app boilerplate
 	- Move server.js to bin directory / make executable
@@ -21,6 +21,8 @@ TODO
 10. Remove jQuery dependence and move to ui-component sortable --> more difficult than expected; only want sort on drop; not during drag.
 11. Upload sigma mutant data
 12. Confirm that wt protein data is correct
+13. Create explicit figure routes; e.g., figure/1, figure/2, figure/3, etc.
+14. 
 
 
 
