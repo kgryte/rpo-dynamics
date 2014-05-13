@@ -47,7 +47,10 @@
 	// MODULES //
 
 	var // Path module:
-		path = require( 'path' );
+		path = require( 'path' ),
+
+		// Distribution comparison:
+		figure = require( './figure.js' );
 
 
 	// ROUTES //
@@ -56,15 +59,26 @@
 
 		// NOTE: the 'this' context is the application.
 
-		// Figure route:
-		this.get( '/figures', function onRequest( request, response ) {
+		// Distributions:
+		this.get( '/distributions', function onRequest( request, response ) {
 
-			response.writeHead( 200, {
-				'Content-Type': 'text/html'
+			response.setTimeout( 0 );
+
+			figure( function onFigure( error, html ) {
+				if ( error ) {
+					response.writeHead( error.status, {
+						'Content-Type': 'application/json'
+					});
+					response.write( error );
+					response.end();
+					return;
+				}
+				response.writeHead( 200, {
+					'Content-Type': 'text/html'
+				});
+				response.write( html );
+				response.end();
 			});
-			response.write( '...rpo dynamics figures...' );
-			response.end();
-
 		});
 
 		// Callback:

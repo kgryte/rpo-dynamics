@@ -83,31 +83,31 @@ http://127.0.0.1:1337/encoding
 provides the model underlying encoding-decoding. Included in the model is a description of each model element.
 
 ```
-http://127.0.0.1:1337/figures/summary/:id
+http://127.0.0.1:1337/summary/:id
 ```
 
 returns a summary figure for condition set `id`; e.g., `10011000`. Note that the selected timeseries which are displayed are randomly chosen on figure generation. Hence, each figure request (browser refresh) will display a different timeseries collection. The ability to fix which timeseries are displayed may be addressed in the future. For now, consider such randomness a feature, as each request is a random data sample. In which case, we can better state that a particular behavior's "representativeness" is reflected in how frequently the behavior appears in the figure. Obviously, the elephant in the room is how representative the sampled collection is of its parent's collection. We do not address the elephant here.
 
 ```
-http://127.0.0.1:1337/figures/timeseries/:id
+http://127.0.0.1:1337/timeseries/:id
 ```
 
 returns all timeseries for condition set `id`; e.g., `10011000`. The timeseries order matches the file order in the data directories.
 
 ```
-http://127.0.0.1:1337/figures/distributions/
+http://127.0.0.1:1337/distributions/
 ```
 
 returns a figure containing a [kernel density estimate](http://en.wikipedia.org/wiki/Kernel_density_estimation) (KDE) for each condition set. 
 
 ```
-http://127.0.0.1:1337/figures/distributions/10011000/compare/00011000
+http://127.0.0.1:1337/distributions/10011000/compare/00011000
 ```
 
 returns a figure comparing the distribution for one condition set, .e.g., `10110001`, with the distribution of another condition set, e.g., `00011000`. The figure includes a KDE and timeseries histogram for each condition set.
 
 ```
-http://127.0.0.1:1337/figures/distributions/10011000/overlay/00011000
+http://127.0.0.1:1337/distributions/10011000/overlay/00011000
 ```
 
 returns a figure overlaying the distribution for one condition set, .e.g, `00011000`, on top of another condition set's distribution, e.g., `10011000`. The distributions are calculated as a KDE. 
@@ -124,7 +124,7 @@ $ brew install phantomjs
 Once installed, ensure that you have the Node server running and open a new terminal instance. From the top-level application directory,
 
 ``` bash
-$ phantomjs scripts/rasterize.js http://127.0.0.1:1337/figures/summary/10011000 public/img/1001100.summary.png 1200px*900px
+$ phantomjs scripts/rasterize.js http://127.0.0.1:1337/summary/10011000 public/img/1001100.summary.png 1200px*900px
 ```
 
 which will render a webpage and return create a PNG. The image size is defined by the third argument. In this case, the webpage selection is 1200px by 900px. The PNG is output to the directory `public/img`.
@@ -132,7 +132,7 @@ which will render a webpage and return create a PNG. The image size is defined b
 You can specify a zoom factor. For example, 
 
 ``` bash
-$ phantomjs scripts/rasterize.js http://127.0.0.1:1337/figures/summary/10011000 public/img/1001100.summary.png 2400px*1800px 2
+$ phantomjs scripts/rasterize.js http://127.0.0.1:1337/summary/10011000 public/img/1001100.summary.png 2400px*1800px 2
 ```
 
 will generate an image which is twice the size of the previous image.
