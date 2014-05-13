@@ -21,7 +21,7 @@
 *
 *
 *	HISTORY:
-*		- 2014/05/11: Created. [AReines].
+*		- 2014/05/12: Created. [AReines].
 *
 *
 *	DEPENDENCIES:
@@ -46,13 +46,10 @@
 	// MODULES //
 
 	var // xfig figure library:
-		xfig = require( './../../lib/xfig.js' ),
+		xfig = require( './../../../lib/xfig.js' ),
 
 		// Module to decode dataset:
-		mapping = require( './../../utils/mapping.js' ),
-
-		// Chart generators:
-		KDE = require( './charts/kde.js' );
+		mapping = require( './../../../utils/mapping.js' );
 
 
 	// GENERATOR //
@@ -62,9 +59,7 @@
 	*/
 	var generator = function( document, selection, data, clbk ) {
 
-		var figure, canvas,
-			datasets, d = [],
-			colors = [ 'pink', 'blue' ], title = [];
+		var figure, canvas;
 
 		// [1] Instantiate a new figure generator:
 		figure = xfig.figure();
@@ -72,24 +67,13 @@
 		// Create the figure:
 		figure.create( document, selection );
 
-		// [2] Get the datasets:
-		datasets = Object.keys( data );
-
-		for ( var i = 0; i < datasets.length; i++  ) {
-			d.push( data[ datasets[ i ] ] );
-			title.push( '<span class="'+ colors[ i ] + '">' + mapping[ datasets[ i ] ] + '</span>');
-		}
-
-		// [3] Instantiate a new canvas generator and configure:
+		// [2] Instantiate a new canvas generator and configure:
 		canvas = xfig.canvas( figure )
-			.width( 1000 )
-			.height( 700 );
+			.width( 500 )
+			.height( 1000 );
 
 		// Create the canvas:
 		canvas.create();
-
-		// [4] Create a new KDE overlay chart:
-		KDE( canvas, d, 800, 520, 90, 80, title.join( ' | ' ) );
 
 		// Finished:
 		clbk();

@@ -15,7 +15,7 @@ TODO
 5. 	Speed up histogram, KDE calculation. Consider just calculating and storing these files in another directory. Have raw and analyzed data.
 6. 	Should AexDem values be included? (oh dear! would allow for corrections)
 7. 	Calculate over all directories and files
-8. 	
+8. 	User cluster to reduce request response time (?)...or move computation to workers
 9. 	Makefile
 	- Make calculating all metrics/statistics part of the build process?
 10. Remove jQuery dependence and move to ui-component sortable --> more difficult than expected; only want sort on drop; not during drag.

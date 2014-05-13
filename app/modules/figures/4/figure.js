@@ -1,6 +1,6 @@
 /**
 *
-*	FIGURE: distributions
+*	FIGURE: 4
 *
 *
 *
@@ -21,7 +21,7 @@
 *
 *
 *	HISTORY:
-*		- 2014/05/02: Created. [AReines].
+*		- 2014/05/12: Created. [AReines].
 *
 *
 *	DEPENDENCIES:
@@ -46,16 +46,13 @@
 	// MODULES //
 
 	var // Module to create a server-side DOM:
-		DOM = require( './../../utils/dom.js' ),
+		DOM = require( './../../../utils/dom.js' ),
 
 		// Document partials:
-		partials = require( './../../utils/partials.js' )( __dirname + '/../../partials' ),
-
-		// Module to decode dataset:
-		mapping = require( './../../utils/mapping.js' ),
+		partials = require( './../../../utils/partials.js' )( __dirname + '/../../../partials' ),
 
 		// Module to get data:
-		getData = require( './../../utils/data.js' ),
+		getData = require( './../../../utils/data.js' ),
 
 		// Module to generate the figure:
 		generator = require( './generator.js' );
@@ -69,17 +66,13 @@
 	*/
 	function figure( clbk ) {
 
-		if ( arguments.length !== 1 ) {
-			console.error( 'figure()::insufficient input arguments. Must provide a callback.' );
-			return;
-		}
+		var ids = [];
 
 		// Initialize a DOM:
 		DOM( partials.index, function onWindow( error, window ) {
 
 			var document = window.document,
-				selection,
-				datasets;
+				selection;
 
 			// Any errors?
 			if ( error ) {
@@ -94,11 +87,8 @@
 			// Get the selection:
 			selection = document.querySelector( '.main' );
 
-			// Get the datasets:
-			datasets = Object.keys( mapping );
-
 			// Get data:
-			getData( datasets, function onData( error, data ) {
+			getData( ids, function onData( error, data ) {
 
 				if ( error ) {
 					clbk( error );

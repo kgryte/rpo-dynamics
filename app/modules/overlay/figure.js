@@ -45,10 +45,7 @@
 
 	// MODULES //
 
-	var // D3:
-		d3 = require( 'd3' ),
-
-		// Module to create a server-side DOM:
+	var // Module to create a server-side DOM:
 		DOM = require( './../../utils/dom.js' ),
 
 		// Document partials:
@@ -94,7 +91,7 @@
 			selection = document.querySelector( '.main' );
 
 			// Get data:
-			getData( [ id1, id2 ], function ( error, data ) {
+			getData( [ id1, id2 ], function onData( error, data ) {
 
 				if ( error ) {
 					clbk( error );
@@ -102,7 +99,7 @@
 				}
 
 				// Generate the figure:
-				generator( document, selection, data, function() {
+				generator( document, selection, data, function onFigure() {
 
 					// Return the document contents to the callback:
 					clbk( null, document.innerHTML );

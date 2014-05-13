@@ -63,7 +63,7 @@
 	*/
 	var generator = function( document, selection, data, clbk ) {
 
-		var figure, datasets, d, canvas, left, top;
+		var figure, datasets, d, canvas;
 
 		// [1] Instantiate a new figure generator:
 		figure = xfig.figure();
