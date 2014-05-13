@@ -1,6 +1,6 @@
 /**
 *
-*	STREAM: metrics
+*	STREAM: stats
 *
 *
 *
@@ -21,7 +21,7 @@
 *
 *
 *	HISTORY:
-*		- 2014/05/11: Created. [AReines].
+*		- 2014/05/12: Created. [AReines].
 *
 *
 *	DEPENDENCIES:
@@ -88,7 +88,7 @@
 				// Assemble the path:
 				path = __dirname + '/' + files[ i ];
 
-				// Include the file in our stream list:
+				// Include the file in our streams list:
 				STREAMS.push( require( path ) );
 
 			} // end IF !hidden
@@ -102,7 +102,7 @@
 
 	/**
 	* FUNCTION: stream( data, dir, prefix, clbk )
-	*	Takes a readable JSON data stream and calculates metrics. Calculated metrics are written to file.
+	*	Takes a readable JSON data stream and calculates stats. Calculated stats are written to file.
 	*
 	* @param {stream} data - JSON data stream
 	* @param {string} dir - file output directory

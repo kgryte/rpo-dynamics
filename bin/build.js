@@ -53,12 +53,6 @@
 		// Module to recursively remove directories and their contents:
 		rimraf = require( 'rimraf' ),
 
-		// Module to stream JSON objects:
-		JSONStream = require( 'JSONStream' ),
-
-		// Module for creating sink streams:
-		Sink = require( 'pipette' ).Sink,
-
 		// Read stream:
 		readStream = require( './../app/utils/streams/file_read.js' ),
 
@@ -66,7 +60,10 @@
 		parser = require( './../app/utils/streams/json_parse.js' ),
 
 		// Metric streams:
-		metrics = require( './../app/utils/streams/metrics' );
+		metrics = require( './../app/utils/streams/metrics' ),
+
+		// Stats streams:
+		stats = require( './../app/utils/streams/stats' );
 
 
 	// VARIABLES //
@@ -80,24 +77,6 @@
 		},
 		INDEX = {};
 
-
-	var STATS = {
-			'efficiency.histogram': {
-				transform: function( data ) {
-					return [
-						raw_efficiency( data )
-					];
-				}
-			},
-			'stoichiometry.histogram': {
-				transform: function( data ) {
-					return [
-						raw_stoichiometry( data )
-					];
-				}
-			}
-		};
-			
 
 	// FUNCTIONS //
 
@@ -248,63 +227,3 @@
 	calculate();
 
 })();
-
-
-/**
-* FUNCTION: calculateStats( DEST, dir, filename )
-*	Read a file from a directory and calculates statistics from the data contents. Calculations are performed according to stats functions.
-*
-* @param {string} DEST - directory destination
-* @param {string} dir - directory name
-* @param {string} filename - filename
-*/
-function calculateStats( DEST, dir, filename ) {
-	var keys, stat,
-		output, file, path, dest, name,
-		write,
-		data, source, sink;
-
-	// Get the file path:
-	path = PATH + dir + '/' + filename;
-
-	// Remove the extension from filename:
-	file = filename.substr( 0, filename.length-5 );
-
-	// Set the destination:
-	dest = DEST + dir + '/' + file + '.';
-
-	// Create the raw data readstream:
-	data = fs.createReadStream( path )
-		.pipe( getParser() );
-
-	// Get the stat names:
-	keys = Object.keys( STATS );
-
-	// Write out the stats:
-	for ( var i = 0; i < keys.length; i++ ) {
-
-		// Get the stat config:
-		stat = STATS[ keys[ i ] ];
-
-		// Generate the output filename:
-		output = dest + keys[ i ] + '.json';
-
-		// Generate a stream name:
-		name = dir + '::' + keys[ i ];
-
-		// Create the write stream:
-		write = getWriter( output, name );
-
-		// Pipe the data stream:
-		source = data.pipe( getTransformer( stat.transform ) )
-			.pipe( getStringifier() );
-
-		sink = new Sink( source );
-
-		sink.pipe( eventStream.mapSync( function onData ( data ) {
-				return data;
-			}))
-			.pipe( write );
-
-	} // end FOR i
-} // end FUNCTION calculateStats()

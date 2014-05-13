@@ -21,7 +21,7 @@ TODO
 10. Remove jQuery dependence and move to ui-component sortable --> more difficult than expected; only want sort on drop; not during drag.
 11. 
 12. 
-13. Create explicit figure routes; e.g., figure/1, figure/2, figure/3, etc.
+13. 
 14. Update code documentation
 
 
