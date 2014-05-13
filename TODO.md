@@ -12,18 +12,29 @@ TODO
 	- Update utils/server.js
 	- read over to see if all up-to-date
 	- Remove dynamic route name
-5. 	Speed up histogram, KDE calculation. Consider just calculating and storing these files in another directory. Have raw and analyzed data.
-6. 	Should AexDem values be included? (oh dear! would allow for corrections)
-7. 	Calculate over all directories and files
+5. 	
+6. 	
+7. 	
 8. 	User cluster to reduce request response time (?)...or move computation to workers
 9. 	Makefile
 	- Make calculating all metrics/statistics part of the build process?
 10. Remove jQuery dependence and move to ui-component sortable --> more difficult than expected; only want sort on drop; not during drag.
-11. Upload sigma mutant data
-12. Confirm that wt protein data is correct
+11. 
+12. 
 13. Create explicit figure routes; e.g., figure/1, figure/2, figure/3, etc.
 14. Update code documentation
 
+
+
+### Data
+
+1. 	Upload quFRET data
+2. 	Upload repeat data
+3. 	Upload sigma mutant data
+4. 	Speed up histogram, KDE calculation. Consider just calculating and storing these files in another directory. Have raw and analyzed data.
+5. 	Calculate over all directories and files
+6. 	Confirm that wt protein data is correct
+7. 	Should AexDem values be included? (oh dear! would allow for corrections)
 
 
 ### Streams

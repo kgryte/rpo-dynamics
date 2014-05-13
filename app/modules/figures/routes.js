@@ -57,6 +57,7 @@
 	var FIGURES = {}, IDS;
 
 	FIGURES[ 2 ] = require( './' + 2 + '/figure.js' );
+	FIGURES[ 3 ] = require( './' + 3 + '/figure.js' );
 	FIGURES[ 4 ] = require( './' + 4 + '/figure.js' );
 
 	IDS = Object.keys( FIGURES );
