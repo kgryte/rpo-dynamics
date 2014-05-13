@@ -119,6 +119,12 @@ http://127.0.0.1:1337/figures/2
 returns manuscript Figure 2. The figure includes raw intensity timeseries, a corresponding FRET efficiency timeseries, and two KDEs for control conditions `00001000` and `00001100`.
 
 ```
+http://127.0.0.1:1337/figures/3
+```
+
+returns manuscript Figure 3. The figure includes FRET efficiency timeseries for conditions `00001000`, `00101000`, and (...quFRET...).
+
+```
 http://127.0.0.1:1337/figures/4
 ```
 
