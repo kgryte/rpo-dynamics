@@ -205,11 +205,11 @@
 		*	Defines the data transformation.
 		*
 		* @param {object} data - JSON stream data
-		* @returns {array} transformed data
+		* @returns {string} transformed data as a comma-delimited string. (note: the last-value is followed by a comma)
 		*/
 		return function transform( data ) {
 			data = self.metric( data );
-			return getBin( self._edges, data );
+			return getBin( self._edges, data ) + ',';
 		};
 	}; // end METHOD transform()
 
@@ -221,7 +221,17 @@
 	*/
 	Stream.prototype.tabulate = function() {
 		var self = this,
-			counts = [];
+			numBins = self._edges.length + 1, // include -/+ infinity bins
+			counts = new Array( numBins );
+
+		for ( var i = 0; i < numBins; i++ ) {
+			counts[ i ] = [
+				self._edges[ i-1 ],
+				0,
+				self._edges[ i ]
+			];
+		} // end FOR i
+
 		/**
 		* FUNCTION: transform( data )
 		*	Defines the data transformation.
@@ -230,9 +240,12 @@
 		* @returns {array} transformed data
 		*/
 		return function transform( data ) {
-			data = JSON.parse( data );
+			var idx;
+			data = data.split( ',' );
+			data.pop();
 			for ( var i = 0; i < data.length; i++ ) {
-				counts[ data[ i ] ] += 1;
+				idx = data[ i ] + 1;
+				counts[ idx ][ 1 ] += 1;
 			}
 			return counts;
 		};
@@ -246,7 +259,7 @@
 		var stream, sink;
 		stream = transformer( this.transform() );
 		sink = new Sink( stream );
-		Sink.pipe( transformer( this.tabulate() ) );
+		sink.pipe( transformer( this.tabulate() ) );
 		return stream;
 	}; // end METHOD stream()
 
