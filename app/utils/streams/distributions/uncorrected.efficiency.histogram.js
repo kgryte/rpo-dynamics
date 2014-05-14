@@ -244,23 +244,31 @@
 			data = data.split( ',' );
 			data.pop();
 			for ( var i = 0; i < data.length; i++ ) {
-				idx = data[ i ] + 1;
+				idx = parseInt( data[ i ], 10 ) + 1;
 				counts[ idx ][ 1 ] += 1;
 			}
-			return counts;
+			return JSON.stringify( counts );
 		};
 	}; // end METHOD transform()
 
 	/**
 	* METHOD: stream()
-	*	Returns a JSON data transform stream for calculating the FRET efficiency.
+	*	Returns a JSON data transform stream for calculating the statistic.
 	*/
 	Stream.prototype.stream = function() {
-		var stream, sink;
-		stream = transformer( this.transform() );
-		sink = new Sink( stream );
-		sink.pipe( transformer( this.tabulate() ) );
-		return stream;
+		var iStream, sink, oStream;
+
+		// Create the input transform stream:
+		iStream = transformer( this.transform() );
+
+		// Send the input stream to a sink, where the data is encoded as standard unicode data:
+		sink = new Sink( iStream, { 'encoding': 'utf8' } );
+
+		// Pipe the data collected in the sink to an output transform stream:
+		oStream = sink.pipe( transformer( this.tabulate() ) );
+
+		// Return the io streams:
+		return [ iStream, oStream ];
 	}; // end METHOD stream()
 
 

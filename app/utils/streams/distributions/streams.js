@@ -47,9 +47,6 @@
 	var // Filesystem module:
 		fs = require( 'fs' ),
 
-		// JSON stringify stream:
-		stringify = require( './../json_stringify.js' ),
-
 		// Write-to-file stream:
 		writeStream = require( './../file_write.js' );
 
@@ -66,7 +63,7 @@
 	*	Keep only JavaScript scripts and exclude the index.js file.
 	*/
 	function filter( file ) {
-		return file.substr( -3 ) === '.js' && file !== 'index.js';
+		return file.substr( -3 ) === '.js' && file !== 'index.js' && file !== 'streams.js';
 	} // end FUNCTION filter()
 
 
@@ -110,7 +107,7 @@
 	* @param {function} clbk - (optional) callback to invoke after writing all streams.
 	*/
 	function stream( data, dir, prefix, clbk ) {
-		var transform, filename, write,
+		var transform, filename, write, ioStreams,
 			total = STREAMS.length, counter = 0;
 
 		// Cycle through each stream...
@@ -125,10 +122,14 @@
 			// Create the write stream:
 			write = writeStream( filename, onEnd );
 
-			// Pipe the JSON data:
-			data.pipe( transform.stream() )
-				.pipe( stringify() )
-				.pipe( write );
+			// Get the input and output streams:
+			ioStreams = transform.stream();
+
+			// Pipe the JSON data to the input stream:
+			data.pipe( ioStreams[ 0 ] );
+
+			// Pipe the output stream to file:
+			ioStreams[ 1 ].pipe( write );
 
 		} // end FOR i
 

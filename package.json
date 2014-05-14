@@ -14,7 +14,8 @@
     "JSONStream": "~0.7.3",
     "event-stream": "~3.1.5",
     "rimraf": "~2.2.8",
-    "pipette": "~0.9.3"
+    "pipette": "~0.9.3",
+    "mkdirp": "~0.5.0"
   },
   "devDependencies": {
     "gulp": "~3.6.0",

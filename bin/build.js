@@ -47,35 +47,15 @@
 
 	// MODULES //
 
-	var // Drop-in replacement for filesystem module:
-		fs = require( './../app/utils/graceful-fs' ),
-
-		// Module to recursively remove directories and their contents:
-		rimraf = require( 'rimraf' ),
-
-		// Read stream:
-		readStream = require( './../app/utils/streams/file_read.js' ),
-
-		// JSON stream parser:
-		parser = require( './../app/utils/streams/json_parse.js' ),
-
-		// Metric streams:
-		metrics = require( './../app/utils/streams/metrics' ),
-
-		// Stats streams:
-		stats = require( './../app/utils/streams/stats' );
+	var // Filesystem module:
+		fs = require( 'fs' );
 
 
 	// VARIABLES //
 
-	var BASE = __dirname + '/../public/data',
-		PATH = BASE + '/raw',
-		DEST = {
-			'metrics': BASE + '/metrics',
-			'stats': BASE + '/stats',
-			'summary': BASE + '/summary'
-		},
-		INDEX = {};
+	var PATH = __dirname + '/../public/data/raw',
+		INDEX = {},
+		STREAMS = {};
 
 
 	// FUNCTIONS //
@@ -89,90 +69,10 @@
 	} // end FUNCTION filter()
 
 	/**
-	* FUNCTION: calculateMetrics( DEST, dir, filename )
-	*	Read a file from a directory and calculates metrics from the data contents. Calculations are performed according to metric functions.
-	*
-	* @param {string} DEST - directory destination
-	* @param {string} dir - directory name
-	* @param {string} filename - filename
-	*/
-	function calculateMetrics( DEST, dir, filename ) {
-		var file, path, data;
-
-		// Get the file path:
-		path = PATH + '/' + dir + '/' + filename;
-
-		// Remove the extension from filename:
-		file = filename.substr( 0, filename.length-5 );
-
-		// Create the raw data readstream:
-		data = readStream( path )
-			.pipe( parser() );
-
-		// Send the data off to calculate metrics:
-		metrics( data, DEST+'/'+dir, file, function onEnd() {
-			console.log( file + '::metrics finished...' );
-		});
-	} // end FUNCTION calculateMetrics()
-
-	/**
-	* FUNCTION: mkdir( dir, clbk )
-	*	Checks if a directory exists. If not, creates the directory.
-	*
-	* @param {string} dir - directory to be created
-	* @param {function} clbk - Callback to be invoked after creating a directory.
-	*/
-	function mkdir( dir, clbk ) {
-		fs.exists( dir, function onExist( exists ) {
-			if ( !exists ) {
-				fs.mkdir( dir, function onError( error ) {
-					if ( error ) {
-						throw new Error( 'mkdir()::unable to create directory.' );
-					}
-					clbk();
-				});
-				return;
-			}
-			clbk();
-		});
-	} // end FUNCTION mkdir()
-
-	/**
-	* FUNCTION: run()
-	*	Runs the transformations across all datasets.
+	* FUNCTION: createIndex()
 	*
 	*/
-	function run() {
-		var dirs = Object.keys( INDEX ),
-			files;
-
-		for ( var i = 0; i < 1; i++ ) {
-			files = INDEX[ dirs[ i ] ];
-			mkdir( DEST.metrics+'/'+dirs[ i ], onDir( dirs[ i ], files ) );
-		}
-	} // end FUNCTION run()
-
-	/**
-	* FUNCTION: onDir( name, files )
-	*	Encloses a directory name and an array of directory contents and returns a callback.
-	*
-	* @param {string} name - directory name
-	* @param {array} files - array of filenames
-	* @returns {function} callback to be invoked upon create a directory.
-	*/
-	function onDir( name, files ) {
-		return function onDir() {
-			for ( var i = 0; i < 1; i++ ) {
-				calculateMetrics( DEST.metrics, name, files[ i ] );
-			}
-		};
-	} // end FUNCTION onDir()
-
-
-	// INIT //
-
-	(function init() {
-
+	function createIndex() {
 		var dirs, files, stats, path;
 
 		// Get the directory names:
@@ -204,26 +104,186 @@
 			} // end IF !hidden directory
 
 		} // end FOR i
+	} // end FUNCTION createIndex()
+
+	/**
+	* FUNCTION: getStreams()
+	*
+	*/
+	function getStreams() {
+		var path, dirs, dir_path, stats;
+
+		// Get the path:
+		path = __dirname + '/../app/utils/streams';
+
+		// Get the directory names:
+		dirs = fs.readdirSync( path );
+
+		// For each possible directory, determine if it is a directory...
+		for ( var i = 0; i < dirs.length; i++ ) {
+
+			if ( dirs[ i ][ 0 ] !== '.' ) {
+
+				// Assemble the path:
+				dir_path = path + '/' + dirs[ i ];
+
+				// Get the file/directory stats:
+				stats = fs.statSync( dir_path );
+
+				// Is the "directory" actually a directory?
+				if ( stats.isDirectory() ) {
+
+					// Get the stream generator:
+					STREAMS[ dirs[ i ] ] = require( dir_path );
+
+				} // end IF directory
+
+			} // end IF !hidden directory
+
+		} // end FOR i
+	} // end FUNCTION getStreams()
+
+	/**
+	* FUNCTION: onEnd( name, x, y, timer )
+	*	Returns a function to indicate progress.
+	*
+	* @param {string} name - indicator namespace
+	* @param {number} x - current iteration
+	* @param {number} y - total iterations
+	* @param {Timer} timer - Timer instance; used to clock build step duration
+	* @param {function} clbk - callback to invoke when all build steps are complete
+	* @returns {function} callback to invoke on end
+	*/
+	function onEnd( name, x, y, timer, clbk ) {
+		return function onEnd() {
+			console.log( name + ': finished. ' + x + ' of ' + y + ' build steps complete...' );
+			console.log( 'Time Elapsed: ' + timer.split( name ) + ' seconds...' );
+			if ( x === y ) {
+				clbk();
+			}
+		};
+	} // end FUNCTION onEnd()
+
+	/**
+	* FUNCTION: Timer()
+	*	Constructor.
+	*/
+	function Timer() {
+		this._start = null;
+		this._end = null;
+		this._splits = {};
+		return this;
+	} // end FUNCTION timer()
+
+	/**
+	* METHOD: start()
+	*	Starts the timer.
+	*
+	* @returns {number} start time in milliseconds
+	*/
+	Timer.prototype.start = function() {
+		this._start = Date.now();
+		return this._start;
+	}; // end METHOD start()
+
+	/**
+	* METHOD: split( id )
+	*	Returns the time elapsed since instance instantiation.
+	*
+	* @param {string} id - split identifier; e.g., build step name
+	* @returns {number} elapsed time in seconds
+	*/
+	Timer.prototype.split = function( id ) {
+		var now = Date.now();
+		this._splits[ id ] = ( now-this._start ) / 1000;
+		return this._splits[ id ];
+	}; // end METHOD split()
+
+	/**
+	* METHOD: splits()
+	*	Returns split times.
+	*
+	* @returns {string} stringified object where split times are in seconds.
+	*/
+	Timer.prototype.splits = function() {
+		return JSON.stringify( this._splits );
+	}; // end METHOD splits()
+
+	/**
+	* METHOD: stop()
+	*	Returns the time elapsed since instance instantiation.
+	*
+	* @returns {number} elapsed time in seconds
+	*/
+	Timer.prototype.stop = function() {
+		this._end = Date.now();
+		return this._end;
+	}; // end METHOD stop()
+
+	/**
+	* METHOD: total()
+	*	Returns the time elapsed since instance instantiation.
+	*
+	* @returns {number} elapsed time in seconds
+	*/
+	Timer.prototype.total = function() {
+		return ( this._end-this._start ) / 1000;
+	}; // end METHOD total()
+
+	
+	// INIT //
+
+	(function init() {
+
+		// [0] Create a data file hash:
+		createIndex();
+
+		// [1] Get the stream generators:
+		getStreams();
 
 	})();
 
 
-	// CALCULATE //
+	// BUILD //
 
-	var calculate = function() {
-		// Remove all previous data transformations, if any, before running transforms:
-		// rimraf( DEST, function onRemove() {
-			// Create the top-level destination directory:
-			mkdir( DEST.metrics, function onCreate() {
-				// Run the transforms:
-				run();
-			});
-		// });
-	}; // end FUNCTION calculate()
+	/**
+	* FUNCTION: build()
+	*
+	*/
+	var build = function() {
+		var keys = Object.keys( STREAMS ),
+			stream, clbk,
+			total = keys.length,
+			stopwatch;
+
+		// Initialize a new timer:
+		stopwatch = new Timer();
+		stopwatch.start();
+
+		// Cycle through the streams...
+		for ( var i = 0; i < total; i++ ) {
+			stream = STREAMS[ keys[ i ] ];
+			clbk = onEnd( keys[ i ], i+1, total, stopwatch, done );
+			stream( PATH, INDEX, clbk );
+		}
+
+		return;
+
+		/**
+		* FUNCTION: done()
+		*	Outputs total build time and split times to the console.
+		*/
+		function done() {
+			stopwatch.stop();
+			console.log( 'Total: ' + stopwatch.total() + ' seconds...' );
+			console.log( 'Splits: ' + stopwatch.splits() );
+		} // end FUNCTION done()
+
+	}; // end FUNCTION build()
 	
 
 	// RUN //
 
-	calculate();
+	build();
 
 })();
