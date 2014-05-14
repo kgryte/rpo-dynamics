@@ -234,13 +234,10 @@
 	// INIT //
 
 	(function init() {
-
 		// [0] Create a data file hash:
 		createIndex();
-
 		// [1] Get the stream generators:
 		getStreams();
-
 	})();
 
 

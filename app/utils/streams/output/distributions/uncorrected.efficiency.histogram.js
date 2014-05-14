@@ -51,7 +51,7 @@
 		transformer = require( './../../json/transform.js' ),
 
 		// Module to determine bin location:
-		getBin = require( './../../../histc/binarysearch.js' );
+		getBin = require( './../../stats/histc/binarysearch.js' );
 
 
 	// FUNCTIONS //
