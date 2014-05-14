@@ -48,10 +48,10 @@
 		fs = require( 'fs' ),
 
 		// JSON stringify stream:
-		stringify = require( './../json_stringify.js' ),
+		stringify = require( './../../json/stringify.js' ),
 
 		// Write-to-file stream:
-		writeStream = require( './../file_write.js' );
+		writeStream = require( './../../file/write.js' );
 
 
 	// VARIABLES //

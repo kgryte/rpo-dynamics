@@ -114,7 +114,7 @@
 		var path, dirs, dir_path, stats;
 
 		// Get the path:
-		path = __dirname + '/../app/utils/streams';
+		path = __dirname + '/../app/utils/streams/output';
 
 		// Get the directory names:
 		dirs = fs.readdirSync( path );

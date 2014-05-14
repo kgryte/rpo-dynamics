@@ -48,7 +48,7 @@
 		fs = require( 'fs' ),
 
 		// Write-to-file stream:
-		writeStream = require( './../file_write.js' );
+		writeStream = require( './../../file/write.js' );
 
 
 	// VARIABLES //

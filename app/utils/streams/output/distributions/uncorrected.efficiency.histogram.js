@@ -48,10 +48,10 @@
 		Sink = require( 'pipette' ).Sink,
 
 		// JSON stream transform:
-		transformer = require( './../json_transform.js' ),
+		transformer = require( './../../json/transform.js' ),
 
 		// Module to determine bin location:
-		getBin = require( './../../histc/binarysearch.js' );
+		getBin = require( './../../../histc/binarysearch.js' );
 
 
 	// FUNCTIONS //

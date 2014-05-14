@@ -1,6 +1,6 @@
 /**
 *
-*	STREAM: metrics
+*	STREAM: distributions
 *
 *
 *
@@ -51,18 +51,18 @@
 		mkdirp = require( 'mkdirp' ),
 
 		// Read stream:
-		readStream = require( './../file_read.js' ),
+		readStream = require( './../../file/read.js' ),
 
 		// JSON stream parser:
-		parser = require( './../json_parse.js' ),
+		parser = require( './../../json/parse.js' ),
 
-		// Metric streams:
-		metrics = require( './streams.js' );
+		// Distribution streams:
+		distributions = require( './streams.js' );
 
 
 	// VARIABLES //
 
-	var DEST = __dirname + '/../../../../public/data/metrics';
+	var DEST = __dirname + '/../../../../../public/data/distributions';
 
 
 	// FUNCTIONS //
@@ -79,7 +79,7 @@
 	*/
 	function onEnd( name, x, y, clbk ) {
 		return function onEnd() {
-			console.log( name + ': ' + x + ' of ' + y + ' metric streams finished...' );
+			console.log( name + ': ' + x + ' of ' + y + ' distribution streams finished...' );
 			if ( x === y ) {
 				clbk();
 			}
@@ -152,7 +152,7 @@
 					.pipe( parser() );
 
 				// Send the data off to calculate transforms:
-				metrics( data, DEST+'/'+dirs[ i ], file, onEnd( dirs[ i ], j+1, total, done ) );
+				distributions( data, DEST+'/'+dirs[ i ], file, onEnd( dirs[ i ], j+1, total, done ) );
 
 			} // end FOR j
 
