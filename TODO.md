@@ -35,16 +35,12 @@ TODO
 5. 	Calculate over all directories and files
 6. 	Confirm that wt protein data is correct
 7. 	Should AexDem values be included? (oh dear! would allow for corrections)
+8. 	Analyze jaw data
 
 
 ### Streams
 
 1. 	Online histogram
-	- Individual dataset
-		- Init counts vector
-		- Find bin for each datum
-		- Update counts vector
-		- On end, write file
 	- All datasets
 		- Use combined stream to create a single concat file
 		- Stream concat file and calculate histogram as done for individual dataset
@@ -54,7 +50,7 @@ TODO
 4. 	Online timeseries-histogram
 	- All datasets
 		- Assemble individual histograms into single file
-5. 	
+5. 	Create separate histogram stream
 
 
 ### Timeseries
