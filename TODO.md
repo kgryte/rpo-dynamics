@@ -65,7 +65,8 @@ TODO
 3. 	Repeats comparision (multipanel, or avg hist with variance overlay)
 4.  Scatterplot matrix-style figure but with KDE overlays
 5. 	Hist2d timeseries across all conditions (is this actually valuable? really only when aligned.)
-6. 	
+6. 	Schematic (break into individual components)
+7. 	
 
 
 ### UI
