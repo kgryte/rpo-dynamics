@@ -73,7 +73,6 @@
 		for ( var i = 1; i < numElements - 1; i++ ) {
 			vec[ i ] = min + increment*i;
 		}
-
 		return vec;
 	} // end FUNCTION linspace()
 
