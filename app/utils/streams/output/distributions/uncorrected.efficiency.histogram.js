@@ -44,14 +44,11 @@
 
 	// MODULES //
 
-	var // Module for creating sink streams:
-		Sink = require( 'pipette' ).Sink,
-
-		// JSON stream transform:
+	var // JSON stream transform:
 		transformer = require( './../../json/transform.js' ),
 
-		// Module to determine bin location:
-		getBin = require( './../../stats/histc/binarysearch.js' );
+		// Module to calculate the histsogram counts:
+		Histc = require( './../../stats/histc' );
 
 
 	// FUNCTIONS //
@@ -96,7 +93,7 @@
 		this.name = 'uncorrected.efficiency';
 		this.type = 'histogram';
 
-		this._edges = linspace( -0.01, 1.01, 0.02 );
+		// this._edges = linspace( -0.01, 1.01, 0.02 );
 
 		// ACCESSORS:
 		this._xValue = function( d ) {
@@ -158,21 +155,6 @@
 	}; // end METHOD y1()
 
 	/**
-	* METHOD: edges( vector )
-	*	Edges setter and getter. If a vector is supplied, sets edges. If no vector is supplied, returns the edges.
-	*
-	* @param {array} vector - edges
-	* @returns {object|vector} instance object or edges
-	*/
-	Stream.prototype.edges = function ( vector ) {
-		if ( !arguments.length ) {
-			return this._edges;
-		}
-		this._edges = vector;
-		return this;
-	}; // end METHOD edges()
-
-	/**
 	* METHOD: metric( data )
 	*	Calculates the (uncorrected) transfer efficiency between donor and acceptor fluorophores.
 	*
@@ -205,49 +187,10 @@
 		*	Defines the data transformation.
 		*
 		* @param {object} data - JSON stream data
-		* @returns {string} transformed data as a comma-delimited string. (note: the last-value is followed by a comma)
+		* @returns {number} transformed data value
 		*/
 		return function transform( data ) {
-			data = self.metric( data );
-			return getBin( self._edges, data ) + ',';
-		};
-	}; // end METHOD transform()
-
-	/**
-	* METHOD: tabulate()
-	*	Returns a data transformation function to tabulate bin counts.
-	*
-	* @returns {function} data transformation function
-	*/
-	Stream.prototype.tabulate = function() {
-		var self = this,
-			numBins = self._edges.length + 1, // include -/+ infinity bins
-			counts = new Array( numBins );
-
-		for ( var i = 0; i < numBins; i++ ) {
-			counts[ i ] = [
-				self._edges[ i-1 ],
-				0,
-				self._edges[ i ]
-			];
-		} // end FOR i
-
-		/**
-		* FUNCTION: transform( data )
-		*	Defines the data transformation.
-		*
-		* @param {object} data - JSON stream data
-		* @returns {array} transformed data
-		*/
-		return function transform( data ) {
-			var idx;
-			data = data.split( ',' );
-			data.pop();
-			for ( var i = 0; i < data.length; i++ ) {
-				idx = parseInt( data[ i ], 10 ) + 1;
-				counts[ idx ][ 1 ] += 1;
-			}
-			return JSON.stringify( counts );
+			return self.metric( data );
 		};
 	}; // end METHOD transform()
 
@@ -256,19 +199,22 @@
 	*	Returns a JSON data transform stream for calculating the statistic.
 	*/
 	Stream.prototype.stream = function() {
-		var iStream, sink, oStream;
+		var transform, histc, ioStreams;
 
 		// Create the input transform stream:
-		iStream = transformer( this.transform() );
+		transform = transformer( this.transform() );
 
-		// Send the input stream to a sink, where the data is encoded as standard unicode data:
-		sink = new Sink( iStream, { 'encoding': 'utf8' } );
+		// Create a histogram counts stream generator and configure:
+		histc = new Histc();
 
-		// Pipe the data collected in the sink to an output transform stream:
-		oStream = sink.pipe( transformer( this.tabulate() ) );
+		// Get the histogram input/output streams:
+		ioStreams = histc.stream();
 
-		// Return the io streams:
-		return [ iStream, oStream ];
+		// Pipe the transform output into the histogram input stream:
+		transform.pipe( ioStreams[ 0 ] );
+
+		// Return the start and end streams:
+		return [ transform, ioStreams[ 1 ] ];
 	}; // end METHOD stream()
 
 

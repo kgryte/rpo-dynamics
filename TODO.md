@@ -50,7 +50,7 @@ TODO
 4. 	Online timeseries-histogram
 	- All datasets
 		- Assemble individual histograms into single file
-5. 	Create separate histogram stream
+5. 	
 
 
 ### Timeseries
