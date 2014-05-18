@@ -44,7 +44,10 @@
 
 	// MODULES //
 
-	var // Module to recursively remove directories and their contents:
+	var // Drop-in replacement for filesystem module:
+		fs = require( './../../../graceful-fs' ),
+
+		// Module to recursively remove directories and their contents:
 		rimraf = require( 'rimraf' ),
 
 		// Module to recursively create directories:
@@ -52,9 +55,6 @@
 
 		// Event stream module:
 		eventStream = require( 'event-stream' ),
-
-		// Read stream:
-		readStream = require( './../../file/read.js' ),
 
 		// Summary streams:
 		summary = require( './streams.js' );
@@ -131,7 +131,7 @@
 		var dirs, numDirs,
 			files, numFiles,
 			filepath,
-			data = [], d, dStream,
+			onRead, onFinish,
 			counter = 0;
 
 		// Get the directories:
@@ -144,8 +144,8 @@
 			files = index[ dirs[ i ] ];
 			numFiles = files.length;
 
-			// Reset the data array:
-			data = [];
+			onFinish = onEnd( dirs[ i ], i+1, numDirs, done );
+			onRead = onData( DEST+'/'+dirs[ i ], numFiles, onFinish );
 
 			for ( var j = 0; j < numFiles; j++ ) {
 
@@ -153,24 +153,55 @@
 				filepath = path + '/' + dirs[ i ] + '/' + files[ j ];
 
 				// Load the data file:
-				d = require( filepath );
-
-				// Append the data to our data buffer:
-				for ( var n = 0; n < d.length; n++ ) {
-					data.push( d[ n ] );
-				}
+				fs.readFile( filepath, 'utf8', onRead );
 
 			} // end FOR j
-
-			// Create a readable data stream:
-			dStream = eventStream.readArray( data );
-
-			// Send a data stream to calculate transforms:
-			summary( dStream, DEST+'/'+dirs[ i ], onEnd( dirs[ i ], i, numDirs, done ) );
 
 		} // end FOR i
 
 		return;
+
+		/**
+		* FUNCTION: onData( path, total, clbk )
+		*	Wraps parameters in an enclosure and returns a callback to invoke after reading a data file.
+		*
+		* @param {string} path - output directory path
+		* @param {number} total - total file number
+		* @param {function} clbk - callback to invoke after calculating summary statistics
+		* @returns {function} callback to invoke after reading a data file
+		*/
+		function onData( path, total, clbk ) {
+			var DATA = [], dStream,
+				counter = 0;
+
+			/**
+			* FUNCTION: onData()
+			*	Callback to invoke after reading a data file.
+			*
+			* @param {object} error - error object
+			* @param {string} data - data as a string
+			*/
+			return function onData( error, data ) {
+				if ( error ) {
+					console.error( error.stack );
+					throw new Error( 'stream()::unable to read file.' );
+				}
+				data = JSON.parse( data );
+
+				// Append the data to our data buffer:
+				for ( var n = 0; n < data.length; n++ ) {
+					DATA.push( data[ n ] );
+				}
+
+				if ( ++counter === total ) {
+					// Create a readable data stream:
+					dStream = eventStream.readArray( DATA );
+
+					// Send a data stream to calculate transforms:
+					summary( dStream, path, clbk );
+				}
+			};
+		} // end FUNCTION onData()
 
 		/**
 		* FUNCTION: done()
