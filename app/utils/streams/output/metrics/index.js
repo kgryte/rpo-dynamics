@@ -124,7 +124,7 @@
 	*	Takes a directory hash and calculates transforms across all hash datasets. Calculations are performed according to transform functions.
 	*
 	* @param {string} path - source parent data directory
-	* @param {object} index - diretory hash
+	* @param {object} index - directory hash
 	* @param {function} clbk - (optional) callback to invoke after finishing all streams. Function should take one input argument: [ error ]. If no errors, error is null.
 	*/
 	function stream( path, index, clbk ) {

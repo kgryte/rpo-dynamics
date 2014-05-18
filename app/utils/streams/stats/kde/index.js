@@ -53,9 +53,6 @@
 		// JSON stream stringify:
 		stringify = require( './../../json/stringify.js' ),
 
-		// JSON stream parser:
-		parser = require( './../../json/parse.js' ),
-
 		// Module to calculate the KDE:
 		KDE = require( './kde.js' );
 
@@ -90,7 +87,7 @@
 		return function transform( data ) {
 			data = JSON.parse( data );
 			kde.estimator( data, 'silverman' );
-			return kde.eval( data );
+			return JSON.stringify( kde.eval( data ) );
 		};
 	}; // end METHOD transform()
 
@@ -108,8 +105,7 @@
 		sink = new Sink( iStream, { 'encoding': 'utf8' } );
 
 		// Pipe the data collected in the sink to an output transform stream:
-		oStream = sink.pipe( transformer( this.transform() ) )
-			.pipe( stringify() );
+		oStream = sink.pipe( transformer( this.transform() ) );
 
 		// Return the io streams:
 		return [ iStream, oStream ];

@@ -53,9 +53,6 @@
 		// JSON stream transform:
 		transformer = require( './../../json/transform.js' ),
 
-		// JSON stream stringify:
-		stringify = require( './../../json/stringify.js' ),
-
 		// Module to determine bin location:
 		getBin = require( './binarysearch.js' );
 
@@ -167,7 +164,7 @@
 				idx = parseInt( data[ i ], 10 ) + 1;
 				counts[ idx ][ 1 ] += 1;
 			}
-			return counts;
+			return JSON.stringify( counts );
 		};
 	}; // end METHOD transform()
 
@@ -188,8 +185,7 @@
 		sink = new Sink( jStream, { 'encoding': 'utf8' } );
 
 		// Pipe the data collected in the sink to an output transform stream:
-		oStream = sink.pipe( transformer( this.tabulate() ) )
-			.pipe( stringify() );
+		oStream = sink.pipe( transformer( this.tabulate() ) );
 
 		// Return the io streams:
 		return [ iStream, oStream ];

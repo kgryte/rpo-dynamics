@@ -45,7 +45,6 @@ TODO
 		- Use combined stream to create a single concat file
 		- Stream concat file and calculate histogram as done for individual dataset
 2. 	Online KDE
-	- In the meantime, buffer an entire file and calculate in one go; save to file
 3. 	Online MVA
 4. 	Online timeseries-histogram
 	- All datasets

@@ -1,6 +1,6 @@
 /**
 *
-*	STREAM: distributions
+*	STREAM: summary
 *
 *
 *
@@ -21,7 +21,7 @@
 *
 *
 *	HISTORY:
-*		- 2014/05/13: Created. [AReines].
+*		- 2014/05/17: Created. [AReines].
 *
 *
 *	DEPENDENCIES:
@@ -56,13 +56,13 @@
 		// JSON stream parser:
 		parser = require( './../../json/parse.js' ),
 
-		// Distribution streams:
-		distributions = require( './streams.js' );
+		// Summary streams:
+		summary = require( './streams.js' );
 
 
 	// VARIABLES //
 
-	var DEST = __dirname + '/../../../../../public/data/distributions';
+	var DEST = __dirname + '/../../../../../public/data/summary';
 
 
 	// FUNCTIONS //
@@ -79,7 +79,7 @@
 	*/
 	function onEnd( name, x, y, clbk ) {
 		return function onEnd() {
-			console.log( name + ': ' + x + ' of ' + y + ' distribution streams finished...' );
+			console.log( name + ': ' + x + ' of ' + y + ' summary streams finished...' );
 			if ( x === y ) {
 				clbk();
 			}
