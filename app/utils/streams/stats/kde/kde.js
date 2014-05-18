@@ -1,6 +1,6 @@
 /**
 *
-*	STREAM: kde
+*	STATS: Kernel Density Estimate
 *
 *
 *
@@ -45,7 +45,7 @@
 	// MODULES //
 
 	var // Module containing probability density functions (pdfs):
-		pdf = require( './pdf.js' );
+		pdf = require( './../pdf' );
 
 
 	// FUNCTIONS //
@@ -128,11 +128,6 @@
 			'bandwidth': [ 1.06 ] // Silverman's Rule of Thumb (n=1,sigma=1)
 		};
 
-		// ACCESSORS //
-		this._xValue = function ( d ) {
-			return d;
-		};
-
 		return this;
 	};
 
@@ -152,17 +147,17 @@
 	}; // end METHOD kernel()
 
 	/**
-	* METHOD: bandwidth( arr )
+	* METHOD: bandwidth( value )
 	*	KDE bandwidth setter and getter. If a value is provided, sets the instance bandwidth. If no value is provided, returns the instance bandwidth.
 	*
-	* @param {array} arr - desired instance bandwidth provided as an array; if arr is length 1, then same bandwidth is used across datasets. If arr length > 1, each element is used as the bandwidth for its corresponding dataset
-	* @returns {object|array} instance object or instance bandwidth
+	* @param {number} value - desired instance bandwidth
+	* @returns {object|number} instance object or instance bandwidth
 	*/
-	KDE.prototype.bandwidth = function( arr ) {
+	KDE.prototype.bandwidth = function( value ) {
 		if ( !arguments.length ) {
 			return this._config.bandwidth;
 		}
-		this._config.bandwidth = arr;
+		this._config.bandwidth = value;
 		return this;
 	}; // end METHOD bandwidth()
 
@@ -170,13 +165,12 @@
 	* METHOD: estimator( data, method )
 	*	Computes bandwidth estimates from input data. NOTE: the estimates will override the current bandwidth value.
 	*
-	* @param {array} data - array of arrays where each nested array is a dataset over which to calculate a bandwidth estimator
+	* @param {array} data - 1d array over which to calculate a bandwidth estimator
 	* @param {string} method - estimator method; methods include: Silverman.
 	* @returns {object} instance object
 	*/
 	KDE.prototype.estimator = function( data, method ) {
-		var xValue = this._xValue,
-			methods = {
+		var methods = {
 				'silverman': kde_estimator_silverman
 			};
 
@@ -190,34 +184,10 @@
 			throw new Error( 'estimator()::unrecognized estimator method: ' + method );
 		}
 
-		// Extract the data:
-		data = data.map( function ( dataset ) {
-			return dataset.map( function ( d ) {
-				return xValue( d );
-			});
-		});
-
-		this._config.bandwidth = data.map( function ( dataset ) {
-			return methods[ method ]( dataset );
-		});
+		this._config.bandwidth = methods[ method ]( data );
 
 		return this;
 	}; // end METHOD estimator()
-
-	/**
-	* METHOD: x( fcn )
-	*	x-value accessor setter and getter. If a function is supplied, sets the x-value accessor. If no function is supplied, returns the x-value accessor.
-	*
-	* @param {function} fcn - x-value accessor
-	* @returns {object|function} instance object or x-value accessor
-	*/
-	KDE.prototype.x = function( fcn ) {
-		if ( !arguments.length ) {
-			return this._xValue;
-		}
-		this._xValue = fcn;
-		return this;
-	}; // end METHOD x()
 
 	/**
 	* METHOD: min( value )
@@ -300,8 +270,7 @@
 	* @returns {array} array of arrays where each nested array is the KDE for a dataset. Note: the output datasets are NOT guaranteed to be the same length as the input datasets. Density length depends on the number of mesh points over which the density is evaluated.
 	*/
 	KDE.prototype.eval = function( data ) {
-		var kde = [], density = [], val,
-			x = this._xValue,
+		var density = [], val,
 			pdf = this._kernel,
 			bw = this._config.bandwidth,
 			N = this._config.domain.pts,
@@ -313,39 +282,25 @@
 		interval = (max-min) / (N-1);
 		edges = linspace( min, max, interval );
 
-		// Check if the number of bandwidths matches the data length:
-		if ( data.length !== bw.length ) {
-			for ( var b = 0; b < data.length; b++ ) {
-				bw.push( bw[ 0 ] );
+		// Initialize the density array:
+		density = new Array( N );
+
+		// Compute a density estimate:
+		for ( var n = 0; n < N; n++ ) {
+
+			// Initialize the density to zero for this interval point:
+			density[ n ] = [ edges[n], 0 ];
+
+			// Given a sampling vector, build the density by evaluating the PDF for each datum and summing:
+			for ( var i = 0; i < data.length; i++ ) {
+				val = ( data[i] - edges[n] ) / bw;
+				density[ n ][ 1 ] += pdf( val );
 			}
-		}
+			density[ n ][ 1 ] /= ( bw * N );
 
-		for ( var i = 0; i < data.length; i++ ) {
+		} // end FOR j
 
-			// Reset the density for the new dataset:
-			density = new Array( N );
-
-			// Compute a density estimate:
-			for ( var n = 0; n < N; n++ ) {
-
-				// Initialize the density to zero for this interval point:
-				density[ n ] = [ edges[n], 0 ];
-
-				// Given a sampling vector, build the density by evaluating the PDF for each datum and summing:
-				for ( var j = 0; j < data[ i ].length; j++ ) {
-					val = ( x( data[i][j] ) - edges[n] ) / bw[ i ];
-					density[ n ][ 1 ] += pdf( val );
-				}
-				density[ n ][ 1 ] /= ( bw[ i ] * N );
-
-			} // end FOR j
-
-			// Push the dataset density into our KDE array:
-			kde.push( density );
-
-		} // end FOR i
-
-		return kde;
+		return density;
 	}; // end METHOD eval()
 
 
