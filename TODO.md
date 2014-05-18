@@ -31,8 +31,8 @@ TODO
 1. 	Upload quFRET data
 2. 	Upload repeat data
 3. 	Upload sigma mutant data
-4. 	Speed up histogram, KDE calculation. Consider just calculating and storing these files in another directory. Have raw and analyzed data.
-5. 	Calculate over all directories and files
+4. 	DFT KDE
+5. 	
 6. 	Confirm that wt protein data is correct
 7. 	Should AexDem values be included? (oh dear! would allow for corrections)
 8. 	Analyze jaw data
@@ -40,10 +40,7 @@ TODO
 
 ### Streams
 
-1. 	Online histogram
-	- All datasets
-		- Use combined stream to create a single concat file
-		- Stream concat file and calculate histogram as done for individual dataset
+1. 	
 2. 	Online KDE
 3. 	Online MVA
 4. 	Online timeseries-histogram

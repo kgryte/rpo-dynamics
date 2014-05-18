@@ -50,11 +50,11 @@
 		// Module to recursively create directories:
 		mkdirp = require( 'mkdirp' ),
 
+		// Event stream module:
+		eventStream = require( 'event-stream' ),
+
 		// Read stream:
 		readStream = require( './../../file/read.js' ),
-
-		// JSON stream parser:
-		parser = require( './../../json/parse.js' ),
 
 		// Summary streams:
 		summary = require( './streams.js' );
@@ -128,33 +128,45 @@
 	* @param {function} clbk - (optional) callback to invoke after finishing all streams. Function should take one input argument: [ error ]. If no errors, error is null.
 	*/
 	function stream( path, index, clbk ) {
-		var dirs, files, total, file, filepath, data, counter = 0;
+		var dirs, numDirs,
+			files, numFiles,
+			filepath,
+			data = [], d, dStream,
+			counter = 0;
 
 		// Get the directories:
 		dirs = Object.keys( index );
+		numDirs = dirs.length;
 
-		for ( var i = 0; i < dirs.length; i++ ) {
+		for ( var i = 0; i < numDirs; i++ ) {
 
 			// Get the directory files:
 			files = index[ dirs[ i ] ];
-			total = files.length;
+			numFiles = files.length;
 
-			for ( var j = 0; j < total; j++ ) {
+			// Reset the data array:
+			data = [];
+
+			for ( var j = 0; j < numFiles; j++ ) {
 
 				// Get the file path:
 				filepath = path + '/' + dirs[ i ] + '/' + files[ j ];
 
-				// Remove the extension from filename:
-				file = files[ j ].substr( 0, files[ j ].length-5 );
+				// Load the data file:
+				d = require( filepath );
 
-				// Create the raw data readstream:
-				data = readStream( filepath )
-					.pipe( parser() );
-
-				// Send the data off to calculate transforms:
-				distributions( data, DEST+'/'+dirs[ i ], file, onEnd( dirs[ i ], j+1, total, done ) );
+				// Append the data to our data buffer:
+				for ( var n = 0; n < d.length; n++ ) {
+					data.push( d[ n ] );
+				}
 
 			} // end FOR j
+
+			// Create a readable data stream:
+			dStream = eventStream.readArray( data );
+
+			// Send a data stream to calculate transforms:
+			summary( dStream, DEST+'/'+dirs[ i ], onEnd( dirs[ i ], i, numDirs, done ) );
 
 		} // end FOR i
 
@@ -165,7 +177,7 @@
 		*
 		*/
 		function done() {
-			if ( ++counter === dirs.length ) {
+			if ( ++counter === numDirs ) {
 				clbk();
 			}
 		} // end FUNCTION done()
@@ -180,7 +192,7 @@
 	*	
 	*
 	* @param {string} path - source parent data directory
-	* @param {object} index - diretory hash
+	* @param {object} index - directory hash
 	* @param {function} clbk - (optional) callback to invoke after finishing all streams. Function should take one input argument: [ error ]. If no errors, error is null.
 	*/
 	function run( path, index, clbk ) {

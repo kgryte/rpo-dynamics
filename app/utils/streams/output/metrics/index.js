@@ -180,7 +180,7 @@
 	*	
 	*
 	* @param {string} path - source parent data directory
-	* @param {object} index - diretory hash
+	* @param {object} index - directory hash
 	* @param {function} clbk - (optional) callback to invoke after finishing all streams. Function should take one input argument: [ error ]. If no errors, error is null.
 	*/
 	function run( path, index, clbk ) {
