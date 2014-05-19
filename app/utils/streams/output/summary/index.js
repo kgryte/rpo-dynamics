@@ -53,9 +53,6 @@
 		// Module to recursively create directories:
 		mkdirp = require( 'mkdirp' ),
 
-		// Event stream module:
-		eventStream = require( 'event-stream' ),
-
 		// Summary streams:
 		summary = require( './streams.js' );
 
@@ -171,9 +168,8 @@
 		* @returns {function} callback to invoke after reading a data file
 		*/
 		function onData( path, total, clbk ) {
-			var DATA = [], dStream,
+			var DATA = [],
 				counter = 0;
-
 			/**
 			* FUNCTION: onData()
 			*	Callback to invoke after reading a data file.
@@ -186,19 +182,12 @@
 					console.error( error.stack );
 					throw new Error( 'stream()::unable to read file.' );
 				}
-				data = JSON.parse( data );
-
 				// Append the data to our data buffer:
-				for ( var n = 0; n < data.length; n++ ) {
-					DATA.push( data[ n ] );
-				}
+				DATA.push( JSON.parse( data ) );
 
 				if ( ++counter === total ) {
-					// Create a readable data stream:
-					dStream = eventStream.readArray( DATA );
-
-					// Send a data stream to calculate transforms:
-					summary( dStream, path, clbk );
+					// Send off the data to calculate transforms:
+					summary( DATA, path, clbk );
 				}
 			};
 		} // end FUNCTION onData()

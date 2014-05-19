@@ -44,7 +44,13 @@
 
 	// MODULES //
 
-	var // JSON stream transform:
+	var // Event stream module:
+		eventStream = require( 'event-stream' ),
+
+		// Element-wise dataset concatentation:
+		concat = require( './../../../concat.js' ),
+
+		// JSON stream transform:
 		transformer = require( './../../json/transform.js' ),
 
 		// Module to calculate the KDE:
@@ -218,11 +224,20 @@
 	}; // end METHOD transform()
 
 	/**
-	* METHOD: stream()
-	*	Returns a JSON data transform stream for calculating the statistic.
+	* METHOD: stream( data )
+	*	Returns a transform stream for calculating the statistic.
+	*
+	* @param {array} data - array of data arrays
+	* @returns {stream} output statistic stream
 	*/
-	Stream.prototype.stream = function() {
-		var transform, kde, ioStreams;
+	Stream.prototype.stream = function( data ) {
+		var dStream, transform, kde, ioStreams;
+
+		// Concatenate all datasets:
+		data = concat( data );
+
+		// Create a readable data stream:
+		dStream = eventStream.readArray( data );
 
 		// Create the input transform stream:
 		transform = transformer( this.transform() );
@@ -233,11 +248,12 @@
 		// Get the KDE input/output streams:
 		ioStreams = kde.stream();
 
-		// Pipe the transform output into the KDE input stream:
-		transform.pipe( ioStreams[ 0 ] );
+		// Set the pipe chain:
+		dStream.pipe( transform )
+			.pipe( ioStreams[ 0 ] );
 
-		// Return the start and end streams:
-		return [ transform, ioStreams[ 1 ] ];
+		// Return the end stream:
+		return ioStreams[ 1 ];
 	}; // end METHOD stream()
 
 

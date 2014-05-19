@@ -102,14 +102,14 @@
 
 	/**
 	* FUNCTION: stream( data, dir, clbk )
-	*	Takes a data event stream and calculates summary statistics. Calculated summary statistics are written to file.
+	*	Takes a data collection and calculates summary statistics. Calculated summary statistics are written to file.
 	*
-	* @param {array} data - data event stream
+	* @param {array} data - array of data arrays
 	* @param {string} dir - file output directory
 	* @param {function} clbk - (optional) callback to invoke after writing all streams.
 	*/
 	function stream( data, dir, clbk ) {
-		var transform, write, ioStreams,
+		var transform, write,
 			filename,
 			total = STREAMS.length,
 			counter = 0;
@@ -126,14 +126,9 @@
 			// Create the write stream:
 			write = writeStream( filename, onEnd );
 
-			// Get the input and output streams:
-			ioStreams = transform.stream();
-
-			// Pipe the data stream to the input stream:
-			data.pipe( ioStreams[ 0 ] );
-
-			// Pipe the output stream to file:
-			ioStreams[ 1 ].pipe( write );
+			// Pipe the transform stream to file:
+			transform.stream( data )
+				.pipe( write );
 
 		} // end FOR i
 
