@@ -71,15 +71,13 @@
 	* @param {string} name - indicator namespace
 	* @param {number} x - current iteration
 	* @param {number} y - total iterations
-	* @param {function} clbk - callback to invoke once all streams have finished
+	* @param {function} clbk - callback
 	* @returns {function} callback to invoke on stream end
 	*/
 	function onEnd( name, x, y, clbk ) {
 		return function onEnd() {
 			console.log( name + ': ' + x + ' of ' + y + ' summary streams finished...' );
-			if ( x === y ) {
-				clbk();
-			}
+			clbk();
 		};
 	} // end FUNCTION onEnd()
 

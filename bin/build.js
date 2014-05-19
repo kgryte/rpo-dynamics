@@ -151,16 +151,14 @@
 	* @param {number} x - current iteration
 	* @param {number} y - total iterations
 	* @param {Timer} timer - Timer instance; used to clock build step duration
-	* @param {function} clbk - callback to invoke when all build steps are complete
+	* @param {function} clbk - callback
 	* @returns {function} callback to invoke on end
 	*/
 	function onEnd( name, x, y, timer, clbk ) {
 		return function onEnd() {
 			console.log( name + ': finished. ' + x + ' of ' + y + ' build steps complete...' );
 			console.log( 'Time Elapsed: ' + timer.split( name ) + ' seconds...' );
-			if ( x === y ) {
-				clbk();
-			}
+			clbk();
 		};
 	} // end FUNCTION onEnd()
 
@@ -250,7 +248,7 @@
 	var build = function() {
 		var keys = Object.keys( STREAMS ),
 			stream, clbk,
-			total = keys.length,
+			counter = 0, total = keys.length,
 			stopwatch;
 
 		// Initialize a new timer:
@@ -272,8 +270,10 @@
 		*/
 		function done() {
 			stopwatch.stop();
-			console.log( 'Total: ' + stopwatch.total() + ' seconds...' );
-			console.log( 'Splits: ' + stopwatch.splits() );
+			if ( ++counter === total ) {
+				console.log( 'Total: ' + stopwatch.total() + ' seconds...' );
+				console.log( 'Splits: ' + stopwatch.splits() );
+			}
 		} // end FUNCTION done()
 
 	}; // end FUNCTION build()
