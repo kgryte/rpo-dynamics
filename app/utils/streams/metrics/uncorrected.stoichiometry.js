@@ -55,9 +55,6 @@
 		this.name = 'uncorrected.stoichiometry';
 
 		// ACCESSORS:
-		this._xValue = function( d ) {
-			return d.x;
-		};
 		this._yValue0 = function( d ) {
 			return d.y[ 0 ];
 		};
@@ -70,21 +67,6 @@
 
 		return this;
 	} // end FUNCTION metric()
-
-	/**
-	* METHOD: x( fcn )
-	*	x-value accessor setter and getter. If a function is supplied, sets the x-value accessor. If no function is supplied, returns the x-value accessor.
-	*
-	* @param {function} fcn - x-value accessor
-	* @returns {object|function} instance object or x-value accessor
-	*/
-	Metric.prototype.x = function ( fcn ) {
-		if ( !arguments.length ) {
-			return this._xValue;
-		}
-		this._xValue = fcn;
-		return this;
-	}; // end METHOD x()
 
 	/**
 	* METHOD: y0( fcn )

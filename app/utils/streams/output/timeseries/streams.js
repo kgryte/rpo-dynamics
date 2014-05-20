@@ -120,7 +120,7 @@
 			transform = new STREAMS[ i ]();
 
 			// Generate the output filename:
-			filename = dir + '/' + prefix + '.' + transform.name + '.' + transform.type + '.json';
+			filename = dir + '/' + prefix + '.' + transform.metric.name + '.' + transform.type + '.json';
 
 			// Create the write stream:
 			write = writeStream( filename, onEnd );
