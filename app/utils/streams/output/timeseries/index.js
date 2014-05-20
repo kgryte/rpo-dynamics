@@ -1,6 +1,6 @@
 /**
 *
-*	STREAM: metrics
+*	STREAM: timeseries
 *
 *
 *
@@ -56,13 +56,13 @@
 		// JSON stream parser:
 		parser = require( './../../json/parse.js' ),
 
-		// Metric streams:
-		metrics = require( './streams.js' );
+		// Timeseries streams:
+		timeseries = require( './streams.js' );
 
 
 	// VARIABLES //
 
-	var DEST = __dirname + '/../../../../../public/data/metrics';
+	var DEST = __dirname + '/../../../../../public/data/timeseries';
 
 
 	// FUNCTIONS //
@@ -79,7 +79,7 @@
 	*/
 	function onEnd( name, x, y, clbk ) {
 		return function onEnd() {
-			console.log( name + ': ' + x + ' of ' + y + ' metric streams finished...' );
+			console.log( name + ': ' + x + ' of ' + y + ' timeseries streams finished...' );
 			if ( x === y ) {
 				clbk();
 			}
@@ -152,7 +152,7 @@
 					.pipe( parser() );
 
 				// Send the data off to calculate transforms:
-				metrics( data, DEST+'/'+dirs[ i ], file, onEnd( dirs[ i ], j+1, total, done ) );
+				timeseries( data, DEST+'/'+dirs[ i ], file, onEnd( dirs[ i ], j+1, total, done ) );
 
 			} // end FOR j
 

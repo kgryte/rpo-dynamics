@@ -1,6 +1,6 @@
 /**
 *
-*	STREAM: metrics
+*	STREAM: timeseries
 *
 *
 *
@@ -102,7 +102,7 @@
 
 	/**
 	* FUNCTION: stream( data, dir, prefix, clbk )
-	*	Takes a readable JSON data stream and calculates metrics. Calculated metrics are written to file.
+	*	Takes a readable JSON data stream and calculates timeseries. Calculated timeseries are written to file.
 	*
 	* @param {stream} data - JSON data stream
 	* @param {string} dir - file output directory
