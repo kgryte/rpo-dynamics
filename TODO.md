@@ -47,6 +47,9 @@ TODO
 	- All datasets
 		- Assemble individual histograms into single file
 5. 	Online variance
+6.  Online mean
+7. 	Online windowed mean
+8.  Online windowed variance
 
 
 ### Timeseries
