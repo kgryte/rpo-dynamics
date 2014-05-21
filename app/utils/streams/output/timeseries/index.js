@@ -146,7 +146,7 @@
 			for ( var j = 0; j < total; j++ ) {
 
 				// Get the file path:
-				filepath = path.join( dir_path, dirs[ i ], files[ j ];
+				filepath = path.join( dir_path, dirs[ i ], files[ j ] );
 
 				// Remove the extension from filename:
 				file = files[ j ].substr( 0, files[ j ].length-5 );
