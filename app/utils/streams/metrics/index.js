@@ -79,11 +79,17 @@
 			.filter( filter );
 
 		for ( var i = 0; i < files.length; i++ ) {
-			filepath = path.join( __dirname, files[ i ] );
-			metric = require( filepath );
-			name = files[ i ].substr( 0, files[ i ].length-3 );
-			METRICS[ name ] = metric;
-		}
+
+			if ( files[ i ][ 0 ] !== '.' ) {
+
+				filepath = path.join( __dirname, files[ i ] );
+				metric = require( filepath );
+				name = files[ i ].substr( 0, files[ i ].length-3 );
+				METRICS[ name ] = metric;
+
+			} // end IF (!hidden)
+
+		} // end FOR i
 
 	})();
 
