@@ -1,8 +1,51 @@
 {
   "name": "rpo-dynamics",
   "version": "0.0.0",
-  "description": "",
-  "main": "server.js",
+  "description": "Single-molecule TIRF FRET analysis of RNA Polymerase open complex dynamics.",
+  "author": "Athan Reines <athan@nodeprime.com",
+  "contributors": [
+    {
+      "name": "Athan Reines",
+      "email": "athan@nodeprime.com"
+    },
+    {
+      "name": "Diego Duchi",
+      "email": "d.duchillumigusin1@physics.ox.ac.uk"
+    }
+  ],
+  "bin": {
+    "rpo-dynamics": "./bin/server.js"
+  },
+  "scripts": {
+    "start": "node bin/server.js",
+    "build": "node bin/build.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "main": "",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/kgryte/rpo-dynamics.git"
+  },
+  "keywords": [
+    "rnap",
+    "rna polymerase",
+    "open complex",
+    "rpo",
+    "rpc",
+    "fret",
+    "forster resonance energy transfer",
+    "transcription",
+    "initial transcription",
+    "alex",
+    "tirf",
+    "total internal reflection fluorescence",
+    "spectroscopy",
+    "microscopy",
+    "single molecule"
+  ],
+  "bugs": {
+    "url": "https://github.com/kgryte/rpo-dynamics/issues"
+  },
   "dependencies": {
     "bootable": "~0.2.1",
     "electrolyte": "0.0.2",
@@ -28,16 +71,6 @@
     "gulp-autoprefixer": "0.0.6",
     "gulp-jsonminify": "0.0.1"
   },
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/kgryte/rpo-dynamics.git"
-  },
-  "author": "",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/kgryte/rpo-dynamics/issues"
-  }
+  "private": true,
+  "license": "MIT"
 }

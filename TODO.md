@@ -12,6 +12,7 @@ TODO
 	- Update utils/server.js
 	- read over to see if all up-to-date
 	- Remove dynamic route name
+	- package.json
 5. 	
 6. 	
 7. 	
