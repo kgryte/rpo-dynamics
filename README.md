@@ -150,7 +150,7 @@ Application tasks, such as checking code quality and compiling resources, use th
 
 ### Code Quality
 
-This application uses [JSHint](http://www.jshint.com/) to check code quality and style.
+To check code quality and style using [JSHint](http://www.jshint.com/), enter
 
 ``` bash
 $ gulp jshint
