@@ -69,6 +69,7 @@ gulp.task( 'jshint', function() {
 	gulp.src(
 		[
 			'./app/*.js',
+			'./app/bin/*.js',
 			'./app/utils/*.js',
 			'./app/modules/*.js',
 			'./app/modules/*/*.js'

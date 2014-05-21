@@ -141,6 +141,27 @@ $ phantomjs scripts/rasterize.js http://127.0.0.1:1337/summary/10011000 public/i
 
 will generate an image which is twice the size of the previous image.
 
+
+---
+
+## Application
+
+Application tasks, such as checking code quality and compiling resources, use the task runner [Gulp](http://gulpjs.com/).
+
+### Code Quality
+
+This application uses [JSHint](http://www.jshint.com/) to check code quality and style.
+
+``` bash
+$ gulp jshint
+```
+
+
+### Tests
+
+...coming soon...
+
+
 ---
 
 ## License
