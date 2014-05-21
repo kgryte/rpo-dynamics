@@ -1,6 +1,6 @@
 /**
 *
-*	STREAM: transform
+*	STREAM: histogram
 *
 *
 *
@@ -45,7 +45,36 @@
 	// MODULES //
 
 	var // JSON stream transform:
-		transformer = require( './../../json/transform.js' );
+		transformer = require( './../../json/transform.js' ),
+
+		// Module to calculate the histogram counts:
+		Histc = require( './../../stats/histc' );
+
+
+	// FUNCTIONS //
+
+	/**
+	* FUNCTION: linspace( min, max, increment )
+	*	Generate a linearly spaced vector.
+	*
+	* @param {number} min - min defines the vector lower bound
+	* @param {number} max - max defines the vector upper bound
+	* @param {number} increment - distance between successive vector elements
+	* @returns {array} a 1-dimensional array
+	*/
+	function linspace( min, max, increment ) {
+		var numElements, vec = [];
+
+		numElements = Math.round( ( ( max - min ) / increment ) ) + 1;
+
+		vec[ 0 ] = min;
+		vec[ numElements - 1] = max;
+
+		for ( var i = 1; i < numElements - 1; i++ ) {
+			vec[ i ] = min + increment*i;
+		}
+		return vec;
+	} // end FUNCTION linspace()
 
 
 	// TRANSFORM //
@@ -58,35 +87,18 @@
 	*/
 	function Transform() {
 
-		this.type = 'timeseries';
+		this.type = 'histogram';
 		this.name = '';
 
-		this._yValue = function( d ) {
-			return d.y;
-		};
+		// this._edges = linspace( -0.01, 1.01, 0.02 );
 
 		// ACCESSORS:
-		this._xValue = function( d ) {
-			return d.x;
+		this._value = function( d ) {
+			return d.y;
 		};
 
 		return this;
 	} // end FUNCTION transform()
-
-	/**
-	* METHOD: x( fcn )
-	*	x-value accessor setter and getter. If a function is supplied, sets the x-value accessor. If no function is supplied, returns the x-value accessor.
-	*
-	* @param {function} fcn - x-value accessor
-	* @returns {object|function} instance object or x-value accessor
-	*/
-	Transform.prototype.x = function ( fcn ) {
-		if ( !arguments.length ) {
-			return this._xValue;
-		}
-		this._xValue = fcn;
-		return this;
-	}; // end METHOD x()
 
 	/**
 	* METHOD: metric( metric )
@@ -97,13 +109,13 @@
 	*/
 	Transform.prototype.metric = function ( metric ) {
 		if ( !arguments.length ) {
-			return this._yValue;
+			return this._value;
 		}
 		if ( !metric.value ) {
 			throw new Error( 'metric()::invalid input argument. Metric must be an object with a \'value\' method.' );
 		}
 		// Extract the method to calculate the metric value and bind the metric context:
-		this._yValue = metric.value.bind( metric );
+		this._value = metric.value.bind( metric );
 		// If the metric has a name, set the transform name:
 		this.name = ( metric.name ) ? metric.name : '';
 		// Return the transform instance:
@@ -117,8 +129,7 @@
 	* @returns {function} data transformation function
 	*/
 	Transform.prototype.transform = function() {
-		var x = this._xValue,
-			y = this._yValue;
+		var val = this._value;
 		/**
 		* FUNCTION: transform( data )
 		*	Defines the data transformation.
@@ -127,19 +138,31 @@
 		* @returns {array} transformed data
 		*/
 		return function transform( data ) {
-			return [
-				x( data ),
-				y( data )
-			];
+			return val( data );
 		};
 	}; // end METHOD transform()
 
 	/**
 	* METHOD: stream()
-	*	Returns a JSON data transform stream for calculating the timeseries transform.
+	*	Returns a JSON data transform stream for calculating the statistic.
 	*/
 	Transform.prototype.stream = function() {
-		return transformer( this.transform() );
+		var transform, histc, ioStreams;
+
+		// Create the input transform stream:
+		transform = transformer( this.transform() );
+
+		// Create a histogram counts stream generator and configure:
+		histc = new Histc();
+
+		// Get the histogram input/output streams:
+		ioStreams = histc.stream();
+
+		// Pipe the transform output into the histogram input stream:
+		transform.pipe( ioStreams[ 0 ] );
+
+		// Return the start and end streams:
+		return [ transform, ioStreams[ 1 ] ];
 	}; // end METHOD stream()
 
 

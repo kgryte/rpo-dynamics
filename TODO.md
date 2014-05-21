@@ -13,7 +13,7 @@ TODO
 	- read over to see if all up-to-date
 	- Remove dynamic route name
 	- package.json
-5. 	
+5. 	Resolve all paths using the path module (windows compatibility)
 6. 	
 7. 	
 8. 	User cluster to reduce request response time (?)...or move computation to workers

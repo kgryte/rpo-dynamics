@@ -31,7 +31,7 @@ $ npm install
 Next, run the build script, which calculates metrics and statistics from the raw intensity data.
 
 ``` bash
-$ npm build
+$ npm run build
 ```
 
 Note that the build process may take a minute or two.
