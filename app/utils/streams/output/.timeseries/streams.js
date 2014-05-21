@@ -47,6 +47,9 @@
 	var // Filesystem module:
 		fs = require( 'fs' ),
 
+		// Path module:
+		path = require( 'path' ),
+
 		// JSON stringify stream:
 		stringify = require( './../../json/stringify.js' ),
 
@@ -105,7 +108,7 @@
 	* @param {function} clbk - (optional) callback to invoke after writing all streams.
 	*/
 	function stream( data, dir, prefix, clbk ) {
-		var transform, filename, write,
+		var transform, filename, filepath, write,
 			total = STREAMS.length, counter = 0;
 
 		// Cycle through each stream...
@@ -115,10 +118,12 @@
 			transform = STREAMS[ i ];
 
 			// Generate the output filename:
-			filename = dir + '/' + prefix + '.' + transform.name + '.' + transform.type + '.json';
+			filename = prefix + '.' + transform.name + '.' + transform.type + '.json';
+
+			filepath = path.join( dir, filename );
 
 			// Create the write stream:
-			write = writeStream( filename, onEnd );
+			write = writeStream( filepath, onEnd );
 
 			// Pipe the JSON data:
 			data.pipe( transform.stream() )

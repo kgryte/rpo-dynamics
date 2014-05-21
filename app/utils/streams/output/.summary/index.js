@@ -47,6 +47,9 @@
 	var // Drop-in replacement for filesystem module:
 		fs = require( './../../../graceful-fs' ),
 
+		// Path module:
+		path = require( 'path' ),
+
 		// Module to recursively remove directories and their contents:
 		rimraf = require( 'rimraf' ),
 
@@ -59,7 +62,7 @@
 
 	// VARIABLES //
 
-	var DEST = __dirname + '/../../../../../public/data/summary';
+	var DEST = path.resolve( __dirname, '/../../../../../public/data/summary' );
 
 
 	// FUNCTIONS //
@@ -86,9 +89,10 @@
 	*
 	*/
 	function mkdir( dirs, clbk ) {
-		var counter = 0, total = dirs.length;
+		var counter = 0, total = dirs.length, dir_path;
 		for ( var i = 0; i < total; i++ ) {
-			mkdirp( DEST + '/' + dirs[ i ], onDir );
+			dir_path = path.join( DEST, dirs[ i ] );
+			mkdirp( dir_path, onDir );
 		} // end FOR i
 		return;
 
@@ -122,7 +126,7 @@
 	* @param {object} index - directory hash
 	* @param {function} clbk - (optional) callback to invoke after finishing all streams. Function should take one input argument: [ error ]. If no errors, error is null.
 	*/
-	function stream( path, index, clbk ) {
+	function stream( dir_path, index, clbk ) {
 		var dirs, numDirs,
 			files, numFiles,
 			filepath,
@@ -140,12 +144,12 @@
 			numFiles = files.length;
 
 			onFinish = onEnd( dirs[ i ], i+1, numDirs, done );
-			onRead = onData( DEST+'/'+dirs[ i ], numFiles, onFinish );
+			onRead = onData( path.join( DEST, dirs[ i ] ), numFiles, onFinish );
 
 			for ( var j = 0; j < numFiles; j++ ) {
 
 				// Get the file path:
-				filepath = path + '/' + dirs[ i ] + '/' + files[ j ];
+				filepath = path.join( dir_path, dirs[ i ], files[ j ] );
 
 				// Load the data file:
 				fs.readFile( filepath, 'utf8', onRead );

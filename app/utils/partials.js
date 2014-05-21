@@ -47,16 +47,17 @@
 	// MODULES //
 
 	var // Filesystem module:
-		fs = require( 'fs' );
+		fs = require( 'fs' ),
+
+		// Path module:
+		path = require( 'path' );
 
 
 	// PARTIALS //
 
 	var partials = function( path ) {
 
-		var files,
-
-			partials = {}, partial, key;
+		var files, partials = {}, file_path, partial, key;
 
 		// Get the file names:
 		files = fs.readdirSync( path )
@@ -70,8 +71,11 @@
 			// Get the name of the partial:
 			key = files[ i ].slice( 0, files[ i ].length - 5 );
 
+			// Get the file path:
+			file_path = path.join( path, files[ i ] );
+
 			// Get the partial:
-			partial = fs.readFileSync( path + '/' + files[ i ], 'utf8' );
+			partial = fs.readFileSync( file_path, 'utf8' );
 
 			// Insert the partial into our partials object:
 			partials[ key ] = partial;

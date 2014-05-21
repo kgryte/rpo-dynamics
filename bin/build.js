@@ -48,12 +48,15 @@
 	// MODULES //
 
 	var // Filesystem module:
-		fs = require( 'fs' );
+		fs = require( 'fs' ),
+
+		// Path module:
+		path = module( 'path' );
 
 
 	// VARIABLES //
 
-	var PATH = __dirname + '/../public/data/raw',
+	var PATH = path.resolve( __dirname, '/../public/data/raw' ),
 		INDEX = {},
 		STREAMS = {};
 
@@ -73,7 +76,7 @@
 	*
 	*/
 	function createIndex() {
-		var dirs, files, stats, path;
+		var dirs, files, stats, dir_path;
 
 		// Get the directory names:
 		dirs = fs.readdirSync( PATH );
@@ -84,16 +87,16 @@
 			if ( dirs[ i ][ 0 ] !== '.' ) {
 
 				// Assemble the path:
-				path = PATH + '/' + dirs[ i ];
+				dir_path = path.join( PATH, dirs[ i ] );
 
 				// Get the file/directory stats:
-				stats = fs.statSync( path );
+				stats = fs.statSync( dir_path );
 
 				// Is the "directory" actually a directory?
 				if ( stats.isDirectory() ) {
 
 					// Get the file names within the directory, filtering for *.json files:
-					files = fs.readdirSync( path )
+					files = fs.readdirSync( dir_path )
 						.filter( filter );
 
 					// Store the directory and the associated data files in a hash:
@@ -111,10 +114,10 @@
 	*
 	*/
 	function getStreams() {
-		var path, dirs, dir_path, stats;
+		var output_path, dirs, dir_path, stats;
 
 		// Get the path:
-		path = __dirname + '/../app/utils/streams/output';
+		output_path = path.resolve( __dirname, '/../app/utils/streams/output' );
 
 		// Get the directory names:
 		dirs = fs.readdirSync( path );
@@ -125,7 +128,7 @@
 			if ( dirs[ i ][ 0 ] !== '.' ) {
 
 				// Assemble the path:
-				dir_path = path + '/' + dirs[ i ];
+				dir_path = path.join( output_path, dirs[ i ] );
 
 				// Get the file/directory stats:
 				stats = fs.statSync( dir_path );

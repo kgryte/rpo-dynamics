@@ -49,6 +49,9 @@
 	var // Filesystem module:
 		fs = require( 'fs' ),
 
+		// Path module:
+		path = require( 'path' ),
+
 		// Directory encoding model:
 		model = require( './../../public/data/encoding.json' ),
 
@@ -66,8 +69,8 @@
 	(function buildMapping() {
 
 		var mapper, _model,
-			files, stats, path,
-			base = __dirname + '/../../public/data/raw' ;
+			files, stats, dir_path,
+			base = path.resolve( __dirname, '/../../public/data/raw' );
 
 		// Format the model appropriate for mapping:
 		_model = model.map( function ( element ) {
@@ -88,10 +91,10 @@
 			if ( files[ i ][ 0 ] !== '.' ) {
 
 				// Assemble the path:
-				path = base + '/' + files[ i ];
+				dir_path = path.join( base, files[ i ] );
 
 				// Get the file stats:
-				stats = fs.statSync( path );
+				stats = fs.statSync( dir_path );
 
 				// Is the "file" actually a directory?
 				if ( stats.isDirectory() ) {

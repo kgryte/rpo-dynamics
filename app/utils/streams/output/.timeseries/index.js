@@ -44,7 +44,10 @@
 
 	// MODULES //
 
-	var // Module to recursively remove directories and their contents:
+	var // Path module:
+		path = require( 'path' ),
+
+		// Module to recursively remove directories and their contents:
 		rimraf = require( 'rimraf' ),
 
 		// Module to recursively create directories:
@@ -62,7 +65,7 @@
 
 	// VARIABLES //
 
-	var DEST = __dirname + '/../../../../../public/data/timeseries';
+	var DEST = path.resolve( __dirname, '/../../../../../public/data/timeseries' );
 
 
 	// FUNCTIONS //
@@ -91,9 +94,10 @@
 	*
 	*/
 	function mkdir( dirs, clbk ) {
-		var counter = 0, total = dirs.length;
+		var counter = 0, total = dirs.length, dir_path;
 		for ( var i = 0; i < total; i++ ) {
-			mkdirp( DEST + '/' + dirs[ i ], onDir );
+			dir_path = path.join( DEST, dirs[ i ] );
+			mkdirp( dir_path, onDir );
 		} // end FOR i
 		return;
 
@@ -127,7 +131,7 @@
 	* @param {object} index - directory hash
 	* @param {function} clbk - (optional) callback to invoke after finishing all streams. Function should take one input argument: [ error ]. If no errors, error is null.
 	*/
-	function stream( path, index, clbk ) {
+	function stream( dir_path, index, clbk ) {
 		var dirs, files, total, file, filepath, data, counter = 0;
 
 		// Get the directories:
@@ -142,7 +146,7 @@
 			for ( var j = 0; j < total; j++ ) {
 
 				// Get the file path:
-				filepath = path + '/' + dirs[ i ] + '/' + files[ j ];
+				filepath = path.join( dir_path, dirs[ i ], files[ j ];
 
 				// Remove the extension from filename:
 				file = files[ j ].substr( 0, files[ j ].length-5 );
@@ -152,7 +156,7 @@
 					.pipe( parser() );
 
 				// Send the data off to calculate transforms:
-				timeseries( data, DEST+'/'+dirs[ i ], file, onEnd( dirs[ i ], j+1, total, done ) );
+				timeseries( data, path.join( DEST, dirs[ i ] ), file, onEnd( dirs[ i ], j+1, total, done ) );
 
 			} // end FOR j
 

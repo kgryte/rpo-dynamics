@@ -47,6 +47,9 @@
 	var // Filesystem module:
 		fs = require( 'fs' ),
 
+		// Path module:
+		path = require( 'path' ),
+
 		// JSON stream transform:
 		transformer = require( './../../json/transform.js' ),
 
@@ -110,7 +113,7 @@
 	*/
 	function stream( data, dir, clbk ) {
 		var transform, write,
-			filename,
+			filename, filepath,
 			total = STREAMS.length,
 			counter = 0;
 
@@ -121,10 +124,12 @@
 			transform = new STREAMS[ i ]();
 
 			// Generate the output filename:
-			filename = dir + '/' + transform.name + '.' + transform.type + '.json';
+			filename = transform.name + '.' + transform.type + '.json';
+
+			filepath = path.join( dir, filename );
 
 			// Create the write stream:
-			write = writeStream( filename, onEnd );
+			write = writeStream( filepath, onEnd );
 
 			// Pipe the transform stream to file:
 			transform.stream( data )

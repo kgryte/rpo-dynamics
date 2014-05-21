@@ -46,7 +46,10 @@
 	// MODULES //
 
 	var // Express middleware:
-		express = require( 'express' );
+		express = require( 'express' ),
+
+		// Path module:
+		path = require( 'path' );
 
 
 	// INIT //
@@ -56,7 +59,7 @@
 		// NOTE: the 'this' context is the application.
 
 		// Where do the static routes for the application live?
-		this.use( express.static( __dirname + '/../../public' ) );
+		this.use( express.static( path.resolve( __dirname, '/../../public' ) ) );
 
 	} // end FUNCTION init()
 

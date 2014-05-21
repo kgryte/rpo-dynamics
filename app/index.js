@@ -58,7 +58,7 @@
 		modules = require( './modules' ),
 
 		// HTTP server:
-		server = require( __dirname + '/utils/server.js' );
+		server = require( './utils/server.js' );
 
 
 	// APP //

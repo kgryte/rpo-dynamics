@@ -139,7 +139,7 @@
 	* @param {function} clbk - (optional) callback to invoke after writing all streams.
 	*/
 	function stream( data, dir, prefix, clbk ) {
-		var transform, filename, write, ioStreams,
+		var transform, filename, filepath, write, ioStreams,
 			total = STREAMS.length, counter = 0;
 
 		// Cycle through each stream...
@@ -149,10 +149,12 @@
 			transform = STREAMS[ i ];
 
 			// Generate the output filename:
-			filename = dir + '/' + prefix + '.' + transform.name + '.' + transform.type + '.json';
+			filename = prefix + '.' + transform.name + '.' + transform.type + '.json';
+
+			filepath = path.join( dir, filename );
 
 			// Create the write stream:
-			write = writeStream( filename, onEnd );
+			write = writeStream( filepath, onEnd );
 
 			// Get the input and output streams:
 			ioStreams = transform.stream();
