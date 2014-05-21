@@ -51,7 +51,13 @@
 		stringify = require( './../../json/stringify.js' ),
 
 		// Write-to-file stream:
-		writeStream = require( './../../file/write.js' );
+		writeStream = require( './../../file/write.js' ),
+
+		// Hash of metric generators:
+		Metrics = require( './../../metrics' ),
+
+		// Timeseries transform:
+		Transform = require( './transform.js' );
 
 
 	// VARIABLES //
@@ -59,42 +65,31 @@
 	var STREAMS = [];
 
 
-	// FUNCTIONS //
-
-	/**
-	* FUNCTION: filter( file )
-	*	Keep only JavaScript scripts and exclude the index.js file.
-	*/
-	function filter( file ) {
-		return file.substr( -3 ) === '.js' && file !== 'index.js' && file !== 'streams.js';
-	} // end FUNCTION filter()
-
-
 	// INIT //
 
 	(function init() {
+		var keys, name, metric, transform;
 
-		var files, path;
+		keys = Object.keys( Metrics );
 
-		// Get the file names:
-		files = fs.readdirSync( __dirname )
-			.filter( filter );
+		for ( var i = 0; i < keys.length; i++ ) {
 
-		// Read in the stream generators...
-		for ( var i = 0; i < files.length; i++ ) {
+			name = keys[ i ];
 
-			if ( files[ i ][ 0 ] !== '.' ) {
+			// [0] Instantiate a new metric generator:
+			metric = new Metrics[ name ]();
 
-				// Assemble the path:
-				path = __dirname + '/' + files[ i ];
+			// [1] Instantiate a new timeseries transform stream generator:
+			transform = new Transform();
 
-				// Include the file in our stream list:
-				STREAMS.push( require( path ) );
+			// [2] Config the transform:
+			transform.metric( metric );
 
-			} // end IF !hidden
+			// [3] Append to our streams list:
+			STREAMS.push( transform );
 
 		} // end FOR i
-
+		
 	})();
 
 
@@ -116,11 +111,11 @@
 		// Cycle through each stream...
 		for ( var i = 0; i < total; i++ ) {
 		
-			// Instantiate a stream instance and configure:
-			transform = new STREAMS[ i ]();
+			// Get the timeseries metric transform stream:
+			transform = STREAMS[ i ];
 
 			// Generate the output filename:
-			filename = dir + '/' + prefix + '.' + transform.metric.name + '.' + transform.type + '.json';
+			filename = dir + '/' + prefix + '.' + transform.name + '.' + transform.type + '.json';
 
 			// Create the write stream:
 			write = writeStream( filename, onEnd );

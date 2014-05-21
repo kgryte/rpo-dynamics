@@ -59,11 +59,10 @@
 	function Transform() {
 
 		this.type = 'timeseries';
+		this.name = '';
 
-		this._metric = {
-			value: function( d ) {
-				return d.y;
-			}
+		this._yValue = function( d ) {
+			return d.y;
 		};
 
 		// ACCESSORS:
@@ -91,19 +90,23 @@
 
 	/**
 	* METHOD: metric( metric )
-	*	Metric setter and getter. If a metric instance is supplied, sets the metric. If no metric is supplied, returns the instance metric.
+	*	Metric setter and getter. If a metric instance is supplied, sets the metric. If no metric is supplied, returns the instance metric value function.
 	*
-	* @param {object} metric - an object with a 'value' method; see constructor for basic example
+	* @param {object} metric - an object with a 'value' method; see constructor for basic example. If the metric has a name property, sets the transform name.
 	* @returns {object|object} instance object or instance metric
 	*/
 	Transform.prototype.metric = function ( metric ) {
 		if ( !arguments.length ) {
-			return this._metric;
+			return this._yValue;
 		}
-		if ( !metric.hasOwnProperty( 'value' ) ) {
+		if ( !metric.value ) {
 			throw new Error( 'metric()::invalid input argument. Metric must be an object with a \'value\' method.' );
 		}
-		this._metric = metric;
+		// Extract the method to calculate the metric value and bind the metric context:
+		this._yValue = metric.value.bind( metric );
+		// If the metric has a name, set the transform name:
+		this.name = ( metric.name ) ? metric.name : '';
+		// Return the transform instance:
 		return this;
 	}; // end METHOD metric()
 
@@ -115,7 +118,7 @@
 	*/
 	Transform.prototype.transform = function() {
 		var x = this._xValue,
-			y = this._metric.value;
+			y = this._yValue;
 		/**
 		* FUNCTION: transform( data )
 		*	Defines the data transformation.
@@ -142,6 +145,6 @@
 
 	// EXPORTS //
 
-	module.exports = Stream;
+	module.exports = Transform;
 
 })();

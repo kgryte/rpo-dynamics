@@ -45,25 +45,51 @@
 	// MODULES //
 
 	var // Filesystem module:
-		fs = require( 'fs' );
+		fs = require( 'fs' ),
+
+		// Path module:
+		path = require( 'path' );
 
 
 	// VARIABLES //
 
-	var METRICS = [];
+	var METRICS = {};
+
+
+	// FUNCTIONS //
+
+	/**
+	* FUNCTION: filter( file )
+	*	Filters a directory for JavaScript files which are not index.js.
+	*
+	* @param {string} file - filename
+	* @returns {boolean} true/false as to whether the filename matches the criteria.
+	*/
+	function filter( file ) {
+		return file.substr( -3 ) === '.js' && file !== 'index.js';
+	} // FUNCTION filter()
 
 
 	// METRICS //
 
 	(function init() {
+		var files, filepath, name, metric;
 
-		
+		files = fs.readdirSync( __dirname )
+			.filter( filter );
+
+		for ( var i = 0; i < files.length; i++ ) {
+			filepath = path.join( __dirname, files[ i ] );
+			metric = require( filepath );
+			name = files[ i ].substr( 0, files[ i ].length-3 );
+			METRICS[ name ] = metric;
+		}
 
 	})();
 
 
 	// EXPORTS //
 
-	module.exports = metrics;
+	module.exports = METRICS;
 
 })();
