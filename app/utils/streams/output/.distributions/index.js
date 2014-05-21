@@ -65,7 +65,7 @@
 
 	// VARIABLES //
 
-	var DEST = path.resolve( __dirname, '/../../../../../public/data/distributions' );
+	var DEST = path.resolve( __dirname, '../../../../../public/data/distributions' );
 
 
 	// FUNCTIONS //

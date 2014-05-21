@@ -62,7 +62,7 @@
 
 	// VARIABLES //
 
-	var DEST = path.resolve( __dirname, '/../../../../../public/data/summary' );
+	var DEST = path.resolve( __dirname, '../../../../../public/data/summary' );
 
 
 	// FUNCTIONS //

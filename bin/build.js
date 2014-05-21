@@ -51,12 +51,12 @@
 		fs = require( 'fs' ),
 
 		// Path module:
-		path = module( 'path' );
+		path = require( 'path' );
 
 
 	// VARIABLES //
 
-	var PATH = path.resolve( __dirname, '/../public/data/raw' ),
+	var PATH = path.resolve( __dirname, '../public/data/raw' ),
 		INDEX = {},
 		STREAMS = {};
 
@@ -117,10 +117,10 @@
 		var output_path, dirs, dir_path, stats;
 
 		// Get the path:
-		output_path = path.resolve( __dirname, '/../app/utils/streams/output' );
+		output_path = path.resolve( __dirname, '../app/utils/streams/output' );
 
 		// Get the directory names:
-		dirs = fs.readdirSync( path );
+		dirs = fs.readdirSync( output_path );
 
 		// For each possible directory, determine if it is a directory...
 		for ( var i = 0; i < dirs.length; i++ ) {

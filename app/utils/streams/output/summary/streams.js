@@ -50,11 +50,11 @@
 		// Path module:
 		path = require( 'path' ),
 
-		// JSON stream transform:
-		transformer = require( './../../json/transform.js' ),
-
 		// Write-to-file stream:
-		writeStream = require( './../../file/write.js' );
+		writeStream = require( './../../file/write.js' ),
+
+		// Hash of metric generators:
+		Metrics = require( './../../metrics' );
 
 
 	// VARIABLES //
@@ -77,22 +77,48 @@
 
 	(function init() {
 
-		var files, path;
+		var files, keys, name, metric, metrics = [], filepath, Transform, transform;
 
 		// Get the file names:
 		files = fs.readdirSync( __dirname )
 			.filter( filter );
 
-		// Read in the stream generators...
+		// Get the metric names:
+		keys = Object.keys( Metrics );
+
+		// Instantiate new metric generators:
+		for ( var m = 0; m < keys.length; m++ ) {
+			name = keys[ m ];
+
+			metric = new Metrics[ name ]();
+
+			metrics.push( metric );
+		}
+
+		// Create the stream generators...
 		for ( var i = 0; i < files.length; i++ ) {
 
 			if ( files[ i ][ 0 ] !== '.' ) {
 
 				// Assemble the path:
-				path = __dirname + '/' + files[ i ];
+				filepath = path.join( __dirname, files[ i ] );
 
-				// Include the file in our streams list:
-				STREAMS.push( require( path ) );
+				// Get the transform generator:
+				Transform = require( filepath );
+
+				// For each metric, create transform streams...
+				for ( var j = 0; j < metrics.length; j++ ) {
+
+					// Instantiate a new transform stream generator:
+					transform = new Transform();
+
+					// Configure the transform:
+					transform.metric( metrics[ j ] );
+
+					// Include the file in our streams list:
+					STREAMS.push( transform );
+
+				} // end FOR j
 
 			} // end IF !hidden
 
@@ -121,7 +147,7 @@
 		for ( var i = 0; i < total; i++ ) {
 		
 			// Instantiate a stream instance and configure:
-			transform = new STREAMS[ i ]();
+			transform = STREAMS[ i ];
 
 			// Generate the output filename:
 			filename = transform.name + '.' + transform.type + '.json';

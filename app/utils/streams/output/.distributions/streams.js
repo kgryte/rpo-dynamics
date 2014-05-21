@@ -106,7 +106,7 @@
 				// Get the transform generator:
 				Transform = require( filepath );
 
-				// For each metric create transform streams...
+				// For each metric, create transform streams...
 				for ( var j = 0; j < metrics.length; j++ ) {
 
 					// Instantiate a new transform stream generator:

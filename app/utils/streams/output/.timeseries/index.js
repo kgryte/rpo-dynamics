@@ -65,7 +65,7 @@
 
 	// VARIABLES //
 
-	var DEST = path.resolve( __dirname, '/../../../../../public/data/timeseries' );
+	var DEST = path.resolve( __dirname, '../../../../../public/data/timeseries' );
 
 
 	// FUNCTIONS //
