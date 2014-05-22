@@ -57,8 +57,25 @@
 	* @returns {object} Stream instance
 	*/
 	function Stream() {
+		// Default initial accumulator value:
+		this._value = 0;
+		
 		return this;
 	} // end FUNCTION stream()
+
+	/**
+	* METHOD: value( value )
+	*	Setter and getter for initial value from which to begin accumulation. If a value is provided, sets the initial accumulation value. If no value is provided, returns the accumulation value.
+	*
+	* @param {number} value - initial value
+	* @returns {object|number} instance object or initial value
+	*/
+	Stream.prototype.value = function( value ) {
+		if ( !arguments.length ) {
+			return this._value;
+		}
+		this._value = value;
+	}; // end METHOD value()
 
 	/**
 	* METHOD: reduce()
@@ -67,16 +84,20 @@
 	* @returns {function} data reduction function
 	*/
 	Stream.prototype.reduce = function() {
-		
+		var N = 0, delta = 0;
 		/**
-		* FUNCTION: reduce( data )
+		* FUNCTION: reduce( acc, data )
 		*	Defines the data reduction.
 		*
+		* @param {number} acc - the value accumulated
 		* @param {number} data - numeric stream data
 		* @returns {number} reduced data
 		*/
-		return function reduce( data ) {
-			return null;
+		return function reduce( mean, x ) {
+			N += 1;
+			delta = x - mean;
+			mean += delta / N;
+			return mean;
 		};
 	}; // end METHOD reduce()
 
@@ -85,7 +106,8 @@
 	*	Returns a JSON data reduction stream for calculating the statistic.
 	*/
 	Stream.prototype.stream = function() {
-		return null;
+		// Get the reduction stream:
+		return reducer( this.reduce(), this._value );
 	}; // end METHOD stream()
 
 
