@@ -45,7 +45,7 @@
 	// MODULES //
 
 	var // Module containing probability density functions (pdfs):
-		pdf = require( './../pdf' );
+		pdf = require( './pdf' );
 
 
 	// FUNCTIONS //
