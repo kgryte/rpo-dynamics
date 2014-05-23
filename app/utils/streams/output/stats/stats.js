@@ -209,7 +209,8 @@
 
 			// Append the pipeline to a list:
 			pipelines.push( pStream );
-		}
+			
+		} // end FOR i
 
 		// Create a single merged stream from pipeline output:
 		mStream = eventStream.merge.apply( {}, pipelines );
