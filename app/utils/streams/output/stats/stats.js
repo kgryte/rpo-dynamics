@@ -53,8 +53,9 @@
 		// JSON stream transform:
 		transformer = require( './../../json/transform.js' ),
 
-		// Mean reduce stream:
-		Mean = require( './../../stats/mean' );
+		// Stats reduce streams:
+		Mean = require( './../../stats/mean' ),
+		Variance = require( './../../stats/variance' );
 
 
 	// FUNCTIONS //
@@ -109,7 +110,7 @@
 		// Create stats reduce stream generators:
 		this._reducers = {
 			'mean': new Mean(),
-			'variance': new Mean()
+			'variance': new Variance()
 		};
 
 		// ACCESSORS:
@@ -174,7 +175,7 @@
 		*	Defines the data transformation.
 		*
 		* @param {object} data - JSON stream data
-		* @returns {array} transformed data
+		* @returns {value} transformed data
 		*/
 		return function transform( data ) {
 			return val( data );
@@ -205,11 +206,15 @@
 			rStream = reducers[ name ].stream();
 
 			// Create a stream pipeline:
-			pStream = pipeline( transform, rStream, keyify( name ) );
+			pStream = pipeline(
+				transform,
+				rStream,
+				keyify( name )
+			);
 
 			// Append the pipeline to a list:
 			pipelines.push( pStream );
-			
+
 		} // end FOR i
 
 		// Create a single merged stream from pipeline output:

@@ -57,8 +57,9 @@
 	* @returns {object} Stream instance
 	*/
 	function Stream() {
-		// Default initial accumulator value:
+		// Default accumulator values:
 		this._value = 0;
+		this._N = 0;
 
 		return this;
 	} // end FUNCTION stream()
@@ -78,13 +79,29 @@
 	}; // end METHOD value()
 
 	/**
+	* METHOD: numValues( value )
+	*	Setter and getter for the total number of values the initial value for accumulation represents. If a value is provided, sets the number of values. If no value is provided, returns the number of values.
+	*
+	* @param {number} value - initial value number
+	* @returns {object|number} instance object or initial value number
+	*/
+	Stream.prototype.numValues = function( value ) {
+		if ( !arguments.length ) {
+			return this._N;
+		}
+		this._N = value;
+	}; // end METHOD numValues()
+
+	/**
 	* METHOD: reduce()
 	*	Returns a data reduction function.
 	*
 	* @returns {function} data reduction function
 	*/
 	Stream.prototype.reduce = function() {
-		var N = 0, delta = 0;
+		var self = this,
+			N = this._N,
+			delta = 0;
 		/**
 		* FUNCTION: reduce( acc, data )
 		*	Defines the data reduction.
@@ -97,6 +114,9 @@
 			N += 1;
 			delta = x - mean;
 			mean += delta / N;
+
+			self._N = N;
+			
 			return mean;
 		};
 	}; // end METHOD reduce()

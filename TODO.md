@@ -41,13 +41,13 @@ TODO
 
 ### Streams
 
-1. 	Online mean
+1. 	
 2. 	Online KDE
 3. 	Online MVA
 4. 	Online timeseries-histogram
 	- All datasets
 		- Assemble individual histograms into single file
-5. 	Online variance
+5. 	
 6.  
 7. 	Online windowed mean
 8.  Online windowed variance
