@@ -50,9 +50,6 @@
 		// Path module:
 		path = require( 'path' ),
 
-		// JSON stringify stream:
-		stringify = require( './../../json/stringify.js' ),
-
 		// Write-to-file stream:
 		writeStream = require( './../../file/write.js' ),
 
@@ -127,7 +124,6 @@
 
 			// Pipe the JSON data:
 			data.pipe( reduce.stream() )
-				.pipe( stringify() )
 				.pipe( write );
 
 		} // end FOR i

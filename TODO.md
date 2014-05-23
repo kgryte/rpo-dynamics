@@ -48,9 +48,11 @@ TODO
 	- All datasets
 		- Assemble individual histograms into single file
 5. 	Online variance
-6.  Online mean
+6.  
 7. 	Online windowed mean
 8.  Online windowed variance
+9. 	Use combined stream for summary and distribution streams
+10. Replace pipette sink with eventstream wait
 
 
 ### Timeseries

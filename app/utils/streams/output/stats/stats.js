@@ -54,6 +54,43 @@
 		Mean = require( './../../stats/mean' );
 
 
+	// FUNCTIONS //
+
+	/**
+	* FUNCTION: keyify( key )
+	*
+	*/
+	function keyify( key ) {
+		/**
+		* FUNCTION: onData( value )
+		*
+		*/
+		function onData( value ) {
+			return '"' + key + '": ' + value + ',';
+		}
+		return transformer( onData );
+	} // end FUNCTION keyify()
+
+	/**
+	* FUNCTION: objectify()
+	*
+	*/
+	function objectify() {
+		/**
+		* FUNCTION: onData( keyvalstr )
+		*
+		*/
+		function onData( keyvalstr ) {
+			// Valid JSON:
+			if ( keyvalstr[ keyvalstr.length-1 ] === ',' ) {
+				keyvalstr = keyvalstr.slice( 0, -1 );
+			}
+			return '{' + keyvalstr + '}';
+		}
+		return transformer( onData );
+	} // end FUNCTION objectify()
+
+
 	// REDUCE //
 
 	/**
@@ -134,7 +171,7 @@
 		mStream = mean.stream();
 
 		// Return a stream pipeline:
-		return pipeline( transform, mStream );
+		return pipeline( transform, mStream, keyify( 'mean' ), objectify() );
 	}; // end METHOD stream()
 
 
