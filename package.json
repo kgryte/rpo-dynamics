@@ -59,7 +59,8 @@
     "rimraf": "~2.2.8",
     "pipette": "~0.9.3",
     "mkdirp": "~0.5.0",
-    "through": "~2.3.4"
+    "through": "~2.3.4",
+    "stream-combiner": "~0.2.0"
   },
   "devDependencies": {
     "gulp": "~3.6.0",

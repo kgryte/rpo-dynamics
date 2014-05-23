@@ -59,7 +59,7 @@
 	function Stream() {
 		// Default initial accumulator value:
 		this._value = 0;
-		
+
 		return this;
 	} // end FUNCTION stream()
 
