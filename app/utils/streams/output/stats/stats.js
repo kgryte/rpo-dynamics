@@ -44,7 +44,10 @@
 
 	// MODULES //
 
-	var // Stream combiner:
+	var // Event-stream module:
+		eventStream = require( 'event-stream' ),
+
+		// Stream combiner:
 		pipeline = require( 'stream-combiner' ),
 
 		// JSON stream transform:
@@ -100,9 +103,14 @@
 	* @returns {object} Stream instance
 	*/
 	function Stream() {
-
 		this.type = 'stats';
 		this.name = '';
+
+		// Create stats reduce stream generators:
+		this._reducers = {
+			'mean': new Mean(),
+			'variance': new Mean()
+		};
 
 		// ACCESSORS:
 		this._value = function( d ) {
@@ -135,6 +143,25 @@
 	}; // end METHOD metric()
 
 	/**
+	* METHOD: reduce( name, reducer )
+	*	Reduce stream generator setter and getter. If no arguments are supplied, returns a list of reduce stream generators. If a name and reducer are supplied, adds the reducer to a reduce stream generator dictionary.
+	*
+	* @param {string} name - reduce stream generator name; e.g., correlation
+	* @param {object} reducer - reduce stream generator. Generator should have a 'stream' method.
+	* returns {object|array} instance object or reduce generator list
+	*/
+	Stream.prototype.reduce = function( name, reducer ) {
+		if ( !arguments.length ) {
+			return Object.keys( this._reducers );
+		}
+		if ( arguments.length < 2 ) {
+			throw new Error( 'insufficient input arguments. Must supply both a generator name and an object having a \'stream\' method.' );
+		}
+		this._reducers[ name ] = reducer;
+		return this;
+	}; // end METHOD reduce()
+
+	/**
 	* METHOD: transform()
 	*	Returns a data transformation function.
 	*
@@ -159,19 +186,40 @@
 	*	Returns a JSON data reduce stream for calculating stats reductions.
 	*/
 	Stream.prototype.stream = function() {
-		var transform, mean, mStream;
+		var transform, rStream, pStream, mStream, oStream,
+			reducers = this._reducers,
+			keys, name,
+			pipelines = [];
 
 		// Create the input transform stream:
 		transform = transformer( this.transform() );
 
-		// Create a mean reduce stream generator:
-		mean = new Mean();
+		// Get the reduce stream names:
+		keys = Object.keys( reducers );
 
-		// Create the reduce stream:
-		mStream = mean.stream();
+		// Create stream pipelines...
+		for ( var i = 0; i < keys.length; i++ ) {
+			name = keys[ i ];
 
-		// Return a stream pipeline:
-		return pipeline( transform, mStream, keyify( 'mean' ), objectify() );
+			// Create a new reduce stream:
+			rStream = reducers[ name ].stream();
+
+			// Create a stream pipeline:
+			pStream = pipeline( transform, rStream, keyify( name ) );
+
+			// Append the pipeline to a list:
+			pipelines.push( pStream );
+		}
+
+		// Create a single merged stream from pipeline output:
+		mStream = eventStream.merge.apply( {}, pipelines );
+
+		// Wait for all streams to finish before making an object:
+		oStream = mStream.pipe( eventStream.wait() )
+			.pipe( objectify() );
+
+		// Return the input and output streams:
+		return [ transform, oStream ];
 	}; // end METHOD stream()
 
 

@@ -122,9 +122,14 @@
 			// Create the write stream:
 			write = writeStream( filepath, onEnd );
 
-			// Pipe the JSON data:
-			data.pipe( reduce.stream() )
-				.pipe( write );
+			// Get the input/output streams:
+			ioStreams = reduce.stream();
+
+			// Pipe the JSON data to the input stream:
+			data.pipe( ioStreams[ 0 ] );
+
+			// Pipe the output stream to file:
+			ioStreams[ 1 ].pipe( write );
 
 		} // end FOR i
 
