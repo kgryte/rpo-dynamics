@@ -41,14 +41,16 @@ TODO
 
 ### Streams
 
-1. 	Online Min/Max/Sum
+1. 	Online Skewness/Kurtosis
 2. 	Online KDE
 3. 	Online MVA
 4. 	Online timeseries-histogram
 	- All datasets
 		- Assemble individual histograms into single file
-5. 	
-6.  
+5. 	Online median
+	- For accurate calculation, must buffer entire dataset into memory using wait
+6.  Online quartiles
+	- For accurate calculation, must buffer entire dataset into memory using wait
 7. 	Online windowed mean
 8.  Online windowed variance
 9. 	Use combined stream for summary and distribution streams
@@ -68,7 +70,7 @@ TODO
 4.  Scatterplot matrix-style figure but with KDE overlays
 5. 	Hist2d timeseries across all conditions (is this actually valuable? really only when aligned.)
 6. 	Schematic (break into individual components)
-7. 	
+7. 	Box-and-whisker plots via descriptive stats files. --> can create a timeseries-histogram like figure, either horizontally or vertically oriented; preference at this point is E on Y-Axis and molecules on X-Axis, in contrast to timeseries-histogram.
 
 
 ### UI

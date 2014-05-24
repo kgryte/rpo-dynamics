@@ -60,6 +60,7 @@
 		Count = require( './../../stats/count' ),
 		Min = require( './../../stats/min' ),
 		Max = require( './../../stats/max' ),
+		Sum = require( './../../stats/sum' ),
 		Mean = require( './../../stats/mean' ),
 		Variance = require( './../../stats/variance' );
 
@@ -152,6 +153,7 @@
 			'count': new Count(),
 			'min': new Min(),
 			'max': new Max(),
+			'sum': new Sum(),
 			'mean': new Mean(),
 			'variance': new Variance()
 		};
