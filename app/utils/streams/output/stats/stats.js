@@ -44,7 +44,10 @@
 
 	// MODULES //
 
-	var // Event-stream module:
+	var // Event emitter:
+		eventEmitter = require( 'events' ).EventEmitter,
+
+		// Event-stream module:
 		eventStream = require( 'event-stream' ),
 
 		// Stream combiner:
@@ -61,31 +64,66 @@
 		Variance = require( './../../stats/variance' );
 
 
+	// INIT //
+
+	// FIXME: find a better way than to change global state.
+	setMaxListeners();
+
+
 	// FUNCTIONS //
 
 	/**
+	* FUNCTION: setMaxListeners()
+	*	Sets the maximum number of event emitter listeners.
+	*/
+	function setMaxListeners() {
+		// WARNING: this may have unintended side-effects. Dangerous, as this temporarily changes the global state for all modules, not just this module.
+		eventEmitter.prototype._maxListeners = 100;
+	} // end FUNCTION setMaxListeners()
+
+	/**
+	* FUNCTION: resetMaxListeners()
+	*	Resets the maximum number of event emitter listeners.
+	*/
+	function resetMaxListeners() {
+		eventEmitter.prototype._maxListeners = 11;
+	} // end FUNCTION resetMaxListeners()
+
+	/**
 	* FUNCTION: keyify( key )
+	*	Returns a JSON transform stream to create a key-value string.
 	*
+	* @param {string} key - key name
+	* @returns {stream} JSON transform stream
 	*/
 	function keyify( key ) {
+		return transformer( onData );
 		/**
 		* FUNCTION: onData( value )
+		*	Event handler. Creates a key-value string; .e.g, "key": value,
 		*
+		* @param {number|string} value - value to be assigned to key
+		* @returns {string} key-value string
 		*/
 		function onData( value ) {
 			return '"' + key + '": ' + value + ',';
 		}
-		return transformer( onData );
 	} // end FUNCTION keyify()
 
 	/**
 	* FUNCTION: objectify()
+	*	Returns a JSON transform stream to create valid JSON from a comma-delimited sequence of key-value strings.
 	*
+	* @returns {stream} JSON transform stream
 	*/
 	function objectify() {
+		return transformer( onData );
 		/**
 		* FUNCTION: onData( keyvalstr )
+		*	Event handler. Wraps a key-value string in {} to create a stringified object.
 		*
+		* @param {string} keyvalstr - key-value string; e.g., "key1": value, "key2": value, ...
+		* @returns {string} key-value string wrapped in {} to create a stringified object
 		*/
 		function onData( keyvalstr ) {
 			// Valid JSON:
@@ -94,7 +132,6 @@
 			}
 			return '{' + keyvalstr + '}';
 		}
-		return transformer( onData );
 	} // end FUNCTION objectify()
 
 
