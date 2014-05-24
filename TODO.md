@@ -41,7 +41,7 @@ TODO
 
 ### Streams
 
-1. 	
+1. 	Online Min/Max/Sum/Counter
 2. 	Online KDE
 3. 	Online MVA
 4. 	Online timeseries-histogram

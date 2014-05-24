@@ -54,6 +54,7 @@
 		transformer = require( './../../json/transform.js' ),
 
 		// Stats reduce streams:
+		Count = require( './../../stats/count' ),
 		Mean = require( './../../stats/mean' ),
 		Variance = require( './../../stats/variance' );
 
@@ -110,7 +111,8 @@
 		// Create stats reduce stream generators:
 		this._reducers = {
 			'mean': new Mean(),
-			'variance': new Variance()
+			'variance': new Variance(),
+			'count': new Count()
 		};
 
 		// ACCESSORS:
