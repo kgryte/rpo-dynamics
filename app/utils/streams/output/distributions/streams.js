@@ -156,15 +156,10 @@
 			// Create the write stream:
 			write = writeStream( filepath, onEnd );
 
-			// Get the input and output streams:
-			ioStreams = transform.stream();
-
-			// Pipe the JSON data to the input stream:
-			data.pipe( ioStreams[ 0 ] );
-
-			// Pipe the output stream to file:
-			ioStreams[ 1 ].pipe( write );
-
+			// Pipe the JSON data to the transform stream and write to file:
+			data.pipe( transform.stream() )
+				.pipe( write );
+				
 		} // end FOR i
 
 		return;

@@ -44,7 +44,10 @@
 
 	// MODULES //
 
-	var // JSON stream transform:
+	var // Stream combiner:
+		pipeline = require( 'stream-combiner' ),
+
+		// JSON stream transform:
 		transformer = require( './../../json/transform.js' ),
 
 		// Module to calculate the KDE:
@@ -151,22 +154,25 @@
 	*	Returns a JSON data transform stream for calculating the statistic.
 	*/
 	Transform.prototype.stream = function() {
-		var transform, kde, ioStreams;
+		var transform, kde, kStream, pStream;
 
-		// Create the input transform stream:
+		// Create an input transform stream:
 		transform = transformer( this.transform() );
 
 		// Create a KDE stream generator and configure:
 		kde = new KDE();
 
-		// Get the KDE input/output streams:
-		ioStreams = kde.stream();
+		// Create a KDE streams:
+		kStream = kde.stream();
 
-		// Pipe the transform output into the KDE input stream:
-		transform.pipe( ioStreams[ 0 ] );
+		// Create a stream pipeline:
+		pStream = pipeline(
+			transform,
+			kStream
+		);
 
-		// Return the start and end streams:
-		return [ transform, ioStreams[ 1 ] ];
+		// Return the pipeline:
+		return pStream;
 	}; // end METHOD stream()
 
 

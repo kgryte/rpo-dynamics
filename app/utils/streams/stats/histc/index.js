@@ -47,9 +47,6 @@
 	var // Event-stream module:
 		eventStream = require( 'event-stream' ),
 
-		// Module for creating sink streams:
-		Sink = require( 'pipette' ).Sink,
-
 		// JSON stream transform:
 		transformer = require( './../../json/transform.js' ),
 
@@ -173,22 +170,30 @@
 	*	Returns a JSON data transform stream for calculating the statistic.
 	*/
 	Stream.prototype.stream = function() {
-		var iStream, jStream, sink, oStream;
+		var iStream, jStream, sStream, oStream, pStream;
 
-		// Create the input transform stream:
+		// Create an input transform stream:
 		iStream = transformer( this.transform() );
 
-		// Transform the data into a comma-delimited string: (like Array join)
-		jStream = iStream.pipe( eventStream.join( ',' ) );
+		// Create a transform stream to convert the data into a comma-delimited string: (like Array join)
+		jStream = eventStream.join( ',' );
 
-		// Send the input stream to a sink, where the data is encoded as standard unicode data:
-		sink = new Sink( jStream, { 'encoding': 'utf8' } );
+		// Create a sink stream to buffer all transformed data into memory:
+		sStream = eventStream.wait();
 
-		// Pipe the data collected in the sink to an output transform stream:
-		oStream = sink.pipe( transformer( this.tabulate() ) );
+		// Create an output transform stream to tabulate data values:
+		oStream = transformer( this.tabulate() );
 
-		// Return the io streams:
-		return [ iStream, oStream ];
+		// Create a stream pipeline:
+		pStream = eventStream.pipeline(
+			iStream,
+			jStream,
+			sStream,
+			oStream
+		);
+
+		// Return the pipeline:
+		return pStream;
 	}; // end METHOD stream()
 
 
