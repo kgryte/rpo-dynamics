@@ -55,6 +55,7 @@
 
 		// Stats reduce streams:
 		Count = require( './../../stats/count' ),
+		Max = require( './../../stats/max' ),
 		Mean = require( './../../stats/mean' ),
 		Variance = require( './../../stats/variance' );
 
@@ -110,9 +111,10 @@
 
 		// Create stats reduce stream generators:
 		this._reducers = {
+			'count': new Count(),
+			'max': new Max(),
 			'mean': new Mean(),
-			'variance': new Variance(),
-			'count': new Count()
+			'variance': new Variance()
 		};
 
 		// ACCESSORS:
