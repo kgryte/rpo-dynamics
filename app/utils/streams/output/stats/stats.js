@@ -5,7 +5,7 @@
 *
 *
 *	DESCRIPTION:
-*		- Calculates descriptive statistics, including count, min, max, sum, mean, variance.
+*		- Calculates descriptive statistics, including count, min, max, sum, mean, median, variance.
 *
 *
 *	API:
@@ -62,6 +62,7 @@
 		Max = require( './../../stats/max' ),
 		Sum = require( './../../stats/sum' ),
 		Mean = require( './../../stats/mean' ),
+		Median = require( './../../stats/median' ),
 		Variance = require( './../../stats/variance' );
 
 
@@ -155,6 +156,7 @@
 			'max': new Max(),
 			'sum': new Sum(),
 			'mean': new Mean(),
+			'median': new Median(),
 			'variance': new Variance()
 		};
 
