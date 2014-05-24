@@ -1,6 +1,6 @@
 /**
 *
-*	STREAM: kernel density estimate (KDE)
+*	STREAM: histogram
 *
 *
 *
@@ -53,8 +53,8 @@
 		// JSON stream transform:
 		transformer = require( './../../json/transform.js' ),
 
-		// Module to calculate the KDE:
-		KDE = require( './../../stats/kde' );
+		// Module to calculate the histsogram counts:
+		Histc = require( './../../stats/histc' );
 
 
 	// FUNCTIONS //
@@ -93,14 +93,10 @@
 	*/
 	function Transform() {
 
-		this.type = 'kde';
+		this.type = 'histogram';
 		this.name = '';
 
-		// TODO: include these methods here, in the histogram, and in the KDE stream.
-
-		// this._min = 0;
-		// this._max = 1;
-		// this._pts = 256;
+		// this._edges = linspace( -0.01, 1.01, 0.02 );
 
 		// ACCESSORS:
 		this._value = function( d ) {
@@ -160,7 +156,7 @@
 	* @returns {stream} output statistic stream
 	*/
 	Transform.prototype.stream = function( data ) {
-		var dStream, transform, kde, ioStreams;
+		var dStream, transform, histc, hStream, pStream;
 
 		// Concatenate all datasets:
 		data = concat( data );
@@ -171,18 +167,21 @@
 		// Create the input transform stream:
 		transform = transformer( this.transform() );
 
-		// Create a KDE stream generator and configure:
-		kde = new KDE();
+		// Create a histogram counts stream generator and configure:
+		histc = new Histc();
 
-		// Get the KDE input/output streams:
-		ioStreams = kde.stream();
+		// Create a histogram stream:
+		hStream = histc.stream();
 
-		// Set the pipe chain:
-		dStream.pipe( transform )
-			.pipe( ioStreams[ 0 ] );
+		// Create a stream pipeline:
+		pStream = eventStream.pipeline(
+			dStream,
+			transform,
+			hStream
+		);
 
-		// Return the end stream:
-		return ioStreams[ 1 ];
+		// Return the pipeline:
+		return pStream;
 	}; // end METHOD stream()
 
 

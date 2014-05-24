@@ -53,8 +53,8 @@ TODO
 	- For accurate calculation, must buffer entire dataset into memory using wait
 7. 	Online windowed mean
 8.  Online windowed variance
-9. 	Use combined stream for summary streams
-10. Replace pipette sink with eventstream wait
+9. 	
+10. 
 
 
 ### Timeseries
