@@ -98,7 +98,7 @@
 	Stream.prototype.stream = function() {
 		var iStream, sStream, oStream, pStream;
 
-		// Create an input transform stream:
+		// Create an input transform stream: (require the data to be a single JSON chunk)
 		iStream = stringify();
 
 		// Create a sink stream to buffer all transformed data into memory:
