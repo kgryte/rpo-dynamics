@@ -1,6 +1,6 @@
 /**
 *
-*	STREAM: median
+*	STREAM: quantiles
 *
 *
 *
@@ -54,14 +54,17 @@
 	// FUNCTIONS //
 
 	/**
-	* FUNCTIONS: median( vector )
-	*	Computes the median value of a 1d dataset array.
+	* FUNCTIONS: quantiles( vector, num )
+	*	Computes quantiles for a 1d dataset array.
 	*
 	* @param {array} vector - 1d array
-	* @returns {number} median value
+	* @param {number} num - number of quantiles
+	* @returns {array} quantiles
 	*/
-	function median( vector ) {
-		var id, vec;
+	function quantiles( vector, num ) {
+		var numValues = vector.length,
+			qValues = new Array( num+1 ),
+			vec, id, value;
 
 		// Create a copy of the input vector:
 		vec = vector.slice();
@@ -71,17 +74,31 @@
 			return a - b;
 		});
 
-		// Get the middle index:
-		id = Math.floor( vec.length / 2 );
+		// 0th quantile is the min:
+		qValues[ 0 ] = vec[ 0 ];
 
-		if ( vec.length % 2 ) {
-			// The number of elements is not evenly divisible by two, hence we have a middle index:
-			return vec[ id ];
-		}
+		// Max defines the quantile upper bound:
+		qValues[ num ] = vec[ numValues-1 ];
 
-		// Even number of elements, so must take the mean of the two middle values:
-		return ( vec[ id-1 ] + vec[ id ] ) / 2.0;
-	} // end FUNCTION median()
+		// Get the quantiles...
+		for ( var i = 1; i < num; i++ ) {
+
+			// Calculate the vector index marking the quantile:
+			id = ( numValues * i / num ) - 1;
+
+			// Is the index an integer?
+			if ( id === parseInt( id, 10 ) ) {
+				// Value is the average between the value at id and id+1:
+				value = ( vec[ id ] + vec[ id+1 ] ) / 2.0;
+			} else {
+				// Round up to the next index:
+				id = Math.ceil( id );
+				value = vec[ id ];
+			}
+			qValues[ i ] = value;
+		} // end FOR i
+		return qValues;
+	} // end FUNCTION quantiles()
 
 
 	// STREAM //
@@ -93,8 +110,26 @@
 	* @returns {object} Stream instance
 	*/
 	function Stream() {
+		// Default number of quantiles:
+		this._quantiles = 4; // default is a quartile
+
 		return this;
 	} // end FUNCTION stream()
+
+	/**
+	* METHOD: quantiles( value )
+	*	Number of quantiles setter and getter. If a value is supplied, sets the number of quantiles. If no value is supplied, returns the number of quantiles.
+	*
+	* @param {number} value - number of quantiles
+	* @returns {object|number} instance object or number of quantiles
+	*/
+	Stream.prototype.quantiles = function ( value ) {
+		if ( !arguments.length ) {
+			return this._quantiles;
+		}
+		this._quantiles = value;
+		return this;
+	}; // end METHOD quantiles()
 
 	/**
 	* METHOD: transform()
@@ -103,6 +138,7 @@
 	* @returns {function} data transformation function
 	*/
 	Stream.prototype.transform = function() {
+		var numQuantiles = this._quantiles;
 		/**
 		* FUNCTION: transform( data )
 		*	Defines the data transformation.
@@ -111,11 +147,16 @@
 		* @returns {number} transformed data
 		*/
 		return function transform( data ) {
+			var qValues;
+
 			// Convert a comma delimited string into an array:
 			data = JSON.parse( '[' + data + ']' );
 
-			// Compute the median:
-			return median( data );
+			// Compute the quatiles:
+			qValues = quantiles( data, numQuantiles );
+
+			// Return stringified results:
+			return JSON.stringify( qValues );
 		};
 	}; // end METHOD transform()
 
@@ -124,7 +165,7 @@
 	*	Returns a JSON data reduction stream for calculating the statistic.
 	*/
 	Stream.prototype.stream = function() {
-		var jStream, sStream, mStream, pStream;
+		var jStream, sStream, qStream, pStream;
 
 		// Create a stream to comma-deliminate all incoming data values:
 		jStream = eventStream.join( ',' );
@@ -132,14 +173,14 @@
 		// Create a sink stream to buffer all data values into memory:
 		sStream = eventStream.wait();
 
-		// Create a transform stream to calculate the median value:
-		mStream = transformer( this.transform() );
+		// Create a transform stream to calculate the quantiles:
+		qStream = transformer( this.transform() );
 
 		// Create a stream pipeline:
 		pStream = eventStream.pipeline(
 			jStream,
 			sStream,
-			mStream
+			qStream
 		);
 
 		// Return the pipeline:

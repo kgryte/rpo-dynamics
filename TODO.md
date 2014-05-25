@@ -13,7 +13,7 @@ TODO
 	- read over to see if all up-to-date
 	- Remove dynamic route name
 	- package.json
-5. 	
+5. 	Add quantile calculation to figure.io/vector.io
 6. 	
 7. 	
 8. 	User cluster to reduce request response time (?)...or move computation to workers
@@ -21,7 +21,7 @@ TODO
 	- Make calculating all metrics/statistics part of the build process?
 10. Remove jQuery dependence and move to ui-component sortable --> more difficult than expected; only want sort on drop; not during drag.
 11. 
-12. 
+12. Summary stats
 13. 
 14. Update code documentation
 
@@ -47,12 +47,10 @@ TODO
 4. 	Online timeseries-histogram
 	- All datasets
 		- Assemble individual histograms into single file
-5. 	Online median
-	- For accurate calculation, must buffer entire dataset into memory using wait
-6.  Online quartiles
-	- For accurate calculation, must buffer entire dataset into memory using wait
-7. 	Online windowed mean
-8.  Online windowed variance
+5. 	
+6.  
+7. 	Online windowed mean (overlap parameter)
+8.  Online windowed variance (overlap parameter)
 9. 	
 10. 
 

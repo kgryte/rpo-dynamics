@@ -63,6 +63,7 @@
 		Sum = require( './../../stats/sum' ),
 		Mean = require( './../../stats/mean' ),
 		Median = require( './../../stats/median' ),
+		Quantiles = require( './../../stats/quantiles' ),
 		Variance = require( './../../stats/variance' );
 
 
@@ -155,8 +156,9 @@
 			'min': new Min(),
 			'max': new Max(),
 			'sum': new Sum(),
-			'mean': new Mean(),
 			'median': new Median(),
+			'quantiles': new Quantiles(),
+			'mean': new Mean(),
 			'variance': new Variance()
 		};
 
