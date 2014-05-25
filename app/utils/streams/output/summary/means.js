@@ -50,11 +50,72 @@
 		// JSON stream transform:
 		transformer = require( './../../json/transform.js' ),
 
-		// JSON stream stringify:
-		stringify = require( './../../json/stringify.js' ),
+		// JSON stream reduce:
+		reducer = require( './../../json/reduce.js' ),
 
 		// Module to calculate an online mean:
 		Mean = require( './../../stats/mean' );
+
+
+	// FUNCTIONS //
+
+	/**
+	* FUNCTION: indexify( idx )
+	*	Returns a transform function which binds an index to streamed data.
+	*
+	* @param {number} idx - datum index
+	* @returns {function} data transformation function
+	*/
+	function indexify( idx ) {
+		/**
+		* FUNCTION: transform( data )
+		*	Defines the data transformation.
+		*
+		* @param {number} data - streamed data
+		* @returns {array} 2-element array: [ idx, data ]
+		*/
+		return function transform( data ) {
+			return [ idx, data ];
+		}; // end FUNCTION transform()
+	} // end FUNCTION indexify()
+
+	/**
+	* FUNCTION: reorderify()
+	*	Returns a reduction function which reorders streamed data.
+	*
+	* @param {number} numData - data stream length
+	* @returns {function} data reduction function
+	*/
+	function reorderify() {
+		/**
+		* FUNCTION: reduce( acc, data )
+		*	Defines the data reduction.
+		*
+		* @param {array} acc - accumulated array
+		* @param {array} data - streamed 2-element data array
+		* @returns {array} reduced data as a 1-d array
+		*/return function reduce( data, d ) {
+			data[ d[0] ] = d[ 1 ];
+			return data;
+		}; // end FUNCTION transform()
+	} // end FUNCTION reorderify()
+
+	/**
+	* FUNCTION: stringify()
+	*	Returns a transform function to stringify streamed data.
+	*/
+	function stringify() {
+		/**
+		* FUNCTION: transform( data )
+		*	Defines the data transformation.
+		*
+		* @param {array} data - streamed data
+		* @returns {string} data stringified
+		*/
+		return function transform( data ) {
+			return JSON.stringify( data );
+		}; // end FUNCTION transform()
+	} // end FUNCTION stringify()
 
 
 	// TRANSFORM //
@@ -128,7 +189,7 @@
 	* @returns {stream} output statistic stream
 	*/
 	Transform.prototype.stream = function( data ) {
-		var mean, dStream, transform, mStream, pStream, cStream, oStream, pipelines = [];
+		var mean, dStream, transform, mStream, iStream, pStream, rStream, sStream, cStream, oStream, pipelines = [];
 
 		// Instantiate a new mean instance and configure:
 		mean = new Mean();
@@ -145,11 +206,15 @@
 			// Create a mean reduction stream:
 			mStream = mean.stream();
 
+			// Create a transform stream to index the reduced stream:
+			iStream = transformer( indexify( i ) );
+
 			// Create a stream pipeline:
 			pStream = eventStream.pipeline(
 				dStream,
 				transform,
-				mStream
+				mStream,
+				iStream
 			);
 
 			// Append the pipeline to our list of pipelines:
@@ -160,8 +225,15 @@
 		// Create a single merged stream from pipeline output:
 		cStream = eventStream.merge.apply( {}, pipelines );
 
-		// Convert merged output to a stringified object:
-		oStream = cStream.pipe( stringify() );
+		// Create a stream to reorder (sort) the merged output:
+		rStream = reducer( reorderify(), new Array( data.length ) );
+
+		// Create a stream to stringify reordered data:
+		sStream = transformer( stringify() );
+
+		// Sort and convert merged output to a stringified object:
+		oStream = cStream.pipe( rStream )
+			.pipe( sStream );
 
 		// Return the output stream:
 		return oStream;

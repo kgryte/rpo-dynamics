@@ -72,6 +72,17 @@
 	} // end FUNCTION filter()
 
 	/**
+	* FUNCTION: sort( a, b )
+	*
+	*/
+	function sort( a, b ) {
+		var val1, val2;
+		val1 = parseInt( a.substr( 0, a.length-5 ), 10 );
+		val2 = parseInt( b.substr( 0, b.length-5 ), 10 );
+		return val1 - val2;
+	} // end FUNCTION sort()
+
+	/**
 	* FUNCTION: createIndex()
 	*
 	*/
@@ -98,6 +109,9 @@
 					// Get the file names within the directory, filtering for *.json files:
 					files = fs.readdirSync( dir_path )
 						.filter( filter );
+
+					// Sort the filenames:
+					files.sort( sort );
 
 					// Store the directory and the associated data files in a hash:
 					INDEX[ dirs[ i ] ] = files;

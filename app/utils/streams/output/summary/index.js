@@ -152,7 +152,7 @@
 				filepath = path.join( dir_path, dirs[ i ], files[ j ] );
 
 				// Load the data file:
-				fs.readFile( filepath, 'utf8', onRead );
+				fs.readFile( filepath, 'utf8', onRead( j ) );
 
 			} // end FOR j
 
@@ -162,36 +162,45 @@
 
 		/**
 		* FUNCTION: onData( path, total, clbk )
-		*	Wraps parameters in an enclosure and returns a callback to invoke after reading a data file.
+		*	Wraps parameters in an enclosure and returns a functin to enclose a file index.
 		*
 		* @param {string} path - output directory path
 		* @param {number} total - total file number
 		* @param {function} clbk - callback to invoke after calculating summary statistics
-		* @returns {function} callback to invoke after reading a data file
+		* @returns {function} function to enclose a file index
 		*/
 		function onData( path, total, clbk ) {
-			var DATA = [],
+			var DATA = new Array( total ),
 				counter = 0;
 			/**
-			* FUNCTION: onData()
-			*	Callback to invoke after reading a data file.
+			* FUNCTION: onData( idx )
+			*	Returns a callback invoked upon reading a data file. Enclosing the index ensures the output data array is the same order as the input files.
 			*
-			* @param {object} error - error object
-			* @param {string} data - data as a string
+			* @param {number} idx - file index
+			* @returns {function} callback to invoke after reading a data file.
 			*/
-			return function onData( error, data ) {
-				if ( error ) {
-					console.error( error.stack );
-					throw new Error( 'stream()::unable to read file.' );
-				}
-				// Append the data to our data buffer:
-				DATA.push( JSON.parse( data ) );
+			return function onData( idx ) {
+				/**
+				* FUNCTION: onData()
+				*	Callback to invoke after reading a data file.
+				*
+				* @param {object} error - error object
+				* @param {string} data - data as a string
+				*/
+				return function onData( error, data ) {
+					if ( error ) {
+						console.error( error.stack );
+						throw new Error( 'stream()::unable to read file.' );
+					}
+					// Append the data to our data buffer:
+					DATA[ idx ] = JSON.parse( data );
 
-				if ( ++counter === total ) {
-					// Send off the data to calculate transforms:
-					summary( DATA, path, clbk );
-				}
-			};
+					if ( ++counter === total ) {
+						// Send off the data to calculate transforms:
+						summary( DATA, path, clbk );
+					}
+				}; // end FUNCTION onData()
+			}; // end FUNCTION onData()
 		} // end FUNCTION onData()
 
 		/**
