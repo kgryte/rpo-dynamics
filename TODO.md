@@ -23,7 +23,7 @@ TODO
 11. 
 12. Summary stats
 13. 
-14. Update code documentation
+14. Update code documentation; e.g., document manifests (top-of-file)
 
 
 
@@ -48,7 +48,7 @@ TODO
 	- All datasets
 		- Assemble individual histograms into single file
 5. 	
-6.  
+6.  Online histogram as a reduction
 7. 	Online windowed mean (overlap parameter)
 8.  Online windowed variance (overlap parameter)
 9. 	
