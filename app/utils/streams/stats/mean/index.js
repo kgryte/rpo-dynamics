@@ -44,8 +44,14 @@
 
 	// MODULES //
 
-	var // JSON stream reducer:
-		reducer = require( './../../json/reduce.js' );
+	var // Module to combine streams:
+		pipeline = require( 'stream-combiner' ),
+
+		// JSON stream reducer:
+		reducer = require( './../../json/reduce.js' ),
+
+		// JSON stream transformer:
+		transformer = require( './../../json/transform.js' );
 
 
 	// STREAM //
@@ -99,35 +105,66 @@
 	* @returns {function} data reduction function
 	*/
 	Stream.prototype.reduce = function() {
-		var self = this,
-			N = this._N,
-			delta = 0;
+		var delta = 0;
 		/**
 		* FUNCTION: reduce( acc, data )
 		*	Defines the data reduction.
 		*
-		* @param {number} acc - the value accumulated
+		* @param {object} acc - accumulation object containing two properties: N, mean. 'N' is the observation number accumulator and 'mean' is the mean accumulator.
 		* @param {number} data - numeric stream data
-		* @returns {number} reduced data
+		* @returns {object} accumulation object
 		*/
-		return function reduce( mean, x ) {
-			N += 1;
-			delta = x - mean;
-			mean += delta / N;
-
-			self._N = N;
-			
-			return mean;
+		return function reduce( acc, x ) {
+			acc.N += 1;
+			delta = x - acc.mean;
+			acc.mean += delta / acc.N;
+			return acc;
 		};
 	}; // end METHOD reduce()
+
+	/**
+	* METHOD: transform()
+	*	Returns a data transformation function.
+	*
+	* @returns {function} data transformation function
+	*/
+	Stream.prototype.transform = function() {
+		/**
+		* FUNCTION: transform( data )
+		*	Defines the data transformation.
+		*
+		* @param {object} data - stream data
+		* @returns {number} transformed data
+		*/
+		return function transform( data ) {
+			return data.mean;
+		};
+	}; // end METHOD transform()
 
 	/**
 	* METHOD: stream()
 	*	Returns a JSON data reduction stream for calculating the statistic.
 	*/
 	Stream.prototype.stream = function() {
-		// Get the reduction stream:
-		return reducer( this.reduce(), this._value );
+		var rStream, tStream, pStream;
+
+		// Create a reduction stream:
+		rStream = reducer( this.reduce(), {
+			'mean': this._value,
+			'N': this._N
+		});
+
+		// Create a transform stream to extact the mean value:
+		tStream = transformer( this.transform() );
+
+		// Create a stream pipeline:
+		pStream = pipeline(
+			rStream,
+			tStream
+		);
+
+		// Return the pipeline:
+		return pStream;
 	}; // end METHOD stream()
 
 

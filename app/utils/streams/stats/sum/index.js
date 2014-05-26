@@ -84,7 +84,6 @@
 	* @returns {function} data reduction function
 	*/
 	Stream.prototype.reduce = function() {
-		var sum = this._value;
 		/**
 		* FUNCTION: reduce( sum, data )
 		*	Defines the data reduction.

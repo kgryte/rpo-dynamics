@@ -64,7 +64,7 @@
 	*/
 	function Stream() {
 		// Default accumulator values:
-		this._value = 0;
+		this._value = 0; // sum of squared differences!
 		this._mean = 0;
 		this._N = 0;
 
@@ -120,29 +120,22 @@
 	* @returns {function} data reduction function
 	*/
 	Stream.prototype.reduce = function() {
-		var self = this,
-			N = this._N,
-			mean = this._mean,
-			delta = 0;
+		var delta = 0;
 		/**
 		* FUNCTION: reduce( acc, data )
 		*	Defines the data reduction.
 		*
-		* @param {number} acc - the value accumulated
+		* @param {object} acc - accumulation object containing three properties: N, mean, sos. 'N' is the observation number accumulator; 'mean' is the mean accumulator; 'sos' is the sum of squared differences accumulator
 		* @param {number} data - numeric stream data
-		* @returns {number} reduced data
+		* @returns {object} accumulation object
 		*/
-		return function reduce( sos, x ) {
-			// SOS = Sum of Squares
-			N += 1;
-			delta = x - mean;
-			mean += delta / N;
-			sos += delta * ( x-mean );
-
-			self._N = N;
-			self._mean = mean;
-
-			return sos;
+		return function reduce( acc, x ) {
+			// SOS = Sum of Squared Differences
+			acc.N += 1;
+			delta = x - acc.mean;
+			acc.mean += delta / acc.N;
+			acc.sos += delta * ( x-acc.mean );
+			return acc;
 		};
 	}; // end METHOD reduce()
 
@@ -153,7 +146,6 @@
 	* @returns {function} data transformation function
 	*/
 	Stream.prototype.transform = function() {
-		var self = this;
 		/**
 		* FUNCTION: transform( data )
 		*	Defines the data transformation.
@@ -162,7 +154,7 @@
 		* @returns {value} transformed data
 		*/
 		return function transform( data ) {
-			return data / (self._N-1);
+			return data.sos / (data.N-1);
 		};
 	}; // end METHOD transform()
 
@@ -174,13 +166,19 @@
 		var rStream, pStream;
 
 		// Get the reduction stream:
-		rStream = reducer( this.reduce(), this._value );
+		rStream = reducer( this.reduce(), {
+			'N': this._N,
+			'mean': this._mean,
+			'sos': this._value
+		});
 
+		// Create a stream pipeline:
 		pStream = pipeline(
 			rStream,
 			transformer( this.transform() )
 		);
 
+		// Return the pipeline:
 		return pStream;
 	}; // end METHOD stream()
 

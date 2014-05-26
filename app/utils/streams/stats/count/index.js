@@ -93,7 +93,7 @@
 		* @returns {number} reduced data
 		*/
 		return function reduce( count, x ) {
-			return ++count;
+			return count + 1;
 		};
 	}; // end METHOD reduce()
 

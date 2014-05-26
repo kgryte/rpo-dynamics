@@ -84,7 +84,6 @@
 	* @returns {function} data reduction function
 	*/
 	Stream.prototype.reduce = function() {
-		var min = this._value;
 		/**
 		* FUNCTION: reduce( min, data )
 		*	Defines the data reduction.

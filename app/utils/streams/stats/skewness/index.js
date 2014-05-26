@@ -127,42 +127,31 @@
 	* @returns {function} data reduction function
 	*/
 	Stream.prototype.reduce = function() {
-		var self = this,
-			N = this._N,
-			mean = this._mean,
-			M = this._values,
-			M1 = M[ 0 ],
-			M2 = M[ 1 ],
-			delta = 0,
+		var delta = 0,
 			delta_n = 0,
-			term1 = 0,
-			val = 0;
+			term1 = 0;
 		/**
 		* FUNCTION: reduce( acc, data )
 		*	Defines the data reduction.
 		*
-		* @param {number} acc - the value accumulated
+		* @param {object} acc - accumulation object containing the following properties: N, mean, M1, M2, M3. 'N' is the observatio number. 'mean' is the mean accumulator. 'M1' is the difference accumulator. 'M2' is the sum of squared difference accumulator. 'M3' is the cubed difference accumulator.
 		* @param {number} data - numeric stream data
-		* @returns {number} reduced data
+		* @returns {object} accumulation object
 		*/
-		return function reduce( M3, x ) {
-			N += 1;
+		return function reduce( acc, x ) {
+			acc.N += 1;
 
-			delta = x - mean;
-			delta_n = delta / N;
+			delta = x - acc.mean;
+			delta_n = delta / acc.N;
 			
-			term1 = delta * delta_n * (N-1);
+			term1 = delta * delta_n * (acc.N-1);
 
-			M3 += term1*delta_n*(N-2) - 3*delta_n*M2;
-			M2 += term1;
-			M1 += delta;
-			mean += delta_n;
+			acc.M3 += term1*delta_n*(acc.N-2) - 3*delta_n*acc.M2;
+			acc.M2 += term1;
+			acc.M1 += delta;
+			acc.mean += delta_n;
 
-			self._N = N;
-			self._mean = mean;
-			self._values = [ M1, M2, M3 ];
-
-			return M3;
+			return acc;
 		};
 	}; // end METHOD reduce()
 
@@ -173,7 +162,6 @@
 	* @returns {function} data transformation function
 	*/
 	Stream.prototype.transform = function() {
-		var self = this;
 		/**
 		* FUNCTION: transform( data )
 		*	Defines the data transformation.
@@ -181,9 +169,8 @@
 		* @param {object} data - stream data
 		* @returns {value} transformed data
 		*/
-		return function transform( M3 ) {
-			var M = self._values;
-			return Math.sqrt( self._N )*M3 / Math.pow( M[ 1 ], 3/2 );
+		return function transform( data ) {
+			return Math.sqrt( data.N )*data.M3 / Math.pow( data.M2, 3/2 );
 		};
 	}; // end METHOD transform()
 
@@ -195,7 +182,13 @@
 		var rStream, pStream;
 
 		// Get the reduction stream:
-		rStream = reducer( this.reduce(), this._values[ 2 ] );
+		rStream = reducer( this.reduce(),  {
+			'N': this._N,
+			'mean': this._mean,
+			'M1': this._values[ 0 ],
+			'M2': this._values[ 1 ],
+			'M3': this._values[ 2 ]
+		});
 
 		pStream = pipeline(
 			rStream,

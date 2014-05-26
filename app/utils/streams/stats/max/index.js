@@ -84,7 +84,6 @@
 	* @returns {function} data reduction function
 	*/
 	Stream.prototype.reduce = function() {
-		var max = this._value;
 		/**
 		* FUNCTION: reduce( max, data )
 		*	Defines the data reduction.
