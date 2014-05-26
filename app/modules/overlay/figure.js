@@ -45,14 +45,14 @@
 
 	// MODULES //
 
-	var // Module to create a server-side DOM:
+	var // Path module:
+		path = require( 'path' ),
+
+		// Module to create a server-side DOM:
 		DOM = require( './../../utils/dom.js' ),
 
 		// Document partials:
-		partials = require( './../../utils/partials.js' )( __dirname + '/../../partials' ),
-
-		// Module to get data:
-		getData = require( './../../utils/data.js' ),
+		partials = require( './../../utils/partials.js' )( path.resolve( __dirname, '../../partials' ) ),
 
 		// Module to generate the figure:
 		generator = require( './generator.js' );
@@ -61,19 +61,18 @@
 	// FIGURE //
 
 	/**
-	* FUNCTION: figure( id1, id2, clbk )
+	* FUNCTION: figure( data, clbk )
 	*
 	*/
-	function figure( id1, id2, clbk ) {
+	function figure( data, clbk ) {
 
-		if ( arguments.length !== 3 ) {
-			console.error( 'figure()::insufficient input arguments. Must provide two ids and a callback.' );
+		if ( arguments.length !== 2 ) {
+			console.error( 'figure()::insufficient input arguments. Must provide data and a callback.' );
 			return;
 		}
 
 		// Initialize a DOM:
 		DOM( partials.index, function onWindow( error, window ) {
-
 			var document = window.document,
 				selection;
 
@@ -90,31 +89,15 @@
 			// Get the selection:
 			selection = document.querySelector( '.main' );
 
-			// Get data:
-			getData( [ id1, id2 ], function onData( error, data ) {
+			// Generate the figure:
+			generator( document, selection, data, function onFigure() {
+				// Return the document contents to the callback:
+				clbk( null, document.innerHTML );
 
-				if ( error ) {
-					clbk( error );
-					return;
-				}
-
-				// Generate the figure:
-				generator( document, selection, data, function onFigure() {
-
-					// Return the document contents to the callback:
-					clbk( null, document.innerHTML );
-
-					// Close the DOM window:
-					window.close();
-
-				});
-
+				// Close the DOM window:
+				window.close();
 			});
-
 		});
-
-		return;
-
 	} // end FIGURE
 		
 

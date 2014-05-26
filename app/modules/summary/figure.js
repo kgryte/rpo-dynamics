@@ -45,14 +45,14 @@
 
 	// MODULES //
 
-	var // Module to create a server-side DOM:
+	var // Path module:
+		path = require( 'path' ),
+
+		// Module to create a server-side DOM:
 		DOM = require( './../../utils/dom.js' ),
 
 		// Document partials:
-		partials = require( './../../utils/partials.js' )( __dirname + '/../../partials' ),
-
-		// Module to get data:
-		getData = require( './../../utils/data.js' ),
+		partials = require( './../../utils/partials.js' )( path.resolve( __dirname, '../../partials' ) ),
 
 		// Module to generate the figure:
 		generator = require( './generator.js' );
