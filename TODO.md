@@ -21,7 +21,7 @@ TODO
 	- Make calculating all metrics/statistics part of the build process?
 10. Remove jQuery dependence and move to ui-component sortable --> more difficult than expected; only want sort on drop; not during drag.
 11. 
-12. Summary stats
+12. 
 13. 
 14. Update code documentation; e.g., document manifests (top-of-file)
 
