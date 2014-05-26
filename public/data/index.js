@@ -1,6 +1,6 @@
 /**
 *
-*	DATA: raw
+*	DATA: index
 *
 *
 *
@@ -52,11 +52,6 @@
 		path = require( 'path' );
 
 
-	// VARIABLES //
-
-	var INDEX = {};
-
-
 	// FUNCTIONS //
 
 	/**
@@ -79,20 +74,30 @@
 	} // end FUNCTION sort()
 
 
-	// INIT //
+	// INDEX //
 
-	(function init() {
-		var dirs, files, stats, dir_path;
+	/**
+	* FUNCTION: getIndex( name )
+	*	Assembles an index of all data files, hashed by parent directory.
+	*
+	* @param {string} name - top-level directory in which to look for datasets and subsequent data files.
+	* @returns {object} data file hash
+	*/
+	function getIndex( name ) {
+		var index = {}, parent_path, dirs, dir_path, stats, files;
+
+		// Assemble the parent data directory path:
+		parent_path = path.join( __dirname, name );
 
 		// Get the directory names:
-		dirs = fs.readdirSync( __dirname );
+		dirs = fs.readdirSync( parent_path );
 
 		for ( var i = 0; i < dirs.length; i++ ) {
 
 			if ( dirs[ i ][ 0 ] !== '.' ) {
 
 				// Assemble the path:
-				dir_path = path.join( __dirname, dirs[ i ] );
+				dir_path = path.join( parent_path, dirs[ i ] );
 
 				// Get the file/directory stats:
 				stats = fs.statSync( dir_path );
@@ -108,18 +113,20 @@
 					files.sort( sort );
 
 					// Store the directory and the associated data files in a hash:
-					INDEX[ dirs[ i ] ] = files;
+					index[ dirs[ i ] ] = files;
 
 				} // end IF directory
 
 			} // end IF !hidden directory
 
 		} // end FOR i
-	})();
+
+		return index;
+	} // end FUNCTION getIndex()
 
 
 	// EXPORTS //
 
-	module.exports = INDEX;
+	module.exports = getIndex;
 
 })();

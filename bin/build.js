@@ -59,14 +59,14 @@
 		// Output streams:
 		STREAMS = require( './../app/utils/streams/output' ),
 
-		// Data index:
-		INDEX = require( './../public/data/raw' );
+		// Module to retrieve a hash of data filenames:
+		getIndex = require( './../public/data' );
 
 
 	// VARIABLES //
 
 	var PATH = path.resolve( __dirname, '../public/data/raw' );
-	
+
 
 	// FUNCTIONS //
 
@@ -96,7 +96,8 @@
 	* @param {function} callback - callback to invoke after all streams finish
 	*/
 	function stream( callback ) {
-		var keys = Object.keys( STREAMS ),
+		var index = getIndex( 'raw' ),
+			keys = Object.keys( STREAMS ),
 			oStream, clbk,
 			counter = 0, total = keys.length,
 			stopwatch;
@@ -109,7 +110,7 @@
 		for ( var i = 0; i < total; i++ ) {
 			oStream = STREAMS[ keys[ i ] ];
 			clbk = onEnd( keys[ i ], i+1, total, stopwatch, done );
-			oStream( PATH, INDEX, clbk );
+			oStream( PATH, index, clbk );
 		}
 
 		return;
