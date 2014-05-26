@@ -74,8 +74,8 @@
 
 		// [2] Instantiate a new data generator and configure:
 		data = xfig.data( data )
-			.x( function ( d ) { return d.x; } )
-			.y( function ( d ) { return d.y[1] / (d.y[0]+d.y[1]); } );
+			.x( function ( d ) { return d[ 0 ]; } )
+			.y( function ( d ) { return d[ 1 ]; } );
 
 		// Format the data:
 		data.format( 2 );
