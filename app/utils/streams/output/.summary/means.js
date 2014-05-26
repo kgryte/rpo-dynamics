@@ -110,7 +110,7 @@
 		*	Defines the data transformation.
 		*
 		* @param {array} data - streamed data
-		* @returns {string} data stringified
+		* @returns {string} stringified data
 		*/
 		return function transform( data ) {
 			return JSON.stringify( data );

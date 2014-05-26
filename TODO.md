@@ -41,7 +41,7 @@ TODO
 
 ### Streams
 
-1. 	Online Skewness/Kurtosis
+1. 	Online Skewness
 2. 	Online KDE
 3. 	Online MVA
 4. 	Online timeseries-histogram

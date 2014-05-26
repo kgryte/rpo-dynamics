@@ -1,6 +1,6 @@
 /**
 *
-*	STREAM: variance
+*	STREAM: kurtosis
 *
 *
 *
@@ -21,7 +21,7 @@
 *
 *
 *	HISTORY:
-*		- 2014/05/22: Created. [AReines].
+*		- 2014/05/23: Created. [AReines].
 *
 *
 *	DEPENDENCIES:
@@ -64,7 +64,7 @@
 	*/
 	function Stream() {
 		// Default accumulator values:
-		this._value = 0;
+		this._values = [ 0, 0, 0, 0 ];
 		this._mean = 0;
 		this._N = 0;
 
@@ -72,18 +72,25 @@
 	} // end FUNCTION stream()
 
 	/**
-	* METHOD: value( value )
-	*	Setter and getter for initial value from which to begin accumulation. If a value is provided, sets the initial accumulation value. If no value is provided, returns the accumulation value.
+	* METHOD: values( seeds )
+	*	Setter and getter for initial values from which to begin accumulation. If a value array is provided, sets the initial values. If no array is provided, returns the initial values.
 	*
-	* @param {number} value - initial value
-	* @returns {object|number} instance object or initial value
+	* @param {array} seeds - 4-element array with the following differences raised to powers: [ M1, M2, M3, M4 ]. E.g., M1 = x-mu; M2 = (x-mu)^2; M3 = (x-mu)^3; M4 = (x-mu)^4.
+	* @returns {object|array} instance object or initial values
 	*/
-	Stream.prototype.value = function( value ) {
+	Stream.prototype.values = function( values ) {
+		var arr;
 		if ( !arguments.length ) {
-			return this._value;
+			// Return a copy:
+			values = this._values;
+			arr = new Array( values.length );
+			for ( var i = 0; i < values; i++ ) {
+				arr[ i ] = values[ i ];
+			}
+			return arr;
 		}
-		this._value = value;
-	}; // end METHOD value()
+		this._values = values;
+	}; // end METHOD values()
 
 	/**
 	* METHOD: mean( value )
@@ -123,7 +130,15 @@
 		var self = this,
 			N = this._N,
 			mean = this._mean,
-			delta = 0;
+			M = this._values,
+			M1 = M[ 0 ],
+			M2 = M[ 1 ],
+			M3 = M[ 2 ],
+			delta = 0,
+			delta_n = 0,
+			delta_n2 = 0,
+			term1 = 0,
+			val = 0;
 		/**
 		* FUNCTION: reduce( acc, data )
 		*	Defines the data reduction.
@@ -132,23 +147,35 @@
 		* @param {number} data - numeric stream data
 		* @returns {number} reduced data
 		*/
-		return function reduce( sos, x ) {
-			// SOS = Sum of Squares
+		return function reduce( M4, x ) {
 			N += 1;
+
 			delta = x - mean;
-			mean += delta / N;
-			sos += delta * ( x-mean );
+			delta_n = delta / N;
+			delta_n2 = delta_n * delta_n;
+
+			term1 = delta * delta_n * (N-1);
+
+// val += term1*delta_n2*(N*N - 3*N + 3) + 6*delta_n2*M[1] - 4*delta_n*M[2];
+// console.log( 'M4 = ' + val );
+
+			M4 += term1*delta_n2*(N*N - 3*N + 3 ) + 6*delta_n2*M2 - 4*delta_n*M3;
+			M3 += term1*delta_n*(N-2) - 3*delta_n*M2;
+			M2 += term1;
+			M1 += delta;
+			mean += delta_n;
 
 			self._N = N;
 			self._mean = mean;
+			self._values = [ M1, M2, M3, M4 ];
 
-			return sos;
+			return M4;
 		};
 	}; // end METHOD reduce()
 
 	/**
 	* METHOD: transform()
-	*	Returns a data transformation function to calculate the unbiased sample variance from a sum of squares.
+	*	Returns a data transformation function to calculate the kurtosis.
 	*
 	* @returns {function} data transformation function
 	*/
@@ -161,8 +188,9 @@
 		* @param {object} data - stream data
 		* @returns {value} transformed data
 		*/
-		return function transform( data ) {
-			return data / (self._N-1);
+		return function transform( M4 ) {
+			var M = self._values;
+			return self._N*M4 / ( M[1]*M[1] ) - 3;
 		};
 	}; // end METHOD transform()
 
@@ -174,7 +202,7 @@
 		var rStream, pStream;
 
 		// Get the reduction stream:
-		rStream = reducer( this.reduce(), this._value );
+		rStream = reducer( this.reduce(), this._values[ 3 ] );
 
 		pStream = pipeline(
 			rStream,

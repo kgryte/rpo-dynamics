@@ -64,7 +64,8 @@
 		Mean = require( './../../stats/mean' ),
 		Median = require( './../../stats/median' ),
 		Quantiles = require( './../../stats/quantiles' ),
-		Variance = require( './../../stats/variance' );
+		Variance = require( './../../stats/variance' ),
+		Kurtosis = require( './../../stats/kurtosis' );
 
 
 	// INIT //
@@ -159,7 +160,8 @@
 			'median': new Median(),
 			'quantiles': new Quantiles(),
 			'mean': new Mean(),
-			'variance': new Variance()
+			'variance': new Variance(),
+			'kurtosis': new Kurtosis(),
 		};
 
 		// ACCESSORS:
