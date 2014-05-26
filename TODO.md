@@ -14,7 +14,7 @@ TODO
 	- Remove dynamic route name
 	- package.json
 5. 	Add quantile calculation to figure.io/vector.io
-6. 	
+6. 	Metrics: specify value precision (ensure 0.229999 --> 0.2300, not 0.2299)
 7. 	
 8. 	User cluster to reduce request response time (?)...or move computation to workers
 9. 	Makefile
@@ -41,7 +41,7 @@ TODO
 
 ### Streams
 
-1. 	
+1. 	Specify value precision
 2. 	Online KDE
 3. 	Online MVA
 4. 	Online timeseries-histogram
