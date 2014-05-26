@@ -15,7 +15,7 @@ TODO
 	- package.json
 5. 	Add quantile calculation to figure.io/vector.io
 6. 	Metrics: specify value precision (ensure 0.229999 --> 0.2300, not 0.2299)
-7. 	
+7. 	Valid JSON task --> data files
 8. 	User cluster to reduce request response time (?)...or move computation to workers
 9. 	Makefile
 	- Make calculating all metrics/statistics part of the build process?
@@ -44,9 +44,7 @@ TODO
 1. 	Specify value precision
 2. 	Online KDE
 3. 	Online MVA
-4. 	Online timeseries-histogram
-	- All datasets
-		- Assemble individual histograms into single file
+4. 	
 5. 	
 6.  
 7. 	Online windowed mean (overlap parameter)
