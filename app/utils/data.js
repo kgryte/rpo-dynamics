@@ -117,7 +117,7 @@
 	*	Loads an array of data arrays based on the specified output data classification, conditions, metric, and dataset filter.
 	*
 	* @param {string} type - output data classification; e.g., raw, distributions, summary, etc.
-	* @param {array} ids - array of encoded condition ids; e.g., [ '00100110' ]
+	* @param {array} ids - array of encoded condition ids; e.g., [ '00100110' ]. Note: [ '*' ] will return all conditions. Use with caution.
 	* @param {string} metric - (optional) metric name; e.g., 'uncorrected.efficiency', 'uncorrected.stoichiometry', etc.
 	* @param {string} transform - (optional) transformation name; e.g., 'histogram', 'kde', 'timeseries', etc.
 	* @param {function} clbk - callback to invoke upon loading the requested data. Function should take two arguments: [ error, data ]. If no errors, error is null.
@@ -139,6 +139,10 @@
 
 		// Get the relevant data file index:
 		index = INDICES[ type ];
+
+		if ( ids[ 0 ] === '*' ) {
+			ids = Object.keys( index );
+		}
 
 		// Generate a callback to track progress:
 		done = onFinish( ids.length );

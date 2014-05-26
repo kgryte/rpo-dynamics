@@ -49,12 +49,37 @@
 	var // Path module:
 		path = require( 'path' ),
 
+		// Module to get data:
+		getData = require( './../../utils/data.js' ),
+
 		// Distribution comparison:
 		figure = require( './figure.js' );
 
 
+	// FUNCTIONS //
+
+	/**
+	* FUNCTION: onError( response, error )
+	*	Sends an error response.
+	*
+	* @param {object} response - HTTP response object
+	* @param {object} error - error object
+	*/
+	function onError( response, error ) {
+		response.writeHead( error.status, {
+			'Content-Type': 'application/json'
+		});
+		response.write( error );
+		response.end();
+	} // end FUNCTION onError()
+
+
 	// ROUTES //
 
+	/**
+	* FUNCTION: routes( clbk )
+	*
+	*/
 	var routes = function ( clbk ) {
 
 		// NOTE: the 'this' context is the application.
@@ -64,20 +89,23 @@
 
 			response.setTimeout( 0 );
 
-			figure( function onFigure( error, html ) {
+			// Get data:
+			getData( 'summary', [ '*' ], 'uncorrected.efficiency', 'kde', function onData( error, data ) {
 				if ( error ) {
-					response.writeHead( error.status, {
-						'Content-Type': 'application/json'
-					});
-					response.write( error );
-					response.end();
+					onError( response, error );
 					return;
 				}
-				response.writeHead( 200, {
-					'Content-Type': 'text/html'
+				figure( function onFigure( error, html ) {
+					if ( error ) {
+						onError( response, error );
+						return;
+					}
+					response.writeHead( 200, {
+						'Content-Type': 'text/html'
+					});
+					response.write( html );
+					response.end();
 				});
-				response.write( html );
-				response.end();
 			});
 		});
 
