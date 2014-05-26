@@ -52,11 +52,12 @@
 	// KDE //
 
 	/**
+	* FUNCTION: kde( canvas, data, width, height, left, top, subtitle )
 	*
 	*/
-	var kde = function( canvas, _data_, width, height, left, top, subtitle ) {
+	var kde = function( canvas, data, width, height, left, top, subtitle ) {
 
-		var graph, data, area, max, axes, annotations, title, text;
+		var graph, area, max, axes, annotations, title, text;
 
 		// [1] Instantiate a new graph generator and configure:
 		graph = xfig.graph( canvas )
@@ -74,16 +75,7 @@
 		graph.create( 'kde' );
 
 		// [2] Instantiate a new data generator and configure:
-		data = xfig.data( _data_ )
-			.x( function ( d ) { return d.x; } )
-			.y( function ( d ) { return d.y[1] / (d.y[0]+d.y[1]); } );
-
-		// Format the data and histogram the data:
-		data.format( 2 )
-			.concat()
-			.kde( function ( d ) {
-				return d[ 1 ];
-			}, 0, 1 );
+		data = xfig.data( data );
 
 		// Bind the data instance to the graph:
 		max = data.max( function ( d ) {

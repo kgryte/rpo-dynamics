@@ -95,7 +95,7 @@
 					onError( response, error );
 					return;
 				}
-				figure( function onFigure( error, html ) {
+				figure( data, function onFigure( error, html ) {
 					if ( error ) {
 						onError( response, error );
 						return;

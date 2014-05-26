@@ -54,9 +54,6 @@
 		// Document partials:
 		partials = require( './../../utils/partials.js' )( path.resolve( __dirname, '../../partials' ) ),
 
-		// Module to decode dataset:
-		mapping = require( './../../utils/mapping.js' ),
-
 		// Module to generate the figure:
 		generator = require( './generator.js' );
 
@@ -64,19 +61,22 @@
 	// FIGURE //
 
 	/**
-	* FUNCTION: figure( clbk )
+	* FUNCTION: figure( data, clbk )
 	*
 	*/
-	function figure( clbk ) {
+	function figure( data, clbk ) {
 
-		if ( arguments.length !== 1 ) {
+		if ( arguments.length !== 2 ) {
+			clbk({
+				'status': 500,
+				'message': 'Internal server error. API incompatibility.'
+			});
 			console.error( 'figure()::insufficient input arguments. Must provide a callback.' );
 			return;
 		}
 
 		// Initialize a DOM:
 		DOM( partials.index, function onWindow( error, window ) {
-
 			var document = window.document,
 				selection,
 				datasets;
@@ -94,34 +94,15 @@
 			// Get the selection:
 			selection = document.querySelector( '.main' );
 
-			// Get the datasets:
-			datasets = Object.keys( mapping );
+			// Generate the figure:
+			generator( document, selection, data, function onFigure() {
+				// Return the document contents to the callback:
+				clbk( null, document.innerHTML );
 
-			// Get data:
-			getData( datasets, function onData( error, data ) {
-
-				if ( error ) {
-					clbk( error );
-					return;
-				}
-
-				// Generate the figure:
-				generator( document, selection, data, function onFigure() {
-
-					// Return the document contents to the callback:
-					clbk( null, document.innerHTML );
-
-					// Close the DOM window:
-					window.close();
-
-				});
-
+				// Close the DOM window:
+				window.close();
 			});
-
 		});
-
-		return;
-
 	} // end FIGURE
 		
 

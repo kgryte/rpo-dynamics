@@ -67,6 +67,10 @@
 	function figure( id, clbk ) {
 
 		if ( arguments.length !== 2 ) {
+			clbk({
+				'status': 500,
+				'message': 'Internal server error. API incompatibility.'
+			});
 			console.error( 'figure()::insufficient input arguments. Must provide an id and a callback.' );
 			return;
 		}
