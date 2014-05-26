@@ -57,14 +57,16 @@
 		Timer = require( './../app/utils/timer.js' ),
 
 		// Module to queue function calls:
-		queue = require( './../app/utils/queue.js' );
+		queue = require( './../app/utils/queue.js' ),
+
+		// Output streams:
+		STREAMS = require( './../app/utils/streams/output' );
 
 
 	// VARIABLES //
 
 	var PATH = path.resolve( __dirname, '../public/data/raw' ),
-		INDEX = {},
-		STREAMS = {};
+		INDEX = {};
 
 
 	// FUNCTIONS //
@@ -130,43 +132,6 @@
 	} // end FUNCTION createIndex()
 
 	/**
-	* FUNCTION: getStreams()
-	*
-	*/
-	function getStreams() {
-		var output_path, dirs, dir_path, stats;
-
-		// Get the path:
-		output_path = path.resolve( __dirname, '../app/utils/streams/output' );
-
-		// Get the directory names:
-		dirs = fs.readdirSync( output_path );
-
-		// For each possible directory, determine if it is a directory...
-		for ( var i = 0; i < dirs.length; i++ ) {
-
-			if ( dirs[ i ][ 0 ] !== '.' ) {
-
-				// Assemble the path:
-				dir_path = path.join( output_path, dirs[ i ] );
-
-				// Get the file/directory stats:
-				stats = fs.statSync( dir_path );
-
-				// Is the "directory" actually a directory?
-				if ( stats.isDirectory() ) {
-
-					// Get the stream generator:
-					STREAMS[ dirs[ i ] ] = require( dir_path );
-
-				} // end IF directory
-
-			} // end IF !hidden directory
-
-		} // end FOR i
-	} // end FUNCTION getStreams()
-
-	/**
 	* FUNCTION: onEnd( name, x, y, timer )
 	*	Returns a function to indicate progress.
 	*
@@ -230,8 +195,6 @@
 	(function init() {
 		// [0] Create a data file hash:
 		createIndex();
-		// [1] Get the stream generators:
-		getStreams();
 	})();
 
 
