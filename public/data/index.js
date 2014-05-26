@@ -77,13 +77,60 @@
 	// INDEX //
 
 	/**
-	* FUNCTION: getIndex( name )
+	* FUNCTION: Index()
+	*	Index constructor.
+	*
+	* @returns {object} index instance
+	*/
+	function Index() {
+		return this;
+	} // and FUNCTION Index()
+
+	/**
+	* METHOD: list()
+	*	Lists available directory indices.
+	*
+	* @returns {array} list of directory indices
+	*/
+	Index.prototype.list = function() {
+		var list = [], dirs, dir_path, stats;
+
+		// Get the directory names:
+		dirs = fs.readdirSync( __dirname );
+
+		for ( var i = 0; i < dirs.length; i++ ) {
+
+			if ( dirs[ i ][ 0 ] !== '.' ) {
+
+				// Assemble the path:
+				dir_path = path.join( __dirname, dirs[ i ] );
+
+				// Get the file/directory stats:
+				stats = fs.statSync( dir_path );
+
+				// Is the "directory" actually a directory?
+				if ( stats.isDirectory() ) {
+
+					// Add the directory to our list:
+					list.push( dirs[ i ] );
+
+				} // end IF directory
+
+			} // end IF !hidden directory
+
+		} // end FOR i
+
+		return list;
+	}; // end METHOD list()
+
+	/**
+	* METHOD: get( name )
 	*	Assembles an index of all data files, hashed by parent directory.
 	*
 	* @param {string} name - top-level directory in which to look for datasets and subsequent data files.
 	* @returns {object} data file hash
 	*/
-	function getIndex( name ) {
+	Index.prototype.get = function( name ) {
 		var index = {}, parent_path, dirs, dir_path, stats, files;
 
 		// Assemble the parent data directory path:
@@ -112,7 +159,7 @@
 					// Sort the filenames:
 					files.sort( sort );
 
-					// Store the directory and the associated data files in a hash:
+					// Store the directory and the associated data filenames in a hash:
 					index[ dirs[ i ] ] = files;
 
 				} // end IF directory
@@ -122,11 +169,11 @@
 		} // end FOR i
 
 		return index;
-	} // end FUNCTION getIndex()
+	}; // end METHOD get()
 
 
 	// EXPORTS //
 
-	module.exports = getIndex;
+	module.exports = new Index();
 
 })();
