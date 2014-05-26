@@ -48,10 +48,17 @@ TODO
 	- All datasets
 		- Assemble individual histograms into single file
 5. 	
-6.  Online histogram as a reduction
+6.  
 7. 	Online windowed mean (overlap parameter)
 8.  Online windowed variance (overlap parameter)
-9. 	
+9. 	Online histogram update
+	- Init stream with counts array
+	- Init stream with ordered index array
+		- If no init, then create null vector; if null, do not decrement counts bins, but only accumulate; once index array is full, start decrementing
+		- Need to specify how many indices to keep on hand at any one time; if < specify, then only increment. Once reach limit, start dec/inc
+	- With each new index,
+		- shift index array and push new index
+		- decrement/increment counts array bins
 10. 
 
 

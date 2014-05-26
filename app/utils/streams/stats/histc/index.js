@@ -44,11 +44,14 @@
 
 	// MODULES //
 
-	var // Event-stream module:
-		eventStream = require( 'event-stream' ),
+	var // Module to combine streams:
+		pipeline = require( 'stream-combiner' ),
 
 		// JSON stream transform:
 		transformer = require( './../../json/transform.js' ),
+
+		// JSON stream reduce:
+		reducer = require( './../../json/reduce.js' ),
 
 		// Module to determine bin location:
 		getBin = require( './binarysearch.js' );
@@ -78,6 +81,44 @@
 		}
 		return vec;
 	} // end FUNCTION linspace()
+
+	/**
+	* FUNCTION: newCounts( edges )
+	*	Initializes a new histogram counts array.
+	*
+	* @param {array} edges - 1d array defining the bins in which to tabulate data.
+	* @returns {array} counts array (note: array length is edges.length+1 to include -/+ infinity bins, i.e., data outside of defined edge range, and each array element is a 3-element array: [ prev_edge | count | edge ] )
+	*/
+	function newCounts( edges ) {
+		var numBins = edges.length + 1,
+			counts = new Array( numBins );
+
+		for ( var i = 0; i < numBins; i++ ) {
+			counts[ i ] = [
+				edges[ i-1 ],
+				0,
+				edges[ i ]
+			];
+		} // end FOR i
+		return counts;
+	} // end FUNCTION newCounts()
+
+	/**
+	* FUNCTION: stringify()
+	*	Returns a transform function to stringify streamed data.
+	*/
+	function stringify() {
+		/**
+		* FUNCTION: transform( data )
+		*	Defines the data transformation.
+		*
+		* @param {array} data - streamed data
+		* @returns {string} stringified data
+		*/
+		return function transform( data ) {
+			return JSON.stringify( data );
+		}; // end FUNCTION transform()
+	} // end FUNCTION stringify()
 
 
 	// STREAM //
@@ -129,67 +170,50 @@
 	}; // end METHOD transform()
 
 	/**
-	* METHOD: tabulate()
-	*	Returns a data transformation function to tabulate bin counts.
+	* METHOD: reduce()
+	*	Returns a data reduction function to tabulate bin counts.
 	*
-	* @returns {function} data transformation function
+	* @returns {function} data reduction function
 	*/
-	Stream.prototype.tabulate = function() {
-		var self = this,
-			numBins = self._edges.length + 1, // include -/+ infinity bins
-			counts = new Array( numBins );
-
-		for ( var i = 0; i < numBins; i++ ) {
-			counts[ i ] = [
-				self._edges[ i-1 ],
-				0,
-				self._edges[ i ]
-			];
-		} // end FOR i
-
+	Stream.prototype.reduce = function() {
 		/**
-		* FUNCTION: transform( data )
-		*	Defines the data transformation.
+		* FUNCTION: reduce( acc, data )
+		*	Defines the data reduction.
 		*
-		* @param {object} data - JSON stream data
-		* @returns {array} transformed data
+		* @param {array} acc - accumulation array
+		* @param {number} idx - streamed bin index
+		* @returns {array} accumulation array
 		*/
-		return function transform( data ) {
-			var idx;
-			data = data.split( ',' );
-			for ( var i = 0; i < data.length; i++ ) {
-				idx = parseInt( data[ i ], 10 ) + 1;
-				counts[ idx ][ 1 ] += 1;
-			}
-			return JSON.stringify( counts );
+		return function reduce( counts, idx ) {
+			counts[ idx ][ 1 ] += 1;
+			return counts;
 		};
-	}; // end METHOD transform()
+	}; // end METHOD reduce()
 
 	/**
 	* METHOD: stream()
 	*	Returns a JSON data transform stream for calculating the statistic.
 	*/
 	Stream.prototype.stream = function() {
-		var iStream, jStream, sStream, oStream, pStream;
+		var iStream, counts, rStream, sStream, pStream;
 
 		// Create an input transform stream:
 		iStream = transformer( this.transform() );
 
-		// Create a transform stream to convert the data into a comma-delimited string: (like Array join)
-		jStream = eventStream.join( ',' );
+		// Initialize a new counts array:
+		counts = newCounts( this._edges );
 
-		// Create a sink stream to buffer all transformed data into memory:
-		sStream = eventStream.wait();
+		// Create a reduction stream to tabulate data values:
+		rStream = reducer( this.reduce(), counts );
 
-		// Create an output transform stream to tabulate data values:
-		oStream = transformer( this.tabulate() );
+		// Create a transform stream to stringify tabulated data:
+		sStream = transformer( stringify() );
 
 		// Create a stream pipeline:
-		pStream = eventStream.pipeline(
+		pStream = pipeline(
 			iStream,
-			jStream,
-			sStream,
-			oStream
+			rStream,
+			sStream
 		);
 
 		// Return the pipeline:
