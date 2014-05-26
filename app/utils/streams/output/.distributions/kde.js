@@ -54,32 +54,6 @@
 		KDE = require( './../../stats/kde' );
 
 
-	// FUNCTIONS //
-
-	/**
-	* FUNCTION: linspace( min, max, increment )
-	*	Generate a linearly spaced vector.
-	*
-	* @param {number} min - min defines the vector lower bound
-	* @param {number} max - max defines the vector upper bound
-	* @param {number} increment - distance between successive vector elements
-	* @returns {array} a 1-dimensional array
-	*/
-	function linspace( min, max, increment ) {
-		var numElements, vec = [];
-
-		numElements = Math.round( ( ( max - min ) / increment ) ) + 1;
-
-		vec[ 0 ] = min;
-		vec[ numElements - 1] = max;
-
-		for ( var i = 1; i < numElements - 1; i++ ) {
-			vec[ i ] = min + increment*i;
-		}
-		return vec;
-	} // end FUNCTION linspace()
-
-
 	// TRANSFORM //
 
 	/**
