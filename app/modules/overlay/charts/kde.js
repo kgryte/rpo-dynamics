@@ -52,18 +52,13 @@
 	// KDE //
 
 	/**
+	* FUNCTION: kde( canvas, data, widget, height, left, top, subtitle )
 	*
 	*/
-	var kde = function( canvas, _data_, width, height, left, top, subtitle ) {
+	var kde = function( canvas, data, width, height, left, top, subtitle ) {
 
 		var graph, area, axes, annotations, title, text,
-			data = [], max = 0, _max,
-			xValue = function( d ) {
-				return d.x;
-			},
-			yValue = function( d ) {
-				return d.y[1] / (d.y[0]+d.y[1]);
-			},
+			Data = [], max = 0, _max,
 			value = function ( d ) {
 				return d[ 1 ];
 			};
@@ -84,20 +79,13 @@
 		graph.create( 'kde-overlay' );
 
 		// [2] For each dataset, create a data object...
-		for ( var i = 0; i < _data_.length; i++ ) {
+		for ( var i = 0; i < data.length; i++ ) {
 
 			// Instantiate a new data generator and configure:
-			data.push( xfig.data( _data_[ i ] )
-				.x( xValue )
-				.y( yValue ) );
-
-			// Format the data and KDE the data:
-			data[ i ].format( 2 )
-				.concat()
-				.kde( value, 0, 1 );
+			Data.push( xfig.data( data[ i ] ) );
 
 			// Calculate the max value so our chart is properly scaled:
-			_max = data[ i ].max( value );
+			_max = Data[ i ].max( value );
 
 			if ( _max > max ) {
 				max = _max;
@@ -109,10 +97,10 @@
 		graph.yMax( max );
 
 		// [3] For each data object, bind data to the graph and create an area chart...
-		for ( var j = 0; j < data.length; j++ ) {
+		for ( var j = 0; j < Data.length; j++ ) {
 
 			// Bind data to the graph:
-			graph.data( data[ j ] );
+			graph.data( Data[ j ] );
 			
 			// Instantiate a new area generator and configure:
 			area = xfig.area( graph )

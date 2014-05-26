@@ -91,7 +91,7 @@
 				condition2 = request.params.condition2;
 
 			// Get data:
-			getData( 'distributions', [ condition1, condition2 ], 'uncorrected.efficiency', 'kde', function onData( error, data ) {
+			getData( 'summary', [ condition1, condition2 ], 'uncorrected.efficiency', 'kde', function onData( error, data ) {
 				if ( error ) {
 					onError( response, error );
 					return;
