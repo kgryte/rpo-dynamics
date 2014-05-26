@@ -66,6 +66,10 @@
 	} // end FUNCTION filter()
 
 
+
+// TODO: remove this. No longer needed, as INDEX is returned on demand from public directory. May be good to cache all known indices.
+
+
 	// INIT //
 
 	(function() {
@@ -100,6 +104,9 @@
 		} // end FOR i
 
 	})();
+
+
+// TODO: should return data tailored to request.
 
 
 	// DATA //
@@ -142,7 +149,7 @@
 				// Get the name of the file:
 				key = files[ j ].slice( 0, files[ j ].length - 5 );
 
-				// Determine the index: (NOTE: we assume the files have numeric names and are number sequentially, beginning with 1.)
+				// Determine the index: (NOTE: we assume the files have numeric names and are numbered sequentially, beginning with 1.)
 				idx = parseInt( key, 10 ) - 1;
 
 				// Get the data:
