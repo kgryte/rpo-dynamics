@@ -55,12 +55,11 @@
 
 	// PARTIALS //
 
-	var partials = function( path ) {
-
+	var partials = function( dir_path ) {
 		var files, partials = {}, file_path, partial, key;
 
 		// Get the file names:
-		files = fs.readdirSync( path )
+		files = fs.readdirSync( dir_path )
 			.filter( function ( file ) {
 				return file.substr( -5 ) === '.html';
 			});
@@ -72,7 +71,7 @@
 			key = files[ i ].slice( 0, files[ i ].length - 5 );
 
 			// Get the file path:
-			file_path = path.join( path, files[ i ] );
+			file_path = path.join( dir_path, files[ i ] );
 
 			// Get the partial:
 			partial = fs.readFileSync( file_path, 'utf8' );

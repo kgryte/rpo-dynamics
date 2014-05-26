@@ -51,9 +51,6 @@
 		// Document partials:
 		partials = require( './../../utils/partials.js' )( __dirname + '/../../partials' ),
 
-		// Module to get data:
-		getData = require( './../../utils/data.js' ),
-
 		// Module to generate the figure:
 		generator = require( './generator.js' );
 
@@ -61,19 +58,21 @@
 	// FIGURE //
 
 	/**
-	* FUNCTION: figure( id, clbk )
+	* FUNCTION: figure( data, clbk )
+	*	Instantiates the server-side DOM and invokes the figure generator.
 	*
+	* @param {array} data - figure data
+	* @param {function} clbk - callback to invoke after figure completion
 	*/
-	function figure( id, clbk ) {
+	function figure( data, clbk ) {
 
 		if ( arguments.length !== 2 ) {
-			console.error( 'figure()::insufficient input arguments. Must provide an id and a callback.' );
+			console.error( 'figure()::insufficient input arguments. Must provide an data and a callback.' );
 			return;
 		}
 
 		// Initialize a DOM:
 		DOM( partials.index, function onWindow( error, window ) {
-
 			var document = window.document,
 				selection;
 
@@ -81,40 +80,24 @@
 			if ( error ) {
 				clbk({
 					'status': 500,
-					'message': 'ERROR:internal server error. Unable to generate server-side DOM.',
-					'error': error
+					'message': 'ERROR:internal server error. Unable to generate server-side DOM.'
 				});
+				console.error( error.stack );
 				return;
 			} // end IF (error)
 
 			// Get the selection:
 			selection = document.querySelector( '.main' );
 
-			// Get data:
-			getData( [ id ], function onData( error, data ) {
+			// Generate the figure:
+			generator( document, selection, data, function onFigure() {
+				// Return the document contents to the callback:
+				clbk( null, document.innerHTML );
 
-				if ( error ) {
-					clbk( error );
-					return;
-				}
-
-				// Generate the figure:
-				generator( document, selection, data[ id ], function onFigure() {
-
-					// Return the document contents to the callback:
-					clbk( null, document.innerHTML );
-
-					// Close the DOM window:
-					window.close();
-
-				});
-
+				// Close the DOM window:
+				window.close();
 			});
-
 		});
-
-		return;
-
 	} // end FIGURE
 		
 

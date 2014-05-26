@@ -59,7 +59,7 @@
 		// NOTE: the 'this' context is the application.
 
 		// Where do the static routes for the application live?
-		this.use( express.static( path.resolve( __dirname, '/../../public' ) ) );
+		this.use( express.static( path.resolve( __dirname, '../../public' ) ) );
 
 	} // end FUNCTION init()
 

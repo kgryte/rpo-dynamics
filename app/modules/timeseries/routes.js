@@ -49,8 +49,29 @@
 	var // Path module:
 		path = require( 'path' ),
 
+		// Module to get data:
+		getData = require( './../../utils/data.js' ),
+
 		// Distribution comparison:
 		figure = require( './figure.js' );
+
+
+	// FUNCTIONS //
+
+	/**
+	* FUNCTION: onError( response, error )
+	*	Sends an error response.
+	*
+	* @param {object} response - HTTP response object
+	* @param {object} error - error object
+	*/
+	function onError( response, error ) {
+		response.writeHead( error.status, {
+			'Content-Type': 'application/json'
+		});
+		response.write( error );
+		response.end();
+	} // end FUNCTION onError()
 
 
 	// ROUTES //
@@ -64,20 +85,24 @@
 
 			var condition = request.params.condition;
 
-			figure( condition, function onFigure( error, html ) {
+			// Get data:
+			getData( 'timeseries', [ condition ], 'uncorrected.efficiency', 'timeseries', function onData( error, data ) {
 				if ( error ) {
-					response.writeHead( error.status, {
-						'Content-Type': 'application/json'
-					});
-					response.write( error );
-					response.end();
+					onError( response, error );
 					return;
 				}
-				response.writeHead( 200, {
-					'Content-Type': 'text/html'
+
+				figure( data[ condition ], function onFigure( error, html ) {
+					if ( error ) {
+						onError( response, error );
+						return;
+					}
+					response.writeHead( 200, {
+						'Content-Type': 'text/html'
+					});
+					response.write( html );
+					response.end();
 				});
-				response.write( html );
-				response.end();
 			});
 		});
 
