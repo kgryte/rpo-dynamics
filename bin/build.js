@@ -47,10 +47,7 @@
 
 	// MODULES //
 
-	var // Filesystem module:
-		fs = require( 'fs' ),
-
-		// Path module:
+	var // Path module:
 		path = require( 'path' ),
 
 		// Timer module:
@@ -60,76 +57,18 @@
 		queue = require( './../app/utils/queue.js' ),
 
 		// Output streams:
-		STREAMS = require( './../app/utils/streams/output' );
+		STREAMS = require( './../app/utils/streams/output' ),
+
+		// Data index:
+		INDEX = require( './../public/data/raw' );
 
 
 	// VARIABLES //
 
-	var PATH = path.resolve( __dirname, '../public/data/raw' ),
-		INDEX = {};
-
+	var PATH = path.resolve( __dirname, '../public/data/raw' );
+	
 
 	// FUNCTIONS //
-
-	/**
-	* FUNCTION: filter( file )
-	*
-	*/
-	function filter( file ) {
-		return file.substr( -5 ) === '.json';
-	} // end FUNCTION filter()
-
-	/**
-	* FUNCTION: sort( a, b )
-	*
-	*/
-	function sort( a, b ) {
-		var val1, val2;
-		val1 = parseInt( a.substr( 0, a.length-5 ), 10 );
-		val2 = parseInt( b.substr( 0, b.length-5 ), 10 );
-		return val1 - val2;
-	} // end FUNCTION sort()
-
-	/**
-	* FUNCTION: createIndex()
-	*
-	*/
-	function createIndex() {
-		var dirs, files, stats, dir_path;
-
-		// Get the directory names:
-		dirs = fs.readdirSync( PATH );
-
-		// For each possible directory, determine if it is a directory...
-		for ( var i = 0; i < dirs.length; i++ ) {
-
-			if ( dirs[ i ][ 0 ] !== '.' ) {
-
-				// Assemble the path:
-				dir_path = path.join( PATH, dirs[ i ] );
-
-				// Get the file/directory stats:
-				stats = fs.statSync( dir_path );
-
-				// Is the "directory" actually a directory?
-				if ( stats.isDirectory() ) {
-
-					// Get the file names within the directory, filtering for *.json files:
-					files = fs.readdirSync( dir_path )
-						.filter( filter );
-
-					// Sort the filenames:
-					files.sort( sort );
-
-					// Store the directory and the associated data files in a hash:
-					INDEX[ dirs[ i ] ] = files;
-
-				} // end IF directory
-
-			} // end IF !hidden directory
-
-		} // end FOR i
-	} // end FUNCTION createIndex()
 
 	/**
 	* FUNCTION: onEnd( name, x, y, timer )
@@ -190,26 +129,18 @@
 	} // end FUNCTION stream()
 
 	
-	// INIT //
-
-	(function init() {
-		// [0] Create a data file hash:
-		createIndex();
-	})();
-
-
 	// BUILD //
 
 	/**
 	* FUNCTION: build()
 	*
 	*/
-	var build = function() {
+	function build() {
 		// Run the execution queue:
 		queue([
 			stream
 		]);
-	}; // end FUNCTION build()
+	} // end FUNCTION build()
 	
 
 	// RUN //

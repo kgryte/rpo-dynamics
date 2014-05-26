@@ -1,6 +1,6 @@
 /**
 *
-*	STREAMS: output
+*	DATA: raw
 *
 *
 *
@@ -54,13 +54,35 @@
 
 	// VARIABLES //
 
-	var STREAMS = {};
+	var INDEX = {};
+
+
+	// FUNCTIONS //
+
+	/**
+	* FUNCTION: filter( file )
+	*
+	*/
+	function filter( file ) {
+		return file.substr( -5 ) === '.json';
+	} // end FUNCTION filter()
+
+	/**
+	* FUNCTION: sort( a, b )
+	*
+	*/
+	function sort( a, b ) {
+		var val1, val2;
+		val1 = parseInt( a.substr( 0, a.length-5 ), 10 );
+		val2 = parseInt( b.substr( 0, b.length-5 ), 10 );
+		return val1 - val2;
+	} // end FUNCTION sort()
 
 
 	// INIT //
 
 	(function init() {
-		var dirs, dir_path, stats;
+		var dirs, files, stats, dir_path;
 
 		// Get the directory names:
 		dirs = fs.readdirSync( __dirname );
@@ -78,8 +100,15 @@
 				// Is the "directory" actually a directory?
 				if ( stats.isDirectory() ) {
 
-					// Get the stream generator:
-					STREAMS[ dirs[ i ] ] = require( dir_path );
+					// Get the file names within the directory, filtering for *.json files:
+					files = fs.readdirSync( dir_path )
+						.filter( filter );
+
+					// Sort the filenames:
+					files.sort( sort );
+
+					// Store the directory and the associated data files in a hash:
+					INDEX[ dirs[ i ] ] = files;
 
 				} // end IF directory
 
@@ -91,6 +120,6 @@
 
 	// EXPORTS //
 
-	module.exports = STREAMS;
+	module.exports = INDEX;
 
 })();

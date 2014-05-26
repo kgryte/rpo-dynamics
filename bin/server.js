@@ -59,7 +59,7 @@
 	// BOOT //
 
 	// Boot the application...
-	app.boot( function ( error ) {
+	app.boot( function onError( error ) {
 
 		// Check if we encountered an error while booting...
 		if ( error ) {
