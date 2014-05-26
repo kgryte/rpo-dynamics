@@ -54,7 +54,10 @@
 		path = require( 'path' ),
 
 		// Timer module:
-		Timer = require( './../app/utils/timer.js' );
+		Timer = require( './../app/utils/timer.js' ),
+
+		// Module to queue function calls:
+		queue = require( './../app/utils/queue.js' );
 
 
 	// VARIABLES //
@@ -182,6 +185,45 @@
 		};
 	} // end FUNCTION onEnd()
 
+	/**
+	* FUNCTION: stream( callback )
+	*	Run the streams.
+	*
+	* @param {function} callback - callback to invoke after all streams finish
+	*/
+	function stream( callback ) {
+		var keys = Object.keys( STREAMS ),
+			oStream, clbk,
+			counter = 0, total = keys.length,
+			stopwatch;
+
+		// Initialize a new timer:
+		stopwatch = new Timer();
+		stopwatch.start();
+
+		// Cycle through the streams...
+		for ( var i = 0; i < total; i++ ) {
+			oStream = STREAMS[ keys[ i ] ];
+			clbk = onEnd( keys[ i ], i+1, total, stopwatch, done );
+			oStream( PATH, INDEX, clbk );
+		}
+
+		return;
+
+		/**
+		* FUNCTION: done()
+		*	Outputs total build time and split times to the console.
+		*/
+		function done() {
+			stopwatch.stop();
+			if ( ++counter === total ) {
+				console.log( 'Total: ' + stopwatch.total() + ' seconds...' );
+				console.log( 'Splits: ' + stopwatch.splits() );
+				callback();
+			}
+		} // end FUNCTION done()
+	} // end FUNCTION stream()
+
 	
 	// INIT //
 
@@ -200,36 +242,7 @@
 	*
 	*/
 	var build = function() {
-		var keys = Object.keys( STREAMS ),
-			stream, clbk,
-			counter = 0, total = keys.length,
-			stopwatch;
-
-		// Initialize a new timer:
-		stopwatch = new Timer();
-		stopwatch.start();
-
-		// Cycle through the streams...
-		for ( var i = 0; i < total; i++ ) {
-			stream = STREAMS[ keys[ i ] ];
-			clbk = onEnd( keys[ i ], i+1, total, stopwatch, done );
-			stream( PATH, INDEX, clbk );
-		}
-
-		return;
-
-		/**
-		* FUNCTION: done()
-		*	Outputs total build time and split times to the console.
-		*/
-		function done() {
-			stopwatch.stop();
-			if ( ++counter === total ) {
-				console.log( 'Total: ' + stopwatch.total() + ' seconds...' );
-				console.log( 'Splits: ' + stopwatch.splits() );
-			}
-		} // end FUNCTION done()
-
+		
 	}; // end FUNCTION build()
 	
 
