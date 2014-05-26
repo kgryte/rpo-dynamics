@@ -45,52 +45,91 @@
 
 	// MODULES //
 
-	var // Filesystem module:
-		fs = require( 'fs' ),
+	var // Path module:
+		path = require( 'path' ),
 
-		// Path module:
-		path = require( 'path' );
+		// Timer module:
+		Timer = require( './../../timer.js' ),
+
+		// Output streams:
+		STREAMS = require( './streams.js' ),
+
+		// Module to retrieve a hash of data filenames:
+		getIndex = require( './../../../../public/data' );
 
 
 	// VARIABLES //
 
-	var STREAMS = {};
+	var PATH = path.resolve( __dirname, '../../../../public/data/raw' );
 
 
-	// INIT //
+	// FUNCTIONS //
 
-	(function init() {
-		var dirs, dir_path, stats;
+	/**
+	* FUNCTION: onEnd( name, x, y, timer )
+	*	Returns a function to indicate progress.
+	*
+	* @param {string} name - indicator namespace
+	* @param {number} x - current iteration
+	* @param {number} y - total iterations
+	* @param {Timer} timer - Timer instance; used to clock build step duration
+	* @param {function} clbk - callback
+	* @returns {function} callback to invoke on end
+	*/
+	function onEnd( name, x, y, timer, clbk ) {
+		return function onEnd() {
+			console.log( name + ': finished. ' + x + ' of ' + y + ' output streams complete...' );
+			console.log( 'Time Elapsed: ' + timer.split( name ) + ' seconds...' );
+			clbk();
+		};
+	} // end FUNCTION onEnd()
 
-		// Get the directory names:
-		dirs = fs.readdirSync( __dirname );
 
-		for ( var i = 0; i < dirs.length; i++ ) {
+	// STREAM //
 
-			if ( dirs[ i ][ 0 ] !== '.' ) {
+	/**
+	* FUNCTION: stream( callback )
+	*	Run the streams.
+	*
+	* @param {function} callback - callback to invoke after all streams finish
+	*/
+	function stream( callback ) {
+		var index = getIndex( 'raw' ),
+			keys = Object.keys( STREAMS ),
+			oStream, clbk,
+			counter = 0, total = keys.length,
+			stopwatch;
 
-				// Assemble the path:
-				dir_path = path.join( __dirname, dirs[ i ] );
+		// Initialize a new timer:
+		stopwatch = new Timer();
+		stopwatch.start();
 
-				// Get the file/directory stats:
-				stats = fs.statSync( dir_path );
+		// Cycle through the streams...
+		for ( var i = 0; i < total; i++ ) {
+			oStream = STREAMS[ keys[ i ] ];
+			clbk = onEnd( keys[ i ], i+1, total, stopwatch, done );
+			oStream( PATH, index, clbk );
+		}
 
-				// Is the "directory" actually a directory?
-				if ( stats.isDirectory() ) {
+		return;
 
-					// Get the stream generator:
-					STREAMS[ dirs[ i ] ] = require( dir_path );
-
-				} // end IF directory
-
-			} // end IF !hidden directory
-
-		} // end FOR i
-	})();
+		/**
+		* FUNCTION: done()
+		*	Outputs total build time and split times to the console.
+		*/
+		function done() {
+			stopwatch.stop();
+			if ( ++counter === total ) {
+				console.log( 'Total: ' + stopwatch.total() + ' seconds...' );
+				console.log( 'Splits: ' + stopwatch.splits() );
+				callback();
+			}
+		} // end FUNCTION done()
+	} // end FUNCTION stream()
 
 
 	// EXPORTS //
 
-	module.exports = STREAMS;
+	module.exports = stream;
 
 })();
