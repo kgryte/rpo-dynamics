@@ -52,6 +52,7 @@
 	// LINE //
 
 	/**
+	* FUNCTION: line( canvas, data, widget, height, left, top, subtitle )
 	*
 	*/
 	var line = function( canvas, data, width, height, left, top, subtitle ) {

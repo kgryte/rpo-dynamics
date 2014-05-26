@@ -126,7 +126,7 @@
 		var DATA = {}, index,
 			files, total,
 			dir_path, file_path, id,
-			d, key, idx,
+			d, parts, idx,
 			done, onRead;
 
 		if ( !INDICES.hasOwnProperty( type ) ) {
@@ -181,11 +181,16 @@
 			// For each data file, get its content...
 			for ( var j = 0; j < total; j++ ) {
 
-				// Get the name of the file:
-				key = files[ j ].split( '.' )[ 0 ];
+				// Split the file name into parts:
+				parts = files[ j ].split( '.' );
 
-				// Determine the index: (NOTE: we assume the files have numeric names and are numbered sequentially, beginning with 1.)
-				idx = parseInt( key, 10 ) - 1;
+				// 1.uncorrected.efficiency.histogram.json
+				if ( parts.length === 5 ) {
+					// Determine the index: (NOTE: we assume the files have numeric names and are numbered sequentially, beginning with 1.)
+					idx = parseInt( parts[ 0 ], 10 ) - 1;
+				} else {
+					idx = j;
+				}
 
 				// Get the file path:
 				file_path = path.join( dir_path, files[ j ] );
@@ -234,7 +239,7 @@
 						console.error( error.stack );
 						return;
 					}
-					// Parse the data and store:
+					// Parse and store the data:
 					DATA[ id ][ idx ] = JSON.parse( json );
 
 					if ( ++counter === total ) {

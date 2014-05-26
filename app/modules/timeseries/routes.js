@@ -76,6 +76,10 @@
 
 	// ROUTES //
 
+	/**
+	* FUNCTION: routes( clbk )
+	*
+	*/
 	var routes = function ( clbk ) {
 
 		// NOTE: the 'this' context is the application.

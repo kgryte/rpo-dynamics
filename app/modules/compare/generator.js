@@ -55,15 +55,28 @@
 		KDE = require( './charts/kde.js' ),
 		TimeseriesHistogram = require( './charts/timeseries-histogram.js' );
 
+	// FUNCTIONS //
+
+	/**
+	* FUNCTION: removeBins( histogram )
+	*	Removes the +/- infinity bins from a histogram.
+	*
+	* @param {array} histogram - array of histogram counts; length = N
+	* @returns {array} array of histogram counts; length = N-2
+	*/
+	function removeBins( histogram ) {
+		return histogram.slice( 1, histogram.length-1 );
+	} // end FUNCTION removeBins()
+
 
 	// GENERATOR //
 
 	/**
+	* FUNCTION: generator( document, selection, data, clbk )
 	*
 	*/
 	var generator = function( document, selection, data, clbk ) {
-
-		var figure, datasets, d, canvas;
+		var figure, datasets, kde, hist, means, canvas;
 
 		// [1] Instantiate a new figure generator:
 		figure = xfig.figure();
@@ -71,13 +84,18 @@
 		// Create the figure:
 		figure.create( document, selection );
 
-		// [2] Get the datasets:
-		datasets = Object.keys( data );
+		// [2] Get the dataset names:
+		datasets = Object.keys( data[ 0 ] );
 
 		// [3] Create a separate canvas for each dataset and create the line charts:
 		for ( var i = 0; i < datasets.length; i++ ) {
 
-			d = data[ datasets[ i ] ];
+			kde = data[ 0 ][ datasets[ i ] ];
+			hist = data[ 1 ][ datasets[ i ] ][ 0 ];
+			means = data[ 2 ][ datasets[ i ] ][ 0 ];
+
+			// Remove the +/- infinity bins from each histogram:
+			hist = hist.map( removeBins );
 
 			// [3.0] Instantiate a new canvas generator and configure:
 			canvas = xfig.canvas( figure )
@@ -88,10 +106,10 @@
 			canvas.create();
 
 			// [3.1] Create a new KDE chart:
-			KDE( canvas, d, 400, 260, 90, 80, mapping[ datasets[ i ] ] );
+			KDE( canvas, kde, 400, 260, 90, 80, mapping[ datasets[ i ] ] );
 
 			// [3.2] Create a new timeseries histogram chart:
-			TimeseriesHistogram( canvas, d, 400, 260, 90, 485, '' );
+			TimeseriesHistogram( canvas, hist, means, 400, 260, 90, 485, '' );
 
 		} // end FOR i
 
