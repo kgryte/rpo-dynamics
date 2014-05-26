@@ -242,7 +242,10 @@
 	*
 	*/
 	var build = function() {
-		
+		// Run the execution queue:
+		queue([
+			stream
+		]);
 	}; // end FUNCTION build()
 	
 
