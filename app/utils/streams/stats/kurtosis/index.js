@@ -156,9 +156,6 @@
 
 			term1 = delta * delta_n * (N-1);
 
-// val += term1*delta_n2*(N*N - 3*N + 3) + 6*delta_n2*M[1] - 4*delta_n*M[2];
-// console.log( 'M4 = ' + val );
-
 			M4 += term1*delta_n2*(N*N - 3*N + 3 ) + 6*delta_n2*M2 - 4*delta_n*M3;
 			M3 += term1*delta_n*(N-2) - 3*delta_n*M2;
 			M2 += term1;

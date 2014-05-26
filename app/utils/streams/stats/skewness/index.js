@@ -1,6 +1,6 @@
 /**
 *
-*	STREAM: kurtosis
+*	STREAM: skewness
 *
 *
 *
@@ -64,7 +64,7 @@
 	*/
 	function Stream() {
 		// Default accumulator values:
-		this._values = [ 0, 0, 0, 0 ];
+		this._values = [ 0, 0, 0 ];
 		this._mean = 0;
 		this._N = 0;
 
@@ -75,7 +75,7 @@
 	* METHOD: values( seeds )
 	*	Setter and getter for initial values from which to begin accumulation. If a value array is provided, sets the initial values. If no array is provided, returns the initial values.
 	*
-	* @param {array} seeds - 4-element array with the following differences raised to powers: [ M1, M2, M3, M4 ]. E.g., M1 = x-mu; M2 = (x-mu)^2; M3 = (x-mu)^3; M4 = (x-mu)^4.
+	* @param {array} seeds - 3-element array with the following differences raised to powers: [ M1, M2, M3 ]. E.g., M1 = x-mu; M2 = (x-mu)^2; M3 = (x-mu)^3.
 	* @returns {object|array} instance object or initial values
 	*/
 	Stream.prototype.values = function( values ) {
@@ -133,10 +133,8 @@
 			M = this._values,
 			M1 = M[ 0 ],
 			M2 = M[ 1 ],
-			M3 = M[ 2 ],
 			delta = 0,
 			delta_n = 0,
-			delta_n2 = 0,
 			term1 = 0,
 			val = 0;
 		/**
@@ -147,19 +145,14 @@
 		* @param {number} data - numeric stream data
 		* @returns {number} reduced data
 		*/
-		return function reduce( M4, x ) {
+		return function reduce( M3, x ) {
 			N += 1;
 
 			delta = x - mean;
 			delta_n = delta / N;
-			delta_n2 = delta_n * delta_n;
-
+			
 			term1 = delta * delta_n * (N-1);
 
-// val += term1*delta_n2*(N*N - 3*N + 3) + 6*delta_n2*M[1] - 4*delta_n*M[2];
-// console.log( 'M4 = ' + val );
-
-			M4 += term1*delta_n2*(N*N - 3*N + 3 ) + 6*delta_n2*M2 - 4*delta_n*M3;
 			M3 += term1*delta_n*(N-2) - 3*delta_n*M2;
 			M2 += term1;
 			M1 += delta;
@@ -167,15 +160,15 @@
 
 			self._N = N;
 			self._mean = mean;
-			self._values = [ M1, M2, M3, M4 ];
+			self._values = [ M1, M2, M3 ];
 
-			return M4;
+			return M3;
 		};
 	}; // end METHOD reduce()
 
 	/**
 	* METHOD: transform()
-	*	Returns a data transformation function to calculate the kurtosis.
+	*	Returns a data transformation function to calculate the skewness.
 	*
 	* @returns {function} data transformation function
 	*/
@@ -188,9 +181,9 @@
 		* @param {object} data - stream data
 		* @returns {value} transformed data
 		*/
-		return function transform( M4 ) {
+		return function transform( M3 ) {
 			var M = self._values;
-			return self._N*M4 / ( M[1]*M[1] ) - 3;
+			return Math.sqrt( self._N )*M3 / Math.pow( M[ 1 ], 3/2 );
 		};
 	}; // end METHOD transform()
 
@@ -202,7 +195,7 @@
 		var rStream, pStream;
 
 		// Get the reduction stream:
-		rStream = reducer( this.reduce(), this._values[ 3 ] );
+		rStream = reducer( this.reduce(), this._values[ 2 ] );
 
 		pStream = pipeline(
 			rStream,

@@ -65,6 +65,7 @@
 		Median = require( './../../stats/median' ),
 		Quantiles = require( './../../stats/quantiles' ),
 		Variance = require( './../../stats/variance' ),
+		Skewness = require( './../../stats/skewness' ),
 		Kurtosis = require( './../../stats/kurtosis' );
 
 
@@ -161,6 +162,7 @@
 			'quantiles': new Quantiles(),
 			'mean': new Mean(),
 			'variance': new Variance(),
+			'skewness': new Skewness(),
 			'kurtosis': new Kurtosis(),
 		};
 
