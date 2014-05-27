@@ -64,9 +64,9 @@
 	*
 	*/
 	var generator = function( document, selection, data, clbk ) {
-
 		var figure, canvas,
-			datasets = Object.keys( data ),
+			dataset1 = Object.keys( data[ 0 ] )[ 0 ],
+			dataset2 = Object.keys( data[ 3 ] )[ 0 ],
 			d = [], raw, dat = [[],[]];
 
 
@@ -86,7 +86,7 @@
 
 		// [3] Assemble our datasets...
 
-		raw = data[ datasets[0] ][10];
+		raw = data[ 0 ][ dataset1 ][10];
 		for ( var i = 0; i < raw.length; i++ ) {
 			dat[ 0 ].push([
 				raw[ i ].x,
@@ -105,30 +105,13 @@
 			.format( 2 );
 
 		// FRET:
-		d[ 1 ] = xfig.data( [ data[ datasets[0] ][10] ] )
-			.x( function ( d ) { return d.x; } )
-			.y( function ( d ) { return d.y[1] / (d.y[0]+d.y[1]); })
-			.format( 2 );
+		d[ 1 ] = xfig.data( [ data[ 1 ][ dataset1 ][10] ] );
 
-		// FRET: (all timeseries)
-		d[ 2 ] = xfig.data( data[ datasets[0] ] )
-			.x( function ( d ) { return d.x; } )
-			.y( function ( d ) { return d.y[1] / (d.y[0]+d.y[1]); })
-			.format( 2 )
-			.concat()
-			.kde( function ( d ) {
-				return d[ 1 ];
-			}, 0, 1 );
+		// KDE:
+		d[ 2 ] = xfig.data( data[ 2 ][ dataset1 ] );
 
-		// FRET: (all timeseries)
-		d[ 3 ] = xfig.data( data[ datasets[1] ] )
-			.x( function ( d ) { return d.x; } )
-			.y( function ( d ) { return d.y[1] / (d.y[0]+d.y[1]); })
-			.format( 2 )
-			.concat()
-			.kde( function ( d ) {
-				return d[ 1 ];
-			}, 0, 1 );
+		// KDE:
+		d[ 3 ] = xfig.data( data[ 3 ][ dataset2 ] );
 
 		// [4] Generate a example intensity timeseries from the first dataset:
 		Raw( canvas, d[ 0 ], 400, 260, 90, 80, 'a' );

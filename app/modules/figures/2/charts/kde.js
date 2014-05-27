@@ -52,6 +52,7 @@
 	// KDE //
 
 	/**
+	* FUNCTION: kde( canvas, data, width, height, left, top, subtitle )
 	*
 	*/
 	var kde = function( canvas, data, width, height, left, top, subtitle ) {
