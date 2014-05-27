@@ -52,7 +52,6 @@
 		mapping = require( './../../../utils/mapping.js' ),
 
 		// Chart generators:
-		Line = require( './charts/line.js' ),
 		Multipanel = require( './charts/multipanel.js' );
 
 
@@ -63,15 +62,9 @@
 	*
 	*/
 	var generator = function( document, selection, data, clbk ) {
-
 		var figure, canvas,
-			datasets = Object.keys( data ), d = [],
-			xValue = function ( d ) {
-				return d.x;
-			},
-			yValue = function ( d ) {
-				return d.y[1] / (d.y[0]+d.y[1]);
-			};
+			datasets = Object.keys( data ),
+			d = [];
 
 		// [1] Instantiate a new figure generator:
 		figure = xfig.figure();
@@ -94,12 +87,9 @@
 		d[ 1 ] = [ data[ datasets[1] ][55] ];
 		d[ 2 ] = [ data[ datasets[1] ][51] ];
 
-		// [4] Generate the line charts...
+		// [4] Generate the multipanel line charts...
 		for ( var i = 0; i < d.length; i++ ) {
-			d[ i ] = xfig.data( d[ i ] )
-				.x( xValue )
-				.y( yValue )
-				.format( 2 );
+			d[ i ] = xfig.data( d[ i ] );
 		} // end FOR i
 
 		Multipanel( canvas, d, 400, 720, 90, 80, '' ); // 720
