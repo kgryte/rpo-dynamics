@@ -49,12 +49,37 @@
 	var // Path module:
 		path = require( 'path' ),
 
+		// Module to get data:
+		getData = require( './../../utils/data.js' ),
+
 		// Distribution comparison:
 		figure = require( './figure.js' );
 
 
+	// FUNCTIONS //
+
+	/**
+	* FUNCTION: onError( response, error )
+	*	Sends an error response.
+	*
+	* @param {object} response - HTTP response object
+	* @param {object} error - error object
+	*/
+	function onError( response, error ) {
+		response.writeHead( error.status, {
+			'Content-Type': 'application/json'
+		});
+		response.write( error );
+		response.end();
+	} // end FUNCTION onError()
+
+
 	// ROUTES //
 
+	/**
+	* FUNCTION: routes( clbk )
+	*
+	*/
 	var routes = function ( clbk ) {
 
 		// NOTE: the 'this' context is the application.
@@ -62,25 +87,65 @@
 		// Summary figure route for a particular condition:
 		this.get( '/summary/:condition', function onRequest( request, response ) {
 
-			var condition = request.params.condition;
+			var condition = request.params.condition,
+				counter = 0,
+				Data = new Array( 4 );
 
-			figure( condition, function onFigure( error, html ) {
+			// Get data:
+			getData( 'summary', [ condition ], 'uncorrected.efficiency', 'kde', function onData( error, data ) {
 				if ( error ) {
-					response.writeHead( error.status, {
-						'Content-Type': 'application/json'
-					});
-					response.write( error );
-					response.end();
+					onError( response, error );
 					return;
 				}
-				response.writeHead( 200, {
-					'Content-Type': 'text/html'
-				});
-				response.write( html );
-				response.end();
-
+				Data[ 0 ] = data;
+				next();
+			});
+			getData( 'summary', [ condition ], 'uncorrected.efficiency', 'timeseries-histogram', function onData( error, data ) {
+				if ( error ) {
+					onError( response, error );
+					return;
+				}
+				Data[ 1 ] = data;
+				next();
+			});
+			getData( 'summary', [ condition ], 'uncorrected.efficiency', 'means', function onData( error, data ) {
+				if ( error ) {
+					onError( response, error );
+					return;
+				}
+				Data[ 2 ] = data;
+				next();
+			});
+			getData( 'timeseries', [ condition ], 'uncorrected.efficiency', 'timeseries', function onData( error, data ) {
+				if ( error ) {
+					onError( response, error );
+					return;
+				}
+				Data[ 3 ] = data;
+				next();
 			});
 
+			return;
+
+			/**
+			* FUNCTION: next()
+			*	Callback to invoke after successfully loading data.
+			*/
+			function next() {
+				if ( ++counter === 4 ) {
+					figure( Data, function onFigure( error, html ) {
+						if ( error ) {
+							onError( response, error );
+							return;
+						}
+						response.writeHead( 200, {
+							'Content-Type': 'text/html'
+						});
+						response.write( html );
+						response.end();
+					});
+				}
+			} // end FUNCTION next()
 		});
 
 		// Callback:

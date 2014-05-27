@@ -84,7 +84,7 @@
 			if ( error ) {
 				clbk({
 					'status': 500,
-					'message': 'ERROR:internal server error. Unable to generate server-side DOM.'
+					'message': 'Internal server error. Unable to generate server-side DOM.'
 				});
 				console.error( error.stack );
 				return;
