@@ -55,10 +55,10 @@
 	// GENERATOR //
 
 	/**
+	* FUNCTION: generator( document, selection, data, clbk )
 	*
 	*/
 	var generator = function( document, selection, data, clbk ) {
-
 		var figure, canvas;
 
 		// [1] Instantiate a new figure generator:
