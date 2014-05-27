@@ -58,22 +58,13 @@
 	// GENERATOR //
 
 	/**
+	* FUNCTION: generator( document, selection, data, clbk )
 	*
 	*/
 	var generator = function( document, selection, data, clbk ) {
-
 		var figure, canvas,
 			datasets = Object.keys( data ),
 			d,
-			xValue = function ( d ) {
-				return d.x;
-			},
-			yValue = function ( d ) {
-				return d.y[1] / (d.y[0]+d.y[1]);
-			},
-			value = function ( d ) {
-				return d[ 1 ];
-			},
 			labels = [ 'a', '', 'b', '' ],
 			left, top;
 
@@ -94,16 +85,10 @@
 		// [3] Assemble our datasets and generate a KDE:
 		for ( var i = 0; i < datasets.length; i++ ) {
 
-			// [3.0] Format the data:
-			d = xfig.data( data[ datasets[ i ] ] )
-				.x( xValue )
-				.y( yValue )
-				.format( 2 )
-				.concat()
-				.kde( value, 0, 1 );
+			// [3.0] Instantiate a new data generator and configure:
+			d = xfig.data( data[ datasets[ i ] ] );
 
 			// [3.1] KDE:
-
 			left = 90 + ( 540 * (i%2) );
 			top = 80 + ( 405 * Math.floor( i / 2 ) );
 

@@ -45,11 +45,14 @@
 
 	// MODULES //
 
-	var // Module to create a server-side DOM:
+	var // Path module:
+		path = require( 'path' ),
+
+		// Module to create a server-side DOM:
 		DOM = require( './../../../utils/dom.js' ),
 
 		// Document partials:
-		partials = require( './../../../utils/partials.js' )( __dirname + '/../../../partials' ),
+		partials = require( './../../../utils/partials.js' )( path.resolve( __dirname, '../../../partials' ) ),
 
 		// Module to get data:
 		getData = require( './../../../utils/data.js' ),
@@ -70,7 +73,6 @@
 
 		// Initialize a DOM:
 		DOM( partials.index, function onWindow( error, window ) {
-
 			var document = window.document,
 				selection;
 
@@ -88,30 +90,35 @@
 			selection = document.querySelector( '.main' );
 
 			// Get data:
-			getData( ids, function onData( error, data ) {
+			getData( 'summary', ids, 'uncorrected.efficiency', 'kde', onData );
 
+			return;
+
+			/**
+			* FUNCTION: onData( error, data )
+			*
+			*/
+			function onData( error, data ) {
 				if ( error ) {
 					clbk( error );
 					return;
 				}
-
 				// Generate the figure:
-				generator( document, selection, data, function onFigure() {
+				generator( document, selection, data, onFigure );
+			} // end FUNCTION onData()
 
-					// Return the document contents to the callback:
-					clbk( null, document.innerHTML );
+			/**
+			* FUNCTION: onFigure()
+			*
+			*/
+			function onFigure() {
+				// Return the document contents to the callback:
+				clbk( null, document.innerHTML );
 
-					// Close the DOM window:
-					window.close();
-
-				});
-
-			});
-
+				// Close the DOM window:
+				window.close();
+			} // end FUNCTION onFigure()
 		});
-
-		return;
-
 	} // end FIGURE
 		
 
