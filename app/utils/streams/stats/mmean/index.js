@@ -65,6 +65,51 @@
 		return buffer;
 	} // end FUNCTION getBuffer()
 
+	/**
+	* FUNCTION: onData( W )
+	*	Returns a callback which calculates a moving mean and is invoked upon receiving new data.
+	*
+	* @param {number} W - window size
+	* @returns {function} callback
+	*/
+	function onData( W ) {
+		var buffer = getBuffer( W ),
+			full = false, idx = 0, oldVal,
+			mean = 0, N = 0, delta = 0;
+
+		/**
+		* FUNCTION: onData( newVal )
+		*	Data event handler. Calculates a moving mean.
+		*/
+		return function onData( newVal ) {
+			// Fill the buffer:
+			if ( !full ) {
+				if ( ++idx <= W-1 ) {
+					// Start at idx=1 to allow fall-through to moving mean calculation below. In the first calculation, we shift a zero value and push the new value, thus filling our buffer with the first W values and starting the rolling calculation.
+					buffer[ idx ] = newVal;
+
+					// Update the mean:
+					N += 1;
+					delta = newVal - mean;
+					mean += delta / N;
+					return;
+				}
+				full = true;
+			} // end IF (!full)
+
+			// Update our buffer:
+			oldVal = buffer.shift();
+			buffer.push( newVal );
+
+			// Calculate the moving mean:
+			delta = newVal - oldVal;
+			mean += delta / W;
+
+			// Queue the mean value:
+			this.queue( mean );
+		}; // end FUNCTION onData()
+	} // end FUNCTION onData()
+
 
 	// STREAM //
 
@@ -95,52 +140,10 @@
 
 	/**
 	* METHOD: stream()
-	*	Returns a through stream for calculating the moving mean.
+	*	Returns a through stream for calculating the moving mean. Note that, when the stream ends, the resulting dataset will have N-Window+1 data points.
 	*/
 	Stream.prototype.stream = function() {
-		var W = this._window,
-			buffer = getBuffer( W ),
-			full = false,
-			idx = 0,
-			oldVal,
-			mean = 0, N = 0, delta = 0;
-
-		return through( onData );
-
-		// FUNCTIONS //
-
-		/**
-		* FUNCTION: onData( newVal )
-		*	Data event handler. Calculates a moving mean.
-		*/
-		function onData( newVal ) {
-			// Fill the buffer:
-			if ( !full ) {
-				if ( ++idx <= W-1 ) {
-					// Start at idx=1 to allow fall-through to moving mean calculation below. In the first calculation, we shift off a zero value and push the new value, filling our buffer.
-					buffer[ idx ] = newVal;
-
-					// Update the mean:
-					N += 1;
-					delta = newVal - mean;
-					mean += delta / N;
-					return;
-				}
-				full = true;
-			}
-
-			// Update our buffer:
-			oldVal = buffer.shift();
-			buffer.push( newVal );
-
-			// Calculate the moving mean:
-			delta = newVal - oldVal;
-			mean += delta / W;
-
-			// Queue the mean value:
-			this.queue( mean );
-		} // end FUNCTION onData()
-
+		return through( onData( this._window ) );
 	}; // end METHOD stream()
 
 
