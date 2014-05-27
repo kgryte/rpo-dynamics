@@ -70,7 +70,7 @@
 		response.writeHead( error.status, {
 			'Content-Type': 'application/json'
 		});
-		response.write( error );
+		response.write( JSON.stringify( error ) );
 		response.end();
 	} // end FUNCTION onError()
 
