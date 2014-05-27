@@ -101,9 +101,9 @@
 		var W = this._window,
 			buffer = getBuffer( W ),
 			full = false,
-			idx = -1,
+			idx = 0,
 			oldVal,
-			mean = 0;
+			mean = 0, N = 0, delta = 0;
 
 		return through( onData );
 
@@ -116,20 +116,29 @@
 		function onData( newVal ) {
 			// Fill the buffer:
 			if ( !full ) {
-				idx += 1;
-				buffer[ idx ] = newVal;
-				if ( idx < W-1 ) {
+				if ( ++idx <= W-1 ) {
+					// Start at idx=1 to allow fall-through to moving mean calculation below. In the first calculation, we shift off a zero value and push the new value, filling our buffer.
+					buffer[ idx ] = newVal;
+
+					// Update the mean:
+					N += 1;
+					delta = newVal - mean;
+					mean += delta / N;
 					return;
 				}
 				full = true;
 			}
 
-			// Calculate the moving mean:
+			// Update our buffer:
 			oldVal = buffer.shift();
 			buffer.push( newVal );
 
-			// Queue the new value:
-			this.queue( newVal );
+			// Calculate the moving mean:
+			delta = newVal - oldVal;
+			mean += delta / W;
+
+			// Queue the mean value:
+			this.queue( mean );
 		} // end FUNCTION onData()
 
 	}; // end METHOD stream()
