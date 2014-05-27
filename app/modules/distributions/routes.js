@@ -87,8 +87,6 @@
 		// Distributions:
 		this.get( '/distributions', function onRequest( request, response ) {
 
-			response.setTimeout( 0 );
-
 			// Get data:
 			getData( 'summary', [ '*' ], 'uncorrected.efficiency', 'kde', function onData( error, data ) {
 				if ( error ) {
