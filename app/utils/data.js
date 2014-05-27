@@ -112,12 +112,15 @@
 
 	// DATA //
 
+	// TODO: implement the proposed API. Datasets.
+
 	/**
-	* FUNCTION: getData( type, ids, metric, filter, clbk )
-	*	Loads an array of data arrays based on the specified output data classification, conditions, metric, and dataset filter.
+	* FUNCTION: getData( type, ids, datasets, metric, transform, clbk )
+	*	Loads an array of data arrays based on the specified output data classification, conditions, metric, and dataset transform.
 	*
 	* @param {string} type - output data classification; e.g., raw, distributions, summary, etc.
 	* @param {array} ids - array of encoded condition ids; e.g., [ '00100110' ]. Note: [ '*' ] will return all conditions. Use with caution.
+	* @param {array} datasets - (optional) array of dataset ids; e.g., [1,3,34]. If undefined, return all datasets (if applicable).
 	* @param {string} metric - (optional) metric name; e.g., 'uncorrected.efficiency', 'uncorrected.stoichiometry', etc.
 	* @param {string} transform - (optional) transformation name; e.g., 'histogram', 'kde', 'timeseries', etc.
 	* @param {function} clbk - callback to invoke upon loading the requested data. Function should take two arguments: [ error, data ]. If no errors, error is null.

@@ -33,7 +33,7 @@ TODO
 2. 	Upload repeat data
 3. 	Upload sigma mutant data
 4. 	DFT KDE
-5. 	Routes should use relevant calculated data, not raw
+5. 	
 6. 	Confirm that wt protein data is correct
 7. 	Should AexDem values be included? (oh dear! would allow for corrections)
 8. 	Analyze jaw data
