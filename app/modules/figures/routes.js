@@ -44,12 +44,6 @@
 (function() {
 	'use strict';
 
-	// MODULES //
-
-	var // Path module:
-		path = require( 'path' );
-
-
 	// VARIABLES //
 
 	// TODO: clean me.
@@ -63,8 +57,30 @@
 	IDS = Object.keys( FIGURES );
 
 
+	// FUNCTIONS //
+
+	/**
+	* FUNCTION: onError( response, error )
+	*	Sends an error response.
+	*
+	* @param {object} response - HTTP response object
+	* @param {object} error - error object
+	*/
+	function onError( response, error ) {
+		response.writeHead( error.status, {
+			'Content-Type': 'application/json'
+		});
+		response.write( JSON.stringify( error ) );
+		response.end();
+	} // end FUNCTION onError()
+
+
 	// ROUTES //
 
+	/**
+	* FUNCTION: routes( clbk )
+	*
+	*/
 	var routes = function ( clbk ) {
 
 		// NOTE: the 'this' context is the application.
@@ -84,25 +100,17 @@
 
 			// CHECK!!!
 			if ( IDS.indexOf( id ) === -1 ) {
-				response.writeHead( 400, {
-					'Content-Type': 'application/json'
-				});
-				response.write( JSON.stringify({
+				onError( response, {
 					'status': 400,
-					'message': 'invalid request. Provided figure number does not correspond to any figure.'
-				}));
-				response.end();
+					'message': 'Invalid request. Provided figure number does not correspond to any figure.'
+				});
 				return;
 			}
 
 			// Generate the figure:
 			FIGURES[ id ]( function onFigure( error, html ) {
 				if ( error ) {
-					response.writeHead( error.status, {
-						'Content-Type': 'application/json'
-					});
-					response.write( error );
-					response.end();
+					onError( error );
 					return;
 				}
 				response.writeHead( 200, {
