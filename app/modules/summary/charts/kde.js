@@ -52,11 +52,12 @@
 	// KDE //
 
 	/**
+	* FUNCTION: kde( canvas, data, width, height, left, top, subtitle )
 	*
 	*/
-	var kde = function( canvas, _data_, width, height, left, top, subtitle ) {
+	var kde = function( canvas, data, width, height, left, top, subtitle ) {
 
-		var graph, data, area, rug, max, axes, annotations, title, text;
+		var graph, area, rug, max, axes, annotations, title, text;
 
 		// [1] Instantiate a new graph generator and configure:
 		graph = xfig.graph( canvas )
@@ -74,16 +75,7 @@
 		graph.create( 'kde' );
 
 		// [2] Instantiate a new data generator and configure:
-		data = xfig.data( _data_ )
-			.x( function ( d ) { return d.x; } )
-			.y( function ( d ) { return d.y[1] / (d.y[0]+d.y[1]); } );
-
-		// Format the data and KDE the data:
-		data.format( 2 )
-			.concat()
-			.kde( function ( d ) {
-				return d[ 1 ];
-			}, 0, 1 );
+		data = xfig.data( data );
 
 		// Bind the data instance to the graph:
 		max = data.max( function ( d ) {
@@ -100,26 +92,7 @@
 		// Create the area chart:
 		area.create();
 
-		// [4] Instantiate a new data generator and configure:
-		// data = xfig.data( _data_ )
-		// 	.x( function ( d ) { return d.x; } )
-		// 	.y( function ( d ) { return d.y[1] / (d.y[0]+d.y[1]); } );
-
-		// // Format the data:
-		// data.format( 2 )
-		// 	.extract( function ( d ) { return d[ 1 ]; });
-
-		// // Bind the data instance to the graph:
-		// graph.data( data );
-
-		// // [5] Instantiate a new rug chart generator and configure:
-		// rug = xfig.rug( graph )
-		// 	.labels( [ 'data 0' ] );
-
-		// // Create the rug chart:
-		// rug.create();
-
-		// [6] Instantiate a new axes generator and configure:
+		// [4] Instantiate a new axes generator and configure:
 		axes = xfig.axes( graph )
 			.xLabel( 'E' )
 			.yLabel( 'density [au]' );
@@ -127,13 +100,13 @@
 		// Create the axes:
 		axes.create();
 
-		// [7] Instantiate a new annotations generator and configure:
+		// [5] Instantiate a new annotations generator and configure:
 		annotations = xfig.annotations( graph );
 
 		// Create the annotations element:
 		annotations.create();
 
-		// [7.1] Instantiate a new title instance and configure:
+		// [5.1] Instantiate a new title instance and configure:
 		title = annotations.title()
 			.top( -65 )
 			.left( -90 );

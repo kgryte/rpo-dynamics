@@ -52,16 +52,13 @@
 	// MULTIPANEL //
 
 	/**
+	* FUNCTION: multipanel( canvas, data, width, height, left, top, subtitle )
 	*
 	*/
-	var multipanel = function( canvas, _data_, width, height, left, top, subtitle ) {
+	var multipanel = function( canvas, data, width, height, left, top, subtitle ) {
 
 		var multipanel,
-			data = [],
-			xValue = function( d ) { return d.x; },
-			yValue = function( d ) {
-				return d.y[1] / ( d.y[0]+d.y[1] );
-			},
+			Data = [],
 			graphs, line,
 			annotations, title,
 			idx;
@@ -78,23 +75,16 @@
 
 		// [2] For each panel dataset, instantiate a new data generator and configure:
 		idx = [0,1,2].map( function ( id ) {
-			return Math.round( Math.random() * _data_.length );
+			return Math.round( Math.random() * data.length );
 		});
 		for ( var i = 0; i < 3; i++ ) {
-
-			data.push( xfig.data( [ _data_[ idx[ i ] ] ] )
-				.x( xValue )
-				.y( yValue ) );
-
-			// Format the data:
-			data[ i ].format( 2 );
-
+			Data.push( xfig.data( [ data[ idx[i] ] ] ) );
 		} // end FOR i
 
 		// Bind the data instance to the multipanel:
-		multipanel.data( data )
-			.xMin( data[0].min( function ( d ) { return d[ 0 ]; } ) )
-			.xMax( data[0].max( function ( d ) { return d[ 0 ]; } ) )
+		multipanel.data( Data )
+			.xMin( Data[0].min( function ( d ) { return d[ 0 ]; } ) )
+			.xMax( Data[0].max( function ( d ) { return d[ 0 ]; } ) )
 			.yMin( 0 )
 			.xLabel( 'time [sec]' )
 			.yLabel( 'E' )

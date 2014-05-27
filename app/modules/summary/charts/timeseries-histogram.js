@@ -52,11 +52,12 @@
 	// HISTOGRAM //
 
 	/**
+	* FUNCTION: histogram( canvas, data, means, width, height, left, top, subtitle )
 	*
 	*/
-	var histogram = function( canvas, data, width, height, left, top, subtitle ) {
+	var histogram = function( canvas, data, means, width, height, left, top, subtitle ) {
 
-		var graph, histogram, edges, axes, annotations, title, text, means;
+		var graph, histogram, axes, annotations, title, text;
 
 		// [1] Instantiate a new graph generator and configure:
 		graph = xfig.graph( canvas )
@@ -73,19 +74,9 @@
 		graph.create( 'timeseries-histogram' );
 
 		// [2] Instantiate a new data generator and configure:
-		data = xfig.data( data )
-			.x( function ( d ) { return d.x; } )
-			.y( function ( d ) { return d.y[1] / ( d.y[0]+d.y[1] ); } );
+		data = xfig.data( data );
 
-		// Create edges to define our histogram bins:
-		edges = xfig.vector.linspace( -0.01, 1.01, 0.02 );
-		
-		// Transform the data and extract the data to histogram:
-		data.format( 2 )
-			.extract( function ( d ) { return d[ 1 ]; });
-
-		// Calculate each dataset's mean value and sort the datasets based on their means:
-		means = data.mean( function ( d ) { return d; });
+		// Sort the datasets based on their means:
 		means = means.map( function ( d, i ) {
 			return [ d, i ];
 		});
@@ -97,8 +88,7 @@
 		});
 
 		// Calculate the histogram:
-		data.reorder( means )
-			.histc( function ( d ) { return d; }, edges );
+		data.reorder( means );
 
 		// Bind the data instance to the graph:
 		graph.data( data )

@@ -49,8 +49,6 @@
 		xfig = require( './../../lib/xfig.js' ),
 
 		// Chart generators:
-		Histogram = require( './charts/histogram.js' ),
-
 		KDE = require( './charts/kde.js' ),
 
 		TimeseriesHistogram = require( './charts/timeseries-histogram.js' ),
@@ -61,11 +59,19 @@
 	// GENERATOR //
 
 	/**
+	* FUNCTION: generator( document, selection, data, clbk )
 	*
 	*/
 	var generator = function( document, selection, data, clbk ) {
+		var dataset, kde, hist, means, timeseries, figure, canvas;
 
-		var figure, canvas;
+		// Get the dataset name: (should be only one)
+		dataset = Object.keys( data[ 0 ] )[ 0 ];
+
+		kde = data[ 0 ][ dataset ];
+		hist = data[ 1 ][ dataset ][ 0 ];
+		means = data[ 2 ][ dataset ][ 0 ];
+		timeseries = data[ 3 ][ dataset ];
 
 		// [1] Instantiate a new figure generator:
 		figure = xfig.figure();
@@ -83,13 +89,13 @@
 
 		// [3] Histogram / KDE:
 		// Histogram( canvas, data, 400, 260, 90, 80, 'a' );
-		KDE( canvas, data, 400, 260, 90, 80, 'a' );
+		KDE( canvas, kde, 400, 260, 90, 80, 'a' );
 
 		// [4] Timeseries Histogram chart:
-		TimeseriesHistogram( canvas, data, 400, 260, 90, 485, 'b' );
+		TimeseriesHistogram( canvas, hist, means, 400, 260, 90, 485, 'b' );
 
 		// [5] Multipanel chart:
-		Multipanel( canvas, data, 400, 720, 630, 80, 'c' );
+		Multipanel( canvas, timeseries, 400, 720, 630, 80, 'c' );
 
 		// Finished:
 		clbk();
