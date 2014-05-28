@@ -59,7 +59,7 @@
 	*/
 	function getBuffer( W ) {
 		var buffer = new Array( W );
-		for ( var i = 0; i < buffer.length; i++ ) {
+		for ( var i = 0; i < W; i++ ) {
 			buffer[ i ] = 0;
 		}
 		return buffer;
@@ -74,7 +74,7 @@
 	*/
 	function onData( W ) {
 		var buffer = getBuffer( W ),
-			full = false, idx = 0, oldVal,
+			full = false, oldVal,
 			mean = 0, N = 0, delta = 0;
 
 		/**
@@ -84,17 +84,17 @@
 		return function onData( newVal ) {
 			// Fill the buffer:
 			if ( !full ) {
-				if ( ++idx <= W-1 ) {
-					// Start at idx=1 to allow fall-through to moving mean calculation below. In the first calculation, we shift a zero value and push the new value, thus filling our buffer with the first W values and starting the rolling calculation.
-					buffer[ idx ] = newVal;
+				buffer[ N ] = newVal;
 
-					// Update the mean:
-					N += 1;
-					delta = newVal - mean;
-					mean += delta / N;
-					return;
+				N += 1;
+				delta = newVal - mean;
+				mean += delta / N;
+
+				if ( N === W ) {
+					full = true;
+					this.queue( mean );
 				}
-				full = true;
+				return;
 			} // end IF (!full)
 
 			// Update our buffer:
