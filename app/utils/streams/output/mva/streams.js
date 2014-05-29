@@ -50,6 +50,9 @@
 		// Path module:
 		path = require( 'path' ),
 
+		// Event emitter:
+		eventEmitter = require( 'events' ).EventEmitter,
+
 		// JSON stringify stream:
 		stringify = require( './../../json/stringify.js' ),
 
@@ -68,6 +71,23 @@
 	// FUNCTIONS //
 
 	/**
+	* FUNCTION: setMaxListeners()
+	*	Sets the maximum number of event emitter listeners.
+	*/
+	function setMaxListeners() {
+		// WARNING: this may have unintended side-effects. Dangerous, as this temporarily changes the global state for all modules, not just this module.
+		eventEmitter.prototype._maxListeners = 100;
+	} // end FUNCTION setMaxListeners()
+
+	/**
+	* FUNCTION: resetMaxListeners()
+	*	Resets the maximum number of event emitter listeners.
+	*/
+	function resetMaxListeners() {
+		eventEmitter.prototype._maxListeners = 11;
+	} // end FUNCTION resetMaxListeners()
+
+	/**
 	* FUNCTION: filter( file )
 	*	Keep only JavaScript scripts and exclude the index.js file.
 	*/
@@ -77,6 +97,9 @@
 
 
 	// INIT //
+
+	// FIXME: find a better way than to change global state.
+	setMaxListeners();
 
 	(function init() {
 

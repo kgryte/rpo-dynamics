@@ -1,6 +1,6 @@
 /**
 *
-*	STREAM: moving mean (window: 5)
+*	STREAM: moving mean (window: 20)
 *
 *
 *
@@ -64,10 +64,10 @@
 	*/
 	function Transform() {
 
-		this.type = 'mmean.w5';
+		this.type = 'mmean-w20';
 		this.name = '';
 
-		this._window = 5;
+		this._window = 20;
 
 		// ACCESSORS:
 		this._value = function( d ) {
