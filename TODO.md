@@ -46,7 +46,7 @@ TODO
 3. 	Online MVA
 4. 	
 5. 	
-6.  
+6.  Test: windowed mean and streaming mean
 7. 	Online windowed mean (overlap parameter)
 8.  Online windowed variance (overlap parameter)
 9. 	Online histogram update
