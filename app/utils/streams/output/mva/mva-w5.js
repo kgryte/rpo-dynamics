@@ -1,6 +1,6 @@
 /**
 *
-*	STREAM: moving mean (window: 10)
+*	STREAM: MVA (window: 5)
 *
 *
 *
@@ -50,8 +50,8 @@
 		// JSON stream transform:
 		transformer = require( './../../json/transform.js' ),
 
-		// Module to perform moving mean:
-		Mean = require( './../../stats/mmean' );
+		// Module to perform MVA:
+		MVA = require( './../../stats/mva' );
 
 
 	// TRANSFORM //
@@ -64,10 +64,10 @@
 	*/
 	function Transform() {
 
-		this.type = 'mmean-w10';
+		this.type = 'mva-w5';
 		this.name = '';
 
-		this._window = 10;
+		this._window = 5;
 
 		// ACCESSORS:
 		this._value = function( d ) {
@@ -121,20 +121,20 @@
 
 	/**
 	* METHOD: stream()
-	*	Returns a JSON data transform stream for calculating the moving mean.
+	*	Returns a JSON data transform stream for performing MVA.
 	*/
 	Transform.prototype.stream = function() {
-		var transform, mean, mStream, pStream;
+		var transform, mva, mStream, pStream;
 
 		// Create the input transform stream:
 		transform = transformer( this.transform() );
 
-		// Create a moving mean stream generator and configure:
-		mean = new Mean();
-		mean.window( this._window );
+		// Create an MVA stream generator and configure:
+		mva = new MVA();
+		mva.window( this._window );
 
-		// Create a moving mean stream:
-		mStream = mean.stream();
+		// Create an MVA stream:
+		mStream = mva.stream();
 
 		// Create a stream pipeline:
 		pStream = pipeline(
