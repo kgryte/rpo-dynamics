@@ -43,7 +43,7 @@ TODO
 
 1. 	Specify value precision
 2. 	Online KDE
-3. 	Online MVA
+3. 	Online MVA (summary)
 4. 	
 5. 	
 6.  Test: windowed mean and streaming mean

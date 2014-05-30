@@ -1,6 +1,6 @@
 /**
 *
-*	STREAM: moving mean
+*	STREAM: mean-variance analysis
 *
 *
 *
@@ -21,7 +21,7 @@
 *
 *
 *	HISTORY:
-*		- 2014/05/27: Created. [AReines].
+*		- 2014/05/29: Created. [AReines].
 *
 *
 *	DEPENDENCIES:
@@ -67,7 +67,7 @@
 
 	/**
 	* FUNCTION: onData( W )
-	*	Returns a callback which calculates a moving mean and is invoked upon receiving new data.
+	*	Returns a callback which calculates a moving mean/variance and is invoked upon receiving new data.
 	*
 	* @param {number} W - window size
 	* @returns {function} callback
@@ -75,11 +75,12 @@
 	function onData( W ) {
 		var buffer = getBuffer( W ),
 			full = false, oldVal,
-			mean = 0, N = 0, delta = 0;
+			sos = 0, mean = 0, N = 0,
+			delta = 0, old_delta = 0, new_delta = 0;
 
 		/**
 		* FUNCTION: onData( newVal )
-		*	Data event handler. Calculates a moving mean.
+		*	Data event handler. Calculates a moving mean/variance.
 		*/
 		return function onData( newVal ) {
 			// Fill the buffer:
@@ -90,9 +91,12 @@
 				delta = newVal - mean;
 				mean += delta / N;
 
+				// Sum of squared differences:
+				sos += delta * ( newVal - mean );
+
 				if ( N === W ) {
 					full = true;
-					this.queue( mean );
+					this.queue( [ mean, sos/(N-1) ] );
 				}
 				return;
 			} // end IF (!full)
@@ -101,12 +105,15 @@
 			oldVal = buffer.shift();
 			buffer.push( newVal );
 
-			// Calculate the moving mean:
+			// Calculate the moving mean and variance:
 			delta = newVal - oldVal;
+			old_delta = oldVal - mean;
 			mean += delta / W;
+			new_delta = newVal - mean;
+			sos += delta * ( old_delta + new_delta );
 
-			// Queue the mean value:
-			this.queue( mean );
+			// Queue the mean-variance pair:
+			this.queue( [ mean, sos/(W-1) ] );
 		}; // end FUNCTION onData()
 	} // end FUNCTION onData()
 
@@ -140,7 +147,7 @@
 
 	/**
 	* METHOD: stream()
-	*	Returns a through stream for calculating the moving mean. Note that, when the stream ends, the resulting dataset will have N-Window+1 data points.
+	*	Returns a through stream for performing MVA. Note that, when the stream ends, the resulting dataset will have N-Window+1 data elements.
 	*/
 	Stream.prototype.stream = function() {
 		return through( onData( this._window ) );
