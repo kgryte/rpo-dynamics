@@ -53,7 +53,7 @@
 		// JSON stream reducer:
 		reducer = require( './../../json/reduce.js' ),
 
-		// Module to calculate the histsogram counts:
+		// Module to calculate the histogram counts:
 		Histc = require( './../../stats/histc' );
 
 

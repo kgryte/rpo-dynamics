@@ -4,7 +4,7 @@ TODO
 
 ### General
 
-1. 	MVA
+1. 	MVA figures
 2. 	Use Casper.js to capture just the figure element
 3. 	Clean-up KDE code (i.e., deal with rug plot)
 4. 	Update app boilerplate
@@ -14,8 +14,8 @@ TODO
 	- Remove dynamic route name
 	- package.json
 5. 	Add quantile calculation to figure.io/vector.io
-6. 	Metrics: specify value precision (ensure 0.229999 --> 0.2300, not 0.2299)
-7. 	Valid JSON task --> data files
+6. 	Metrics: specify value precision (ensure 0.229999 --> 0.2300, not 0.2299) --> link to significant figures
+7. 	Valid JSON gulp task --> data files
 8. 	User cluster to reduce request response time (?)...or move computation to workers
 9. 	Makefile
 	- Make calculating all metrics/statistics part of the build process?
@@ -46,7 +46,7 @@ TODO
 3. 	Online MVA (summary)
 4. 	
 5. 	
-6.  Test: windowed mean and streaming mean
+6.  
 7. 	Online windowed mean (overlap parameter)
 8.  Online windowed variance (overlap parameter)
 9. 	Online histogram update
@@ -74,6 +74,8 @@ TODO
 5. 	Hist2d timeseries across all conditions (is this actually valuable? really only when aligned.)
 6. 	Schematic (break into individual components)
 7. 	Box-and-whisker plots via descriptive stats files. --> can create a timeseries-histogram like figure, either horizontally or vertically oriented; preference at this point is E on Y-Axis and molecules on X-Axis, in contrast to timeseries-histogram.
+8. 	Contour plot
+9. 	Hist2d MVA
 
 
 ### UI
