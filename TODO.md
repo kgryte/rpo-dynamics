@@ -13,6 +13,8 @@ TODO
 	- read over to see if all up-to-date
 	- Remove dynamic route name
 	- package.json
+	- use path module
+	- absolute path for bootable
 5. 	Add quantile calculation to figure.io/vector.io
 6. 	Metrics: specify value precision (ensure 0.229999 --> 0.2300, not 0.2299) --> link to significant figures
 7. 	Valid JSON gulp task --> data files
@@ -44,7 +46,7 @@ TODO
 1. 	Specify value precision
 2. 	Online KDE
 3. 	Online MVA (summary)
-4. 	
+4. 	MVA stream should output a 2d hist
 5. 	
 6.  
 7. 	Online windowed mean (overlap parameter)
