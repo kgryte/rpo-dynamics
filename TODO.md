@@ -23,7 +23,7 @@ TODO
 	- Make calculating all metrics/statistics part of the build process?
 10. Remove jQuery dependence and move to ui-component sortable --> more difficult than expected; only want sort on drop; not during drag.
 11. Add prefix argument to getData module to target a particular file(s). Similar to ids. Allow ['*'], or [1,2,3,8,9]. Accordingly, three prefixes in filter.
-12. 
+12. Use async module, rather than queue
 13. 
 14. Update code documentation; e.g., document manifests (top-of-file)
 
@@ -43,14 +43,14 @@ TODO
 
 ### Streams
 
-1. 	Specify value precision
+1. 	
 2. 	Online KDE
 3. 	Online MVA (summary)
-4. 	MVA stream should output a 2d hist
+4. 	
 5. 	Hist2d --> similar to stats stream, but binarysearch one direction pipe to next binarysearch etc. Should be able to histnd by chaining configured streams together.
 6.  Move streams to separate repo and require git repo.
-7. 	Online windowed mean (overlap parameter)
-8.  Online windowed variance (overlap parameter)
+7. 	
+8.  
 9. 	Online histogram update
 	- Init stream with counts array
 	- Init stream with ordered index array

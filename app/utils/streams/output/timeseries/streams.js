@@ -50,11 +50,8 @@
 		// Path module:
 		path = require( 'path' ),
 
-		// JSON stringify stream:
-		stringify = require( './../../json/stringify.js' ),
-
-		// Write-to-file stream:
-		writeStream = require( './../../file/write.js' ),
+		// Flow streams:
+		flow = require( 'flow.io' ),
 
 		// Hash of metric generators:
 		Metrics = require( './../../metrics' ),
@@ -123,11 +120,11 @@
 			filepath = path.join( dir, filename );
 
 			// Create the write stream:
-			write = writeStream( filepath, onEnd );
+			write = flow.write( filepath, onEnd );
 
 			// Pipe the JSON data:
 			data.pipe( transform.stream() )
-				.pipe( stringify() )
+				.pipe( flow.stringify() )
 				.pipe( write );
 
 		} // end FOR i

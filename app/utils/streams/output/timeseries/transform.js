@@ -44,8 +44,8 @@
 
 	// MODULES //
 
-	var // JSON stream transform:
-		transformer = require( './../../json/transform.js' );
+	var // Flow transform stream:
+		transformer = require( 'flow.io' ).transform;
 
 
 	// TRANSFORM //
