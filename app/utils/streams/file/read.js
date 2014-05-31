@@ -55,9 +55,10 @@
 	*	Returns a readable stream which reads from a file.
 	*
 	* @param {string} path - file path
+	* @param {function} clbk - (optional) callback to invoke after finishing reading a file. Function should take one input argument: [ error ]. If no errors, error is null.
 	* @returns {stream} readable stream
 	*/
-	function getReader( path ) {
+	function getReader( path, clbk ) {
 		if ( !arguments.length ) {
 			throw new Error( 'getReader()::insufficient input arguments. Must provide an input file path.' );
 		}
@@ -65,10 +66,17 @@
 		stream.on( 'error', function onError( error ) {
 			var err = {
 					'status': 500,
-					'message': 'internal server error. Error encountered while attempting to read data.',
-					'error': error
+					'message': 'Error encountered while attempting to read data.'
 				};
 			console.error( error.stack );
+			if ( clbk ) {
+				clbk( err );
+			}
+		});
+		stream.on( 'finish', function onEnd() {
+			if ( clbk ) {
+				clbk();
+			}
 		});
 		return stream;
 	} // end FUNCTION getReader()

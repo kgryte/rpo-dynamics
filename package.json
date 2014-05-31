@@ -2,7 +2,10 @@
   "name": "rpo-dynamics",
   "version": "0.0.0",
   "description": "Single-molecule TIRF FRET analysis of RNA Polymerase open complex dynamics.",
-  "author": "Athan Reines <athan@nodeprime.com",
+  "author": {
+    "name": "Athan Reines",
+    "email": "athan@nodeprime.com"
+  },
   "contributors": [
     {
       "name": "Athan Reines",
@@ -13,9 +16,6 @@
       "email": "d.duchillumigusin1@physics.ox.ac.uk"
     }
   ],
-  "bin": {
-    "rpo-dynamics": "./bin/server.js"
-  },
   "scripts": {
     "start": "node bin/server.js",
     "build": "node bin/build.js",
@@ -72,6 +72,14 @@
     "gulp-autoprefixer": "0.0.6",
     "gulp-jsonminify": "0.0.1"
   },
+  "engines": {
+    "node": "*"
+  },
   "private": true,
-  "license": "MIT"
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "http://www.opensource.org/licenses/MIT"
+    }
+  ]
 }

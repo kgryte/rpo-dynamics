@@ -66,8 +66,7 @@
 		stream.on( 'error', function onError( error ) {
 			var err = {
 					'status': 500,
-					'message': 'internal server error. Error encountered while attempting to write data.',
-					'error': error
+					'message': 'Error encountered while attempting to write data.'
 				};
 			console.error( error.stack );
 			if ( clbk ) {
