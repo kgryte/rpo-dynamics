@@ -43,12 +43,12 @@ TODO
 
 ### Streams
 
-1. 	
+1. 	Move streams to separate processes; use browserify to create a single script to import into node-webworkers
 2. 	Online KDE
 3. 	Online MVA (summary)
 4. 	
 5. 	Hist2d --> similar to stats stream, but binarysearch one direction pipe to next binarysearch etc. Should be able to histnd by chaining configured streams together.
-6.  Move streams to separate repo and require git repo.
+6.  
 7. 	
 8.  
 9. 	Online histogram update
@@ -73,7 +73,7 @@ TODO
 2. 	Small-multiple timeseries-histogram across all conditions
 3. 	Repeats comparision (multipanel, or avg hist with variance overlay)
 4.  Scatterplot matrix-style figure but with KDE overlays
-5. 	Hist2d timeseries across all conditions (is this actually valuable? really only when aligned.)
+5. 	
 6. 	Schematic (break into individual components)
 7. 	Box-and-whisker plots via descriptive stats files. --> can create a timeseries-histogram like figure, either horizontally or vertically oriented; preference at this point is E on Y-Axis and molecules on X-Axis, in contrast to timeseries-histogram.
 8. 	Contour plot
