@@ -1,6 +1,6 @@
 /**
 *
-*	STREAM: histogram
+*	STREAM: kernel density estimate (KDE)
 *
 *
 *
@@ -50,37 +50,8 @@
 		// Element-wise dataset concatentation:
 		concat = require( './../../../concat.js' ),
 
-		// JSON stream transform:
-		transformer = require( './../../json/transform.js' ),
-
-		// Module to calculate the histsogram counts:
-		Histc = require( './../../stats/histc' );
-
-
-	// FUNCTIONS //
-
-	/**
-	* FUNCTION: linspace( min, max, increment )
-	*	Generate a linearly spaced vector.
-	*
-	* @param {number} min - min defines the vector lower bound
-	* @param {number} max - max defines the vector upper bound
-	* @param {number} increment - distance between successive vector elements
-	* @returns {array} a 1-dimensional array
-	*/
-	function linspace( min, max, increment ) {
-		var numElements, vec = [];
-
-		numElements = Math.round( ( ( max - min ) / increment ) ) + 1;
-
-		vec[ 0 ] = min;
-		vec[ numElements - 1] = max;
-
-		for ( var i = 1; i < numElements - 1; i++ ) {
-			vec[ i ] = min + increment*i;
-		}
-		return vec;
-	} // end FUNCTION linspace()
+		// Flow streams:
+		flow = require( 'flow.io' );
 
 
 	// TRANSFORM //
@@ -93,10 +64,14 @@
 	*/
 	function Transform() {
 
-		this.type = 'histogram';
+		this.type = 'kde';
 		this.name = '';
 
-		// this._edges = linspace( -0.01, 1.01, 0.02 );
+		// TODO: include these methods here, in the histogram, and in the KDE stream.
+
+		// this._min = 0;
+		// this._max = 1;
+		// this._pts = 256;
 
 		// ACCESSORS:
 		this._value = function( d ) {
@@ -156,7 +131,7 @@
 	* @returns {stream} output statistic stream
 	*/
 	Transform.prototype.stream = function( data ) {
-		var dStream, transform, histc, hStream, pStream;
+		var dStream, transform, kde, kStream, pStream;
 
 		// Concatenate all datasets:
 		data = concat( data );
@@ -165,19 +140,19 @@
 		dStream = eventStream.readArray( data );
 
 		// Create the input transform stream:
-		transform = transformer( this.transform() );
+		transform = flow.transform( this.transform() );
 
-		// Create a histogram counts stream generator and configure:
-		histc = new Histc();
+		// Create a KDE stream generator and configure:
+		kde = flow.kde();
 
-		// Create a histogram stream:
-		hStream = histc.stream();
+		// Create a KDE streams:
+		kStream = kde.stream();
 
 		// Create a stream pipeline:
 		pStream = eventStream.pipeline(
 			dStream,
 			transform,
-			hStream
+			kStream
 		);
 
 		// Return the pipeline:

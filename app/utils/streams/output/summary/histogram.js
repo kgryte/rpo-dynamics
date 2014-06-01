@@ -1,6 +1,6 @@
 /**
 *
-*	STREAM: MVA (window: 20)
+*	STREAM: histogram
 *
 *
 *
@@ -21,7 +21,7 @@
 *
 *
 *	HISTORY:
-*		- 2014/05/28: Created. [AReines].
+*		- 2014/05/20: Created. [AReines].
 *
 *
 *	DEPENDENCIES:
@@ -47,14 +47,37 @@
 	var // Event stream module:
 		eventStream = require( 'event-stream' ),
 
-		// JSON stream transform:
-		transformer = require( './../../json/transform.js' ),
+		// Element-wise dataset concatentation:
+		concat = require( './../../../concat.js' ),
 
-		// JSON stream stringify:
-		stringify = require( './../../json/stringify.js' ),
+		// Flow streams:
+		flow = require( 'flow.io' );
 
-		// Module to perform MVA:
-		MVA = require( './../../stats/mva' );
+
+	// FUNCTIONS //
+
+	/**
+	* FUNCTION: linspace( min, max, increment )
+	*	Generate a linearly spaced vector.
+	*
+	* @param {number} min - min defines the vector lower bound
+	* @param {number} max - max defines the vector upper bound
+	* @param {number} increment - distance between successive vector elements
+	* @returns {array} a 1-dimensional array
+	*/
+	function linspace( min, max, increment ) {
+		var numElements, vec = [];
+
+		numElements = Math.round( ( ( max - min ) / increment ) ) + 1;
+
+		vec[ 0 ] = min;
+		vec[ numElements - 1] = max;
+
+		for ( var i = 1; i < numElements - 1; i++ ) {
+			vec[ i ] = min + increment*i;
+		}
+		return vec;
+	} // end FUNCTION linspace()
 
 
 	// TRANSFORM //
@@ -67,10 +90,10 @@
 	*/
 	function Transform() {
 
-		this.type = 'mva-w20';
+		this.type = 'histogram';
 		this.name = '';
 
-		this._window = 20;
+		// this._edges = linspace( -0.01, 1.01, 0.02 );
 
 		// ACCESSORS:
 		this._value = function( d ) {
@@ -124,49 +147,38 @@
 
 	/**
 	* METHOD: stream( data )
-	*	Returns a JSON data transform stream for performing MVA.
+	*	Returns a transform stream for calculating the statistic.
 	*
 	* @param {array} data - array of data arrays
-	* @returns {stream} output stream
+	* @returns {stream} output statistic stream
 	*/
 	Transform.prototype.stream = function( data ) {
-		var mva, dStream, transform, mStream, pStream, cStream, oStream, pipelines = [];
+		var dStream, transform, histc, hStream, pStream;
 
-		// Create an MVA stream generator and configure:
-		mva = new MVA();
-		mva.window( this._window );
+		// Concatenate all datasets:
+		data = concat( data );
 
-		for ( var i = 0; i < data.length; i++ ) {
+		// Create a readable data stream:
+		dStream = eventStream.readArray( data );
 
-			// Create a readable data stream:
-			dStream = eventStream.readArray( data[ i ] );
+		// Create the input transform stream:
+		transform = flow.transform( this.transform() );
 
-			// Create the input transform stream:
-			transform = transformer( this.transform() );
+		// Create a histogram counts stream generator and configure:
+		histc = flow.histc();
 
-			// Create an MVA stream:
-			mStream = mva.stream();
+		// Create a histogram stream:
+		hStream = histc.stream();
 
-			// Create a stream pipeline:
-			pStream = eventStream.pipeline(
-				dStream,
-				transform,
-				mStream
-			);
+		// Create a stream pipeline:
+		pStream = eventStream.pipeline(
+			dStream,
+			transform,
+			hStream
+		);
 
-			// Append the pipeline to our list of pipelines:
-			pipelines.push( pStream );
-
-		} // end FOR i
-
-		// Create a single merged stream from pipeline output:
-		cStream = eventStream.merge.apply( {}, pipelines );
-
-		// Create the output stream:
-		oStream = cStream.pipe( stringify() );
-
-		// Return the output stream:
-		return oStream;
+		// Return the pipeline:
+		return pStream;
 	}; // end METHOD stream()
 
 

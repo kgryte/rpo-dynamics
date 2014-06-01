@@ -1,6 +1,6 @@
 /**
 *
-*	STREAM: kernel density estimate (KDE)
+*	STREAM: MVA (window: 20)
 *
 *
 *
@@ -21,7 +21,7 @@
 *
 *
 *	HISTORY:
-*		- 2014/05/20: Created. [AReines].
+*		- 2014/05/28: Created. [AReines].
 *
 *
 *	DEPENDENCIES:
@@ -47,14 +47,8 @@
 	var // Event stream module:
 		eventStream = require( 'event-stream' ),
 
-		// Element-wise dataset concatentation:
-		concat = require( './../../../concat.js' ),
-
-		// JSON stream transform:
-		transformer = require( './../../json/transform.js' ),
-
-		// Module to calculate the KDE:
-		KDE = require( './../../stats/kde' );
+		// Flow streams:
+		flow = require( 'flow.io' );
 
 
 	// TRANSFORM //
@@ -67,14 +61,10 @@
 	*/
 	function Transform() {
 
-		this.type = 'kde';
+		this.type = 'mva-w20';
 		this.name = '';
 
-		// TODO: include these methods here, in the histogram, and in the KDE stream.
-
-		// this._min = 0;
-		// this._max = 1;
-		// this._pts = 256;
+		this._window = 20;
 
 		// ACCESSORS:
 		this._value = function( d ) {
@@ -128,38 +118,49 @@
 
 	/**
 	* METHOD: stream( data )
-	*	Returns a transform stream for calculating the statistic.
+	*	Returns a JSON data transform stream for performing MVA.
 	*
 	* @param {array} data - array of data arrays
-	* @returns {stream} output statistic stream
+	* @returns {stream} output stream
 	*/
 	Transform.prototype.stream = function( data ) {
-		var dStream, transform, kde, kStream, pStream;
+		var mva, dStream, transform, mStream, pStream, cStream, oStream, pipelines = [];
 
-		// Concatenate all datasets:
-		data = concat( data );
+		// Create an MVA stream generator and configure:
+		mva = flow.mva();
+		mva.window( this._window );
 
-		// Create a readable data stream:
-		dStream = eventStream.readArray( data );
+		for ( var i = 0; i < data.length; i++ ) {
 
-		// Create the input transform stream:
-		transform = transformer( this.transform() );
+			// Create a readable data stream:
+			dStream = eventStream.readArray( data[ i ] );
 
-		// Create a KDE stream generator and configure:
-		kde = new KDE();
+			// Create the input transform stream:
+			transform = flow.transform( this.transform() );
 
-		// Create a KDE streams:
-		kStream = kde.stream();
+			// Create an MVA stream:
+			mStream = mva.stream();
 
-		// Create a stream pipeline:
-		pStream = eventStream.pipeline(
-			dStream,
-			transform,
-			kStream
-		);
+			// Create a stream pipeline:
+			pStream = eventStream.pipeline(
+				dStream,
+				transform,
+				mStream
+			);
 
-		// Return the pipeline:
-		return pStream;
+			// Append the pipeline to our list of pipelines:
+			pipelines.push( pStream );
+
+		} // end FOR i
+
+		// Create a single merged stream from pipeline output:
+		cStream = eventStream.merge.apply( {}, pipelines );
+
+		// Create the output stream:
+		oStream = cStream.pipe( flow.stringify() );
+
+		// Return the output stream:
+		return oStream;
 	}; // end METHOD stream()
 
 

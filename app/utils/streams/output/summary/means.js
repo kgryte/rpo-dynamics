@@ -1,6 +1,6 @@
 /**
 *
-*	STREAM: timeseries-histogram
+*	STREAM: means
 *
 *
 *
@@ -21,7 +21,7 @@
 *
 *
 *	HISTORY:
-*		- 2014/05/26: Created. [AReines].
+*		- 2014/05/23: Created. [AReines].
 *
 *
 *	DEPENDENCIES:
@@ -47,40 +47,11 @@
 	var // Event stream module:
 		eventStream = require( 'event-stream' ),
 
-		// JSON stream transform:
-		transformer = require( './../../json/transform.js' ),
-
-		// JSON stream reducer:
-		reducer = require( './../../json/reduce.js' ),
-
-		// Module to calculate the histogram counts:
-		Histc = require( './../../stats/histc' );
+		// Flow streams:
+		flow = require( 'flow.io' );
 
 
 	// FUNCTIONS //
-
-	/**
-	* FUNCTION: linspace( min, max, increment )
-	*	Generate a linearly spaced vector.
-	*
-	* @param {number} min - min defines the vector lower bound
-	* @param {number} max - max defines the vector upper bound
-	* @param {number} increment - distance between successive vector elements
-	* @returns {array} a 1-dimensional array
-	*/
-	function linspace( min, max, increment ) {
-		var numElements, vec = [];
-
-		numElements = Math.round( ( ( max - min ) / increment ) ) + 1;
-
-		vec[ 0 ] = min;
-		vec[ numElements - 1] = max;
-
-		for ( var i = 1; i < numElements - 1; i++ ) {
-			vec[ i ] = min + increment*i;
-		}
-		return vec;
-	} // end FUNCTION linspace()
 
 	/**
 	* FUNCTION: indexify( idx )
@@ -124,23 +95,6 @@
 	} // end FUNCTION reorderify()
 
 	/**
-	* FUNCTION: parse()
-	*	Returns a transform function to parse JSON streamed data.
-	*/
-	function parse() {
-		/**
-		* FUNCTION: transform( data )
-		*	Defines the data transformation.
-		*
-		* @param {array} data - streamed data
-		* @returns {string} parsed JSON data
-		*/
-		return function transform( data ) {
-			return JSON.parse( data );
-		}; // end FUNCTION transform()
-	} // end FUNCTION parse()
-
-	/**
 	* FUNCTION: stringify()
 	*	Returns a transform function to stringify streamed data.
 	*/
@@ -168,10 +122,8 @@
 	*/
 	function Transform() {
 
-		this.type = 'timeseries-histogram';
+		this.type = 'means';
 		this.name = '';
-
-		// this._edges = linspace( -0.01, 1.01, 0.02 );
 
 		// ACCESSORS:
 		this._value = function( d ) {
@@ -231,31 +183,31 @@
 	* @returns {stream} output statistic stream
 	*/
 	Transform.prototype.stream = function( data ) {
-		var histc, dStream, transform, hStream, iStream, pStream, mStream, rStream, oStream, pipelines = [];
+		var mean, dStream, transform, mStream, iStream, pStream, rStream, sStream, cStream, oStream, pipelines = [];
 
-		// Create a histogram counts stream generator and configure:
-		histc = new Histc();
+		// Instantiate a new mean instance and configure:
+		mean = flow.mean();
 
+		// For each dataset, compute its mean...
 		for ( var i = 0; i < data.length; i++ ) {
 
 			// Create a readable data stream:
 			dStream = eventStream.readArray( data[ i ] );
 
-			// Create the input transform stream:
-			transform = transformer( this.transform() );
+			// Create an input transform stream:
+			transform = flow.transform( this.transform() );
 
-			// Create a histogram stream:
-			hStream = histc.stream();
+			// Create a mean reduction stream:
+			mStream = mean.stream();
 
 			// Create a transform stream to index the reduced stream:
-			iStream = transformer( indexify( i ) );
+			iStream = flow.transform( indexify( i ) );
 
 			// Create a stream pipeline:
 			pStream = eventStream.pipeline(
 				dStream,
 				transform,
-				hStream,
-				transformer( parse() ),
+				mStream,
 				iStream
 			);
 
@@ -265,14 +217,17 @@
 		} // end FOR i
 
 		// Create a single merged stream from pipeline output:
-		mStream = eventStream.merge.apply( {}, pipelines );
+		cStream = eventStream.merge.apply( {}, pipelines );
 
 		// Create a stream to reorder (sort) the merged output:
-		rStream = reducer( reorderify(), new Array( data.length ) );
+		rStream = flow.reduce( reorderify(), new Array( data.length ) );
 
-		// Create the output stream:
-		oStream = mStream.pipe( rStream )
-			.pipe( transformer( stringify() ) );
+		// Create a stream to stringify reordered data:
+		sStream = flow.transform( stringify() );
+
+		// Sort and convert merged output to a stringified object:
+		oStream = cStream.pipe( rStream )
+			.pipe( sStream );
 
 		// Return the output stream:
 		return oStream;
