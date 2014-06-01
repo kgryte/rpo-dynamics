@@ -47,11 +47,8 @@
 	var // Stream combiner:
 		pipeline = require( 'stream-combiner' ),
 
-		// JSON stream transform:
-		transformer = require( './../../json/transform.js' ),
-
-		// Module to perform MVA:
-		MVA = require( './../../stats/mva' );
+		// Flow streams:
+		flow = require( 'flow.io' );
 
 
 	// TRANSFORM //
@@ -127,10 +124,10 @@
 		var transform, mva, mStream, pStream;
 
 		// Create the input transform stream:
-		transform = transformer( this.transform() );
+		transform = flow.transform( this.transform() );
 
 		// Create an MVA stream generator and configure:
-		mva = new MVA();
+		mva = flow.mva();
 		mva.window( this._window );
 
 		// Create an MVA stream:

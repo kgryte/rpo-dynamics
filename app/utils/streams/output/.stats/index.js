@@ -53,11 +53,8 @@
 		// Module to recursively create directories:
 		mkdirp = require( 'mkdirp' ),
 
-		// Read stream:
-		readStream = require( './../../file/read.js' ),
-
-		// JSON stream parser:
-		parser = require( './../../json/parse.js' ),
+		// Flow streams:
+		flow = require( 'flow.io' ),
 
 		// Stats streams:
 		stats = require( './streams.js' );
@@ -152,8 +149,8 @@
 				file = files[ j ].substr( 0, files[ j ].length-5 );
 
 				// Create the raw data readstream:
-				data = readStream( filepath )
-					.pipe( parser() );
+				data = flow.read( filepath )
+					.pipe( flow.parse() );
 
 				// Send the data off to calculate reductions:
 				stats( data, path.join( DEST, dirs[ i ] ), file, onEnd( dirs[ i ], j+1, total, done ) );

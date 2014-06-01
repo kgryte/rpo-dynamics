@@ -50,20 +50,8 @@
 		// Event-stream module:
 		eventStream = require( 'event-stream' ),
 
-		// JSON stream transform:
-		transformer = require( './../../json/transform.js' ),
-
-		// Stats reduce streams:
-		Count = require( './../../stats/count' ),
-		Min = require( './../../stats/min' ),
-		Max = require( './../../stats/max' ),
-		Sum = require( './../../stats/sum' ),
-		Mean = require( './../../stats/mean' ),
-		Median = require( './../../stats/median' ),
-		Quantiles = require( './../../stats/quantiles' ),
-		Variance = require( './../../stats/variance' ),
-		Skewness = require( './../../stats/skewness' ),
-		Kurtosis = require( './../../stats/kurtosis' );
+		// Flow streams:
+		flow = require( 'flow.io' );
 
 
 	// INIT //
@@ -99,7 +87,7 @@
 	* @returns {stream} JSON transform stream
 	*/
 	function keyify( key ) {
-		return transformer( onData );
+		return flow.transform( onData );
 		/**
 		* FUNCTION: onData( value )
 		*	Event handler. Creates a key-value string; .e.g, "key": value,
@@ -119,7 +107,7 @@
 	* @returns {stream} JSON transform stream
 	*/
 	function objectify() {
-		return transformer( onData );
+		return flow.transform( onData );
 		/**
 		* FUNCTION: onData( keyvalstr )
 		*	Event handler. Wraps a key-value string in {} to create a stringified object.
@@ -151,16 +139,16 @@
 
 		// Create stats reduce stream generators:
 		this._reducers = {
-			'count': new Count(),
-			'min': new Min(),
-			'max': new Max(),
-			'sum': new Sum(),
-			'median': new Median(),
-			'quantiles': new Quantiles(),
-			'mean': new Mean(),
-			'variance': new Variance(),
-			'skewness': new Skewness(),
-			'kurtosis': new Kurtosis(),
+			'count': flow.count(),
+			'min': flow.min(),
+			'max': flow.max(),
+			'sum': flow.sum(),
+			'median': flow.median(),
+			'quantiles': flow.quantiles(),
+			'mean': flow.mean(),
+			'variance': flow.variance(),
+			'skewness': flow.skewness(),
+			'kurtosis': flow.kurtosis(),
 		};
 
 		// ACCESSORS:
@@ -245,7 +233,7 @@
 			pipelines = [];
 
 		// Create the input transform stream:
-		transform = transformer( this.transform() );
+		transform = flow.transform( this.transform() );
 
 		// Get the reduce stream names:
 		keys = Object.keys( reducers );

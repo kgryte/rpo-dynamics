@@ -47,11 +47,8 @@
 	var // Stream combiner:
 		pipeline = require( 'stream-combiner' ),
 
-		// JSON stream transform:
-		transformer = require( './../../json/transform.js' ),
-
-		// Module to calculate the histogram counts:
-		Histc = require( './../../stats/histc' );
+		// Flow streams:
+		flow = require( 'flow.io' );
 
 
 	// FUNCTIONS //
@@ -153,10 +150,10 @@
 		var transform, histc, hStream, pStream;
 
 		// Create the input transform stream:
-		transform = transformer( this.transform() );
+		transform = flow.transform( this.transform() );
 
 		// Create a histogram counts stream generator and configure:
-		histc = new Histc();
+		histc = flow.histc();
 
 		// Create a histogram stream:
 		hStream = histc.stream();

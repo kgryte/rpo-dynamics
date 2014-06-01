@@ -1,6 +1,6 @@
 /**
 *
-*	STREAM: MVA (window: 10)
+*	STREAM: MVA (window: 3)
 *
 *
 *
@@ -47,11 +47,8 @@
 	var // Stream combiner:
 		pipeline = require( 'stream-combiner' ),
 
-		// JSON stream transform:
-		transformer = require( './../../json/transform.js' ),
-
-		// Module to perform MVA:
-		MVA = require( './../../stats/mva' );
+		// Flow streams:
+		flow = require( 'flow.io' );
 
 
 	// TRANSFORM //
@@ -64,10 +61,10 @@
 	*/
 	function Transform() {
 
-		this.type = 'mva-w10';
+		this.type = 'mva-w3';
 		this.name = '';
 
-		this._window = 10;
+		this._window = 3;
 
 		// ACCESSORS:
 		this._value = function( d ) {
@@ -127,10 +124,10 @@
 		var transform, mva, mStream, pStream;
 
 		// Create the input transform stream:
-		transform = transformer( this.transform() );
+		transform = flow.transform( this.transform() );
 
-		// Create an MVA stream generator and configure:
-		mva = new MVA();
+		// Create a MVA stream generator and configure:
+		mva = flow.mva();
 		mva.window( this._window );
 
 		// Create an MVA stream:

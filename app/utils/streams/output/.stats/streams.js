@@ -51,7 +51,7 @@
 		path = require( 'path' ),
 
 		// Write-to-file stream:
-		writeStream = require( './../../file/write.js' ),
+		writeStream = require( 'flow.io' ).write,
 
 		// Hash of metric generators:
 		Metrics = require( './../../metrics' ),

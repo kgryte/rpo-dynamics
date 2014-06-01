@@ -47,11 +47,8 @@
 	var // Stream combiner:
 		pipeline = require( 'stream-combiner' ),
 
-		// JSON stream transform:
-		transformer = require( './../../json/transform.js' ),
-
-		// Module to calculate the KDE:
-		KDE = require( './../../stats/kde' );
+		// Flow streams:
+		flow = require( 'flow.io' );
 
 
 	// TRANSFORM //
@@ -131,10 +128,10 @@
 		var transform, kde, kStream, pStream;
 
 		// Create an input transform stream:
-		transform = transformer( this.transform() );
+		transform = flow.transform( this.transform() );
 
 		// Create a KDE stream generator and configure:
-		kde = new KDE();
+		kde = flow.kde();
 
 		// Create a KDE streams:
 		kStream = kde.stream();
