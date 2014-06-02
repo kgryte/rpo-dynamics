@@ -44,7 +44,7 @@ $ npm start
 
 The application should be listening on PORT 1337. If you have other applications using this port, you can change the port in `app/utils/server.js`.
 
-To ensure that local repository is uptodate, pull the remote repository which will merge any changes.
+To ensure that local repository is uptodate, pull the remote repository, merging any changes.
 
 ``` bash
 $ git pull origin master

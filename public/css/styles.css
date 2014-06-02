@@ -78,7 +78,7 @@ body {
 
 .graph[data-graph-type="kde"] .area,
 .graph[data-graph-type="kde-overlay"] .area {
-	opacity: 0.25;
+	opacity: 0.35;
 }
 
 .graph[data-graph-type="kde-overlay"] .area[data-label="data 0"] {
