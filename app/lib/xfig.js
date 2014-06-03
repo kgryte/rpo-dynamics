@@ -1,8 +1,27 @@
 !function (){
 	var xfig = { version: "0.0.0" }; // semver
 
-var d3 = require( 'd3' ),
-	_ = require( 'lodash' );
+	/**
+	* Dependencies.
+	*/
+	var has_require = ( typeof require !== 'undefined' );
+	var d3 = this.d3;
+	var _ = this._;
+
+	if ( typeof d3 === 'undefined' ) {
+		if ( has_require ) {
+			d3 = require( 'd3' );
+		} else {
+			throw new Error( 'xfig::missing dependency. xfig requires D3; see http://d3js.org.' );
+		}
+	}
+	if ( typeof _ === 'undefined' ) {
+		if ( has_require ) {
+			_ = require( 'lodash' );
+		} else {
+			throw new Error( 'xfig::missing dependency. xfig requires either underscore or lodash; see http://underscorejs.org.' );
+		}
+	}
 
 // ANNOTATION //
 
@@ -2480,15 +2499,16 @@ function Figure() {
 } // end FUNCTION Figure()
 
 /**
-* METHOD: create( selection )
+* METHOD: create( document, selection )
 *	Creates a new figure element. If a selection is supplied, appends a figure element to a selection. If no selection is supplied, a figure is appended to a newly create HTML element; to access the figure parent, use the parent method.
 *
-* @param {object} selection - DOM element selection, e.g., document.querySelector( '.main' )
+* @param {Document} document - document object
+* @param {object} selection - (optional) DOM element selection, e.g., document.querySelector( '.main' )
 * @returns {object} figure instance
 */
 Figure.prototype.create = function( document, selection ) {
 	var figure, elements;
-	if ( !arguments.length ) {
+	if ( arguments.length < 2 ) {
 		selection = document.createElement( 'div' );
 	}
 	this._parent = selection;
