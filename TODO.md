@@ -46,7 +46,7 @@ TODO
 1. 	Move streams to separate processes; use browserify to create a single script to import into node-webworkers
 2. 	Online KDE
 3. 	Online MVA (summary)
-4. 	
+4. 	Online autocorrelation
 5. 	Hist2d --> similar to stats stream, but binarysearch one direction pipe to next binarysearch etc. Should be able to histnd by chaining configured streams together.
 6.  
 7. 	
@@ -72,13 +72,15 @@ TODO
 1.  Multiple timeseries -->  dynamically resize based on parent size (wrap in container); ability to sort based on mean, variance --> sort in-browser using data attributes: data-mean, data-variance, etc. --> see isotope.js
 2. 	Small-multiple timeseries-histogram across all conditions
 3. 	Repeats comparision (multipanel, or avg hist with variance overlay)
-4.  Individual metric KDEs; similar to multiple timeseries. On hover, overlay avg KDE (aggregate all KDEs and calculate mean).
-5. 	Sort matrix KDE figure using correlation (see Bostock example); more similar two KDEs are, the higher the correlation should be. Similar to chi-squared goodness-of-fit
+4.  Individual metric KDEs; similar to multiple timeseries. On hover, overlay avg KDE (summary KDE / N).
+5. 	Sort matrix KDE figure using RMSE (see Bostock example). Chi-squared goodness-of-fit (Cramer's V, deviance)
 6. 	Schematic (break into individual components)
 7. 	Box-and-whisker plots via descriptive stats files. --> can create a timeseries-histogram like figure, either horizontally or vertically oriented; preference at this point is E on Y-Axis and molecules on X-Axis, in contrast to timeseries-histogram.
 8. 	Contour plot
 9. 	Hist2d MVA
-10. Stacked
+10. Sort stat based on distribution similarity (corr, chi-squared)
+11. Matrix plot: hover to highlight graph and show condition names
+12. Matrix routes: /matrix/1*001*11 where comparison is between those condition encodings matching the selector. Wildcards match any
 
 
 ### UI

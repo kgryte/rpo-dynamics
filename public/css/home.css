@@ -1,0 +1,50 @@
+
+
+/* Box-Sizing */
+*, *:after, *::before {
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+body, div, canvas {
+	margin: 0;
+	padding: 0;
+}
+
+body {
+	font-family: sans-serif;
+    color: #474747;
+	font-weight: normal;
+	background-color: #fff;
+}
+
+header {
+	position: absolute;
+	left: 0;
+	top: 0;
+
+	height: 60px;
+	width: 100%;
+
+	background-image: url( '../img/bkgd/low_contrast_linen_@2X.png' );
+
+	-webkit-box-shadow: 0 2px 2px 0 #bbb;
+	   -moz-box-shadow: 0 2px 2px 0 #bbb;
+	        box-shadow: 0 2px 2px 0 #bbb;
+}
+
+.clearfix:before, .clearfix:after {
+	content: "";
+	display: table;
+}
+
+.clearfix:after {
+	clear: both;
+}
+
+.main {
+	position: relative;
+	margin-top: 75px;
+}
+
