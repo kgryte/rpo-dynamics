@@ -46,7 +46,7 @@
 	// MODULES //
 
 	var // xfig figure library:
-		xfig = require( './../../../lib/xfig.js' ),
+		xfig = require( 'figure.io' ),
 
 		// Module to decode dataset:
 		mapping = require( './../../../utils/mapping.js' ),

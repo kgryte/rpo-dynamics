@@ -24,7 +24,7 @@ TODO
 10. Remove jQuery dependence and move to ui-component sortable --> more difficult than expected; only want sort on drop; not during drag.
 11. Add prefix argument to getData module to target a particular file(s). Similar to ids. Allow ['*'], or [1,2,3,8,9]. Accordingly, three prefixes in filter.
 12. Use async module, rather than queue
-13. Import xfig as npm module
+13. 
 14. Update code documentation; e.g., document manifests (top-of-file)
 
 
