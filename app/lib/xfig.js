@@ -4,17 +4,17 @@
 var d3 = require( 'd3' ),
 	_ = require( 'lodash' );
 
-
 // ANNOTATION //
 
 /**
 * FUNCTION: Annotations( parent )
 *	Annotations constructor. Creates a new annotations instance.
 *
+* @constructor
 * @param {object} parent - parent instance (Canvas, Graph)
 * @returns {object} annotations instance
 */
-var Annotations = function( parent ) {
+function Annotations( parent ) {
 
 	// INSTANCE ATTRIBUTES //
 
@@ -42,7 +42,7 @@ var Annotations = function( parent ) {
 
 	return this;
 
-}; // end FUNCTION Annotations()
+} // end FUNCTION Annotations()
 
 /**
 * METHOD: create()
@@ -217,10 +217,11 @@ Annotations.prototype.children = function() {
 * FUNCTION: Text( annotations )
 *	Text constructor. Creates a new text instance.
 *
+* @constructor
 * @param {object} annotations - annotations instance
 * @returns {object} text instance
 */
-var Text = function( annotations ) {
+function Text( annotations ) {
 
 	// INSTANCE ATTRIBUTES //
 
@@ -251,7 +252,7 @@ var Text = function( annotations ) {
 
 	return this;
 
-}; // end FUNCTION Text()
+} // end FUNCTION Text()
 
 /**
 * METHOD: create( text )
@@ -310,11 +311,8 @@ Text.prototype.width = function( value ) {
 			}
 			self._config.width = value;
 		});
-	
 	}
-	
 	return this;
-
 }; // end METHOD width()
 
 /**
@@ -342,11 +340,8 @@ Text.prototype.height = function( value ) {
 			}
 			self._config.height = value;
 		});
-	
 	}
-	
 	return this;
-
 }; // end METHOD height()
 
 /**
@@ -371,7 +366,6 @@ Text.prototype.position = function( value ) {
 			console.error( errors );
 			throw new Error( 'position()::invalid input argument.' );
 		}
-
 		for ( var key in value ) {
 			if ( value.hasOwnProperty( key ) ) {
 				errors = Validator( value[ key ], rules );
@@ -381,13 +375,11 @@ Text.prototype.position = function( value ) {
 				}
 			}
 		}
-
 		// Set the value:
 		self._config.position = value;
 	});
 	
 	return this;
-
 }; // end METHOD position()
 
 /**
@@ -414,7 +406,6 @@ Text.prototype.left = function( value ) {
 	});
 
 	return this;
-
 }; // end METHOD left()
 
 /**
@@ -441,7 +432,6 @@ Text.prototype.top = function( value ) {
 	});
 
 	return this;
-
 }; // end METHOD top()
 
 /**
@@ -481,10 +471,11 @@ Text.prototype.children = function() {
 * FUNCTION: Title( annotations )
 *	Title constructor. Creates a new title instance.
 *
+* @constructor
 * @param {object} annotations - annotations instance
 * @returns {object} title instance
 */
-var Title = function( annotations ) {
+function Title( annotations ) {
 
 	// INSTANCE ATTRIBUTES //
 
@@ -515,7 +506,7 @@ var Title = function( annotations ) {
 
 	return this;
 
-}; // end FUNCTION Title()
+} // end FUNCTION Title()
 
 /**
 * METHOD: create( title )
@@ -525,7 +516,6 @@ var Title = function( annotations ) {
 * @returns {object} title instance
 */
 Title.prototype.create = function( title ) {
-
 	var selection = this._parent._root,
 		width = this._config.width,
 		height = this._config.height,
@@ -546,7 +536,6 @@ Title.prototype.create = function( title ) {
 		.html( title );
 
 	return this;
-
 }; // end METHOD create()
 
 /**
@@ -576,9 +565,7 @@ Title.prototype.width = function( value ) {
 		});
 	
 	}
-	
 	return this;
-
 }; // end METHOD width()
 
 /**
@@ -608,9 +595,7 @@ Title.prototype.height = function( value ) {
 		});
 	
 	}
-	
 	return this;
-
 }; // end METHOD height()
 
 /**
@@ -645,13 +630,11 @@ Title.prototype.position = function( value ) {
 				}
 			}
 		}
-
 		// Set the value:
 		self._config.position = value;
 	});
 	
 	return this;
-
 }; // end METHOD position()
 
 /**
@@ -678,7 +661,6 @@ Title.prototype.left = function( value ) {
 	});
 
 	return this;
-
 }; // end METHOD left()
 
 /**
@@ -705,7 +687,6 @@ Title.prototype.top = function( value ) {
 	});
 
 	return this;
-
 }; // end METHOD top()
 
 /**
@@ -745,10 +726,11 @@ Title.prototype.children = function() {
 * FUNCTION: Axes( graph )
 *	Axes constructor. Creates a new axes instance.
 *
+* @constructor
 * @param {object} graph - parent graph instance
 * @returns {object} axes instance
 */
-var Axes = function( graph ) {
+function Axes( graph ) {
 
 	// INSTANCE ATTRIBUTES //
 
@@ -824,7 +806,7 @@ var Axes = function( graph ) {
 
 	return this;
 
-}; // end FUNCTION Axes()
+} // end FUNCTION Axes()
 
 /**
 * METHOD: create()
@@ -1655,10 +1637,11 @@ Axes.prototype.children = function() {
 * FUNCTION: Canvas( figure )
 *	Canvas constructor. Creates a new canvas instance.
 *
+* @constructor
 * @param {object} figure - parent figure instance
 * @returns {object} canvas instance
 */
-var Canvas = function( figure ) {
+function Canvas( figure ) {
 
 	// INSTANCE ATTRIBUTES //
 
@@ -1685,7 +1668,7 @@ var Canvas = function( figure ) {
 
 	return this;
 
-}; // end FUNCTION Canvas()
+} // end FUNCTION Canvas()
 
 /**
 * METHOD: create( type )
@@ -1695,56 +1678,46 @@ var Canvas = function( figure ) {
 * @returns {object} canvas instance
 */
 Canvas.prototype.create = function( type ) {
-
-	// VARIABLES //
-	var self = this;
-
-	// CHECKS!!!
 	if ( !type ) {
 		type = 'svg';
 	}
 
-	// CANVAS //
-
 	// Create a new canvas based on the specified type...
 	switch ( type ) {
 		case 'svg':
-			this._root = svg();
+			this._root = this._svg();
 			break;
 		default:
 			throw new Error( 'create()::unrecognized canvas type: ' + type );
 	} // end SWITCH (type)
 
 	return this;
-
-	// FUNCTIONS //
-
-	/**
-	* FUNCTION: svg()
-	*	Append an SVG canvas to a parent element.
-	*
-	* @returns {object} SVG element as a D3 selection.
-	*/
-	function svg() {
-		var parent = self._parent._root,
-			width = self._config.width,
-			height = self._config.height,
-			canvas;
-
-		canvas = d3.select( parent ).append( 'svg:svg' )
-			.attr( 'property', 'canvas' )
-			.attr( 'class', 'canvas' )
-			.attr( 'width', width )
-			.attr( 'height', height )
-			.attr( 'viewBox', '0 0 ' + width + ' ' + height )
-			.attr( 'preserveAspectRatio', 'xMidYMid' )
-			.attr( 'data-aspect', width / height );
-
-		return canvas;
-	} // end FUNCTION svg()
-
 }; // end METHOD create()
 
+/**
+* METHOD: _svg()
+*	Appends an SVG canvas to a parent element.
+*
+* @private
+* @returns {object} SVG element as a D3 selection.
+*/
+Canvas.prototype._svg = function() {
+	var parent = this._parent._root,
+		width = this._config.width,
+		height = this._config.height,
+		canvas;
+
+	canvas = d3.select( parent ).append( 'svg:svg' )
+		.attr( 'property', 'canvas' )
+		.attr( 'class', 'canvas' )
+		.attr( 'width', width )
+		.attr( 'height', height )
+		.attr( 'viewBox', '0 0 ' + width + ' ' + height )
+		.attr( 'preserveAspectRatio', 'xMidYMid' )
+		.attr( 'data-aspect', width / height );
+
+	return canvas;
+}; // end METHOD _svg()
 
 /**
 * METHOD: width( value )
@@ -1873,10 +1846,11 @@ Canvas.prototype.children = function() {
 * FUNCTION: Data( data )
 *	Data constructor. Creates a new data instance.
 *
+* @constructor
 * @param {array} data - input data is expected to be an array of arrays; e.g., [[[0,0],[1,1],...,[N,N]]] or [[{x:0,y:0},{x:1,y:1},...{x:N,y:N}]]. Elements in the outer array are treated as separate datasets.
 * @returns {object} data instance
 */
-var Data = function( data ) {
+function Data( data ) {
 
 	// INSTANCE ATTRIBUTES //
 
@@ -1890,7 +1864,7 @@ var Data = function( data ) {
 
 	return this;
 
-}; // end FUNCTION Data()
+} // end FUNCTION Data()
 
 /**
 * METHOD: format( dim )
@@ -2489,9 +2463,10 @@ Data.prototype.config = function() {
 * FUNCTION: Figure()
 *	Figure constructor. Creates a new figure instance.
 *
+* @constructor
 * @returns {object} figure instance
 */
-var Figure = function() {
+function Figure() {
 
 	// INSTANCE ATTRIBUTES //
 
@@ -2502,7 +2477,7 @@ var Figure = function() {
 
 	return this;
 
-}; // end FUNCTION Figure()
+} // end FUNCTION Figure()
 
 /**
 * METHOD: create( selection )
@@ -2564,10 +2539,11 @@ Figure.prototype.children = function() {
 * FUNCTION: Graph( canvas )
 *	Graph constructor. Creates a new graph instance.
 *
+* @constructor
 * @param {object} canvas - parent canvas instance
 * @returns {object} graph instance
 */
-var Graph = function( canvas ) {
+function Graph( canvas ) {
 
 	// INSTANCE ATTRIBUTES //
 
@@ -2669,7 +2645,7 @@ var Graph = function( canvas ) {
 
 	return this;
 
-}; // end FUNCTION Graph()
+} // end FUNCTION Graph()
 
 /**
 * METHOD: create( type )
@@ -2679,16 +2655,12 @@ var Graph = function( canvas ) {
 * @returns {object} graph instance
 */
 Graph.prototype.create = function( type ) {
-
-	// VARIABLES //
 	var selection = this._parent._root,
 		position = this._config.position,
 		width = this._config.width,
 		height = this._config.height,
 		clipPath, background,
 		id = Date.now();
-
-	// GRAPH //
 
 	// Create the clip-path:
 	clipPath = selection.append( 'svg:defs' )
@@ -3544,10 +3516,11 @@ Graph.prototype.children = function() {
 * FUNCTION: Area( graph )
 *	Area constructor. Creates a new area instance.
 *
+* @constructor
 * @param {object} graph - parent graph instance
 * @returns {object} area instance
 */
-var Area = function( graph ) {
+function Area( graph ) {
 
 	// INSTANCE ATTRIBUTES //
 
@@ -3603,8 +3576,7 @@ var Area = function( graph ) {
 	}
 
 	return this;
-
-}; // end FUNCTION Area()
+} // end FUNCTION Area()
 
 /**
 * METHOD: create()
@@ -3613,7 +3585,6 @@ var Area = function( graph ) {
 * @returns {object} area instance
 */
 Area.prototype.create = function() {
-
 	var selection = this._parent._root,
 		labels = this._config.labels,
 		paths;
@@ -3634,7 +3605,6 @@ Area.prototype.create = function() {
 		.attr( 'd', this._path );
 
 	return this;
-
 }; // end METHOD create()
 
 /**
@@ -3656,7 +3626,6 @@ Area.prototype.path = function() {
 * @returns {object|string} area instance or interpolation mode
 */
 Area.prototype.interpolation = function( mode ) {
-
 	var self = this;
 
 		// https://github.com/mbostock/d3/wiki/SVG-Shapes#wiki-line_interpolate
@@ -3676,7 +3645,6 @@ Area.prototype.interpolation = function( mode ) {
 	});
 	
 	return this;
-
 }; // end METHOD interpolation()
 
 /**
@@ -3704,7 +3672,6 @@ Area.prototype.tension = function( value ) {
 	});
 
 	return this;
-
 }; // end METHOD tension()
 
 /**
@@ -3731,9 +3698,7 @@ Area.prototype.labels = function ( arr ) {
 	});
 
 	return this;
-
 }; // end METHOD labels()
-
 
 /**
 * METHOD: parent()
@@ -3772,10 +3737,11 @@ Area.prototype.children = function() {
 * FUNCTION: Histogram( graph )
 *	Histogram constructor. Creates a new histogram instance.
 *
+* @constructor
 * @param {object} graph - parent graph instance
 * @returns {object} histogram instance
 */
-var Histogram = function( graph ) {
+function Histogram( graph ) {
 
 	// INSTANCE ATTRIBUTES //
 
@@ -3822,7 +3788,7 @@ var Histogram = function( graph ) {
 
 	return this;
 
-}; // end FUNCTION Histogram()
+} // end FUNCTION Histogram()
 
 /**
 * METHOD: create()
@@ -3958,10 +3924,11 @@ Histogram.prototype.children = function() {
 * FUNCTION: Line( graph )
 *	Line constructor. Creates a new line instance.
 *
+* @constructor
 * @param {object} graph - parent graph instance
 * @returns {object} line instance
 */
-var Line = function( graph ) {
+function Line( graph ) {
 
 	// INSTANCE ATTRIBUTES //
 
@@ -4014,7 +3981,7 @@ var Line = function( graph ) {
 
 	return this;
 
-}; // end FUNCTION Line()
+} // end FUNCTION Line()
 
 /**
 * METHOD: create()
@@ -4182,10 +4149,11 @@ Line.prototype.children = function() {
 * FUNCTION: Rug( graph )
 *	Rug plot constructor. Creates a new rug instance.
 *
+* @constructor
 * @param {object} graph - parent graph instance
 * @returns {object} rug instance
 */
-var Rug = function( graph ) {
+function Rug( graph ) {
 
 	// INSTANCE ATTRIBUTES //
 
@@ -4233,7 +4201,7 @@ var Rug = function( graph ) {
 
 	return this;
 
-}; // end FUNCTION Rug()
+} // end FUNCTION Rug()
 
 /**
 * METHOD: create()
@@ -4382,10 +4350,11 @@ Rug.prototype.children = function() {
 * FUNCTION: TimeseriesHistogram( graph )
 *	Timeseries histogram constructor. Creates a new timeseries histogram instance.
 *
+* @constructor
 * @param {object} graph - parent graph instance
 * @returns {object} timeseries histogram instance
 */
-var TimeseriesHistogram = function( graph ) {
+function TimeseriesHistogram( graph ) {
 
 	var binHeight = 0;
 
@@ -4437,7 +4406,7 @@ var TimeseriesHistogram = function( graph ) {
 
 	return this;
 
-}; // end FUNCTION TimeseriesHistogram()
+} // end FUNCTION TimeseriesHistogram()
 
 /**
 * METHOD: create()
@@ -4546,16 +4515,17 @@ TimeseriesHistogram.prototype.children = function() {
 	return this._children;
 }; // end METHOD children()
 
-// MULTIPANEL //
+// PANEL //
 
 /**
-* FUNCTION: Multipanel( canvas )
-*	Multipanel constructor. Creates a new multipanel instance.
+* FUNCTION: Panel( canvas )
+*	Panel constructor. Creates a new panel instance.
 *
+* @constructor
 * @param {object} canvas - parent canvas instance
-* @returns {object} multipanel instance
+* @returns {object} panel instance
 */
-var Multipanel = function( canvas ) {
+function Panel( canvas ) {
 
 	// INSTANCE ATTRIBUTES //
 
@@ -4570,7 +4540,11 @@ var Multipanel = function( canvas ) {
 			"top": 80,
 			"left": 90
 		},
-		"padding": 10,
+		"padding": {
+			"top": 0,
+			"left": 0
+		},
+		"gutter": 0,
 		"background": false,
 		"scales": [
 			{
@@ -4634,9 +4608,6 @@ var Multipanel = function( canvas ) {
 		]
 	};
 
-	// DATA //
-	this._data = null;
-
 	// SCALES //
 	this._xScale = d3.scale.linear()
 		.domain([
@@ -4657,192 +4628,138 @@ var Multipanel = function( canvas ) {
 			this._config.scales[ 1 ].range.min
 		]);
 
-	// REGISTER //
-	if ( canvas._config.hasOwnProperty( 'multipanel' ) ) {
-		canvas._config.multipanel.push( this._config );
-	} else {
-		canvas._config.multipanel = [ this._config ];
-	}
-	if ( canvas._children.hasOwnProperty( 'multipanel' ) ) {
-		canvas._children.multipanel.push( this );
-	} else {
-		canvas._children.multipanel = [ this ];
-	}
+	// DATA //
+	this._data = null;
 
 	return this;
-
-}; // end FUNCTION Multipanel()
-
-/**
-* METHOD: create( type )
-*	Creates a new multipanel element and appends to a canvas element. Option to define the multipanel graph type.
-*
-* @param {string} type - multipanel type
-* @returns {object} multipanel instance
-*/
-Multipanel.prototype.create = function( type ) {
-
-	// VARIABLES //
-	var config = this._config,
-		selection = this._parent._root,
-		position = config.position,
-		height = config.height,
-		padding = config.padding,
-		graphHeight, top,
-		graph, axes,
-		total = this._data.length,
-		xAxisFLG, yAxisFLG;
-
-	// MULTIPANEL //
-
-	// Create the multipanel element:
-	this._root = selection.append( 'svg:g' )
-		.attr( 'property', 'multipanel' )
-		.attr( 'class', 'multipanel' )
-		.attr( 'transform', 'translate(' + position.left + ',' + position.top + ')' );
-
-	// Compute the graph height: (NOTE: 54 is a fudge factor to allow for x-axis ticks and labels; depending on font-size, tick padding, and tick sizes, this may not be correct.)
-	graphHeight = Math.floor( ( height-54-padding*(total-1) ) / total );
-
-	config.scales[ 1 ].range.max = graphHeight;
-
-	// Create the graphs and axes:
-	for ( var i = 0; i < total; i++ ) {
-
-		// Formatting flags:
-		xAxisFLG = false;
-
-		if ( i === total-1 ) {
-			xAxisFLG = true;
-		}
-
-		// Graph vertical position:
-		top = (graphHeight+padding) * i;
-
-		// Graph:
-		graph = createGraph( this, graphHeight, top, this._data[ i ] );
-
-		// Axes:
-		axes = createAxes( graph, xAxisFLG );
-
-	} // end FOR i
-
-	return this;
-
-	// FUNCTIONS //
-
-	function createGraph( parent, height, top, data ) {
-		var graph;
-
-		graph = new Graph( parent );
-
-		graph.width( config.width )
-			.height( height )
-			.position({
-				'left': 0,
-				'top': top
-			})
-			.xMin( config.scales[ 0 ].domain.min )
-			.xMax( config.scales[ 0 ].domain.max )
-			.yMin( config.scales[ 1 ].domain.min )
-			.yMax( config.scales[ 1 ].domain.max )
-			.xRange([
-				config.scales[ 0 ].range.min,
-				config.scales[ 0 ].range.max
-			])
-			.yRange([
-				config.scales[ 1 ].range.max,
-				config.scales[ 1 ].range.min
-			])
-			.xScale( config.scales[ 0 ].type )
-			.yScale( config.scales[ 1 ].type )
-			.background( config.background )
-			.data( data );
-
-		return graph.create();
-
-	} // end FUNCTION createGraph()
-
-	function createAxes( graph, xAxisFLG ) {
-		var axes, yTicks;
-
-		axes = new Axes( graph );
-
-		// Configure the axes:
-		axes.yLabel( config.axes[ 1 ].label )
-			.yTickFormat( config.axes[ 1 ].ticks.format )
-			.xNumTicks( config.axes[ 0 ].ticks.num )
-			.yNumTicks( config.axes[ 1 ].ticks.num )
-			.xTickPadding( config.axes[ 0 ].ticks.padding )
-			.yTickPadding( config.axes[ 1 ].ticks.padding )
-			.xTickRotation( config.axes[ 0 ].ticks.rotation )
-			.yTickRotation( config.axes[ 1 ].ticks.rotation )
-			.xInnerTickSize( config.axes[ 0 ].ticks.innerSize )
-			.yInnerTickSize( config.axes[ 1 ].ticks.innerSize )
-			.xOuterTickSize( config.axes[ 0 ].ticks.outerSize )
-			.yOuterTickSize( config.axes[ 1 ].ticks.outerSize )
-			.xTickDirection( config.axes[ 0 ].ticks.direction )
-			.yTickDirection( config.axes[ 1 ].ticks.direction )
-			.xTickDisplay( xAxisFLG )
-			.yTickDisplay( config.axes[ 1 ].ticks.display )
-			.xAxisOrient( config.axes[ 0 ].orient )
-			.yAxisOrient( config.axes[ 1 ].orient )
-			.xAxisDisplay( config.axes[ 0 ].display )
-			.yAxisDisplay( config.axes[ 1 ].display );
-
-		// Show x-axis tick labels:
-		if ( xAxisFLG ) {
-			axes.xLabel( config.axes[ 0 ].label )
-				.xTickFormat( config.axes[ 0 ].ticks.format );
-		} else {
-			axes.xLabel( '' )
-				.xTickFormat( '' );
-		}
-
-		// Create the axes:
-		axes.create();
-
-		return axes;
-
-	} // end FUNCTION createAxes()
-
-}; // end METHOD create()
+} // end FUNCTION Panel()
 
 /**
 * METHOD: padding( value )
-*	Panel padding setter and getter. If a value is supplied, defines the panel padding. If no value is supplied, returns the panel padding.
+*	Convenience method to set multple padding values. If a value is supplied, defines the panel padding. If no value is supplied, returns the panel padding.
 *
-* @param {number} value - panel padding; i.e., the vertical padding between panels
-* @returns {object|number} multipanel instance or panel padding
+* @param {object} value - object with the following properties: left, top. All values assigned to properties should be numbers.
+* @returns {object|object} panel instance or padding object
 */
-Multipanel.prototype.padding = function( value ) {
+Panel.prototype.padding = function( value ) {
 	var self = this,
-		rules = 'number';
+		rules = 'object|has_properties[left,top]';
 
 	if ( !arguments.length ) {
 		return this._config.padding;
 	}
 
 	Validator( value, rules, function set( errors ) {
+		var rules = 'number';
+
 		if ( errors ) {
 			console.error( errors );
-			throw new Error( 'padding()::invalid input argument. ' );
+			throw new Error( 'padding()::invalid input argument.' );
 		}
+
+		for ( var key in value ) {
+			if ( value.hasOwnProperty( key ) ) {
+				errors = Validator( value[ key ], rules );
+				if ( errors.length ) {
+					console.error( errors );
+					throw new Error( 'padding()::invalid input argument.' );
+				}
+			}
+		}
+
+		// Set the value:
 		self._config.padding = value;
 	});
 	
 	return this;
-
 }; // end METHOD padding()
 
 /**
-* METHOD: width( value )
-*	Width setter and getter. If a value is supplied, defines the multipanel width. If no value is supplied, returns the multipanel width.
+* METHOD: paddingLeft( value )
+*	Padding-left setter and getter. If a value is supplied, defines the panel padding-left. If no value is supplied, returns the panel padding-left.
 *
-* @param {number} width - desired multipanel width.
-* @returns {object|number} multipanel instance or multipanel width.
+* @param {number} value - desired panel padding-left.
+* @returns {object|number} - panel instance or padding left value
 */
-Multipanel.prototype.width = function( value ) {
+Panel.prototype.paddingLeft = function( value ) {
+	var padding = this._config.padding,
+		rules = 'number';
+
+	if ( !arguments.length ) {
+		return padding.left;
+	}
+
+	Validator( value, rules, function set( errors ) {
+		if ( errors ) {
+			console.error( errors );
+			throw new Error( 'paddingLeft()::invalid input argument.' );
+		}
+		padding.left = value;
+	});
+
+	return this;
+}; // end METHOD paddingLeft()
+
+/**
+* METHOD: paddingTop( value )
+*	Padding-top setter and getter. If a value is supplied, defines the panel padding-top. If no value is supplied, returns the panel padding-top.
+*
+* @param {number} value - desired panel padding-top.
+* @returns {object|number} - panel instance or padding top value
+*/
+Panel.prototype.paddingTop = function( value ) {
+	var padding = this._config.padding,
+		rules = 'number';
+
+	if ( !arguments.length ) {
+		return padding.top;
+	}
+
+	Validator( value, rules, function set( errors ) {
+		if ( errors ) {
+			console.error( errors );
+			throw new Error( 'paddingTop()::invalid input argument.' );
+		}
+		padding.top = value;
+	});
+
+	return this;
+}; // end METHOD paddingTop()
+
+/**
+* METHOD: gutter( value )
+*	Gutter setter and getter. If a value is supplied, defines the panel gutter. If no value is supplied, returns the panel gutter.
+*
+* @param {number} value - desired panel gutter.
+* @returns {object|number} - panel instance or gutter value
+*/
+Panel.prototype.gutter = function( value ) {
+	var self = this,
+		rules = 'number';
+
+	if ( !arguments.length ) {
+		return this._config.gutter;
+	}
+
+	Validator( value, rules, function set( errors ) {
+		if ( errors ) {
+			console.error( errors );
+			throw new Error( 'gutter()::invalid input argument.' );
+		}
+		self._config.gutter = value;
+	});
+
+	return this;
+}; // end METHOD gutter()
+
+/**
+* METHOD: width( value )
+*	Width setter and getter. If a value is supplied, defines the panel width. If no value is supplied, returns the panel width.
+*
+* @param {number} width - desired panel width.
+* @returns {object|number} panel instance or panel width.
+*/
+Panel.prototype.width = function( value ) {
 	var self = this,
 		rules = 'number';
 
@@ -4864,17 +4781,16 @@ Multipanel.prototype.width = function( value ) {
 	}
 	
 	return this;
-
 }; // end METHOD width()
 
 /**
 * METHOD: height( value )
-*	Height setter and getter. If a value is supplied, defines the multipanel height. If no value is supplied, returns the multipanel height.
+*	Height setter and getter. If a value is supplied, defines the panel height. If no value is supplied, returns the panel height.
 *
-* @param {number} height - desired multipanel height.
-* @returns {object|number} multipanel instance or multipanel height.
+* @param {number} height - desired panel height.
+* @returns {object|number} panel instance or panel height.
 */
-Multipanel.prototype.height = function( value ) {
+Panel.prototype.height = function( value ) {
 	var self = this,
 		rules = 'number';
 
@@ -4895,17 +4811,16 @@ Multipanel.prototype.height = function( value ) {
 	}
 	
 	return this;
-
 }; // end METHOD height()
 
 /**
 * METHOD: xMin( value )
-*	xMin setter and getter. If a value is supplied, defines the multipanel xMin. If no value is supplied, returns the multipanel xMin.
+*	xMin setter and getter. If a value is supplied, defines the panel xMin. If no value is supplied, returns the panel xMin.
 *
-* @param {number} xMin - desired multipanel xMin.
-* @returns {object|number} multipanel instance or multipanel xMin.
+* @param {number} xMin - desired panel xMin.
+* @returns {object|number} panel instance or panel xMin.
 */
-Multipanel.prototype.xMin = function( value ) {
+Panel.prototype.xMin = function( value ) {
 	var domain = this._config.scales[ 0 ].domain,
 		rules = 'number';
 
@@ -4924,19 +4839,17 @@ Multipanel.prototype.xMin = function( value ) {
 		});
 	
 	}
-	
 	return this;
-
 }; // end METHOD xMin()
 
 /**
 * METHOD: xMax( value )
-*	xMax setter and getter. If a value is supplied, defines the multipanel xMax. If no value is supplied, returns the multipanel xMax.
+*	xMax setter and getter. If a value is supplied, defines the panel xMax. If no value is supplied, returns the panel xMax.
 *
-* @param {number} xMax - desired multipanel xMax.
-* @returns {object|number} multipanel instance or multipanel xMax.
+* @param {number} xMax - desired panel xMax.
+* @returns {object|number} panel instance or panel xMax.
 */
-Multipanel.prototype.xMax = function( value ) {
+Panel.prototype.xMax = function( value ) {
 	var domain = this._config.scales[ 0 ].domain,
 		rules = 'number';
 
@@ -4955,19 +4868,17 @@ Multipanel.prototype.xMax = function( value ) {
 		});
 	
 	}
-	
 	return this;
-
 }; // end METHOD xMax()
 
 /**
 * METHOD: yMin( value )
-*	yMin setter and getter. If a value is supplied, defines the multipanel yMin. If no value is supplied, returns the multipanel yMin.
+*	yMin setter and getter. If a value is supplied, defines the panel yMin. If no value is supplied, returns the panel yMin.
 *
-* @param {number} yMin - desired multipanel yMin.
-* @returns {object|number} multipanel instance or multipanel yMin.
+* @param {number} yMin - desired panel yMin.
+* @returns {object|number} panel instance or panel yMin.
 */
-Multipanel.prototype.yMin = function( value ) {
+Panel.prototype.yMin = function( value ) {
 	var domain = this._config.scales[ 1 ].domain,
 		rules = 'number';
 
@@ -4986,19 +4897,17 @@ Multipanel.prototype.yMin = function( value ) {
 		});
 		
 	}
-	
 	return this;
-
 }; // end METHOD yMin()
 
 /**
 * METHOD: yMax( value )
-*	yMax setter and getter. If a value is supplied, defines the multipanel yMax. If no value is supplied, returns the multipanel yMax.
+*	yMax setter and getter. If a value is supplied, defines the panel yMax. If no value is supplied, returns the panel yMax.
 *
-* @param {number} yMax - desired multipanel yMax.
-* @returns {object|number} multipanel instance or multipanel yMax.
+* @param {number} yMax - desired panel yMax.
+* @returns {object|number} panel instance or panel yMax.
 */
-Multipanel.prototype.yMax = function( value ) {
+Panel.prototype.yMax = function( value ) {
 	var domain = this._config.scales[ 1 ].domain,
 		rules = 'number';
 
@@ -5017,9 +4926,7 @@ Multipanel.prototype.yMax = function( value ) {
 		});
 	
 	}
-
 	return this;
-
 }; // end METHOD yMax()
 
 /**
@@ -5027,9 +4934,9 @@ Multipanel.prototype.yMax = function( value ) {
 *	xDomain setter and getter. If an array is supplied, sets the instance xDomain. If no argument is supplied, gets the instance xDomain.
 *
 * @param {array} arr - 2-element array defining the xDomain
-* @returns {object|array} multipanel instance or xDomain
+* @returns {object|array} panel instance or xDomain
 */
-Multipanel.prototype.xDomain = function( arr ) {
+Panel.prototype.xDomain = function( arr ) {
 	var domain = this._config.scales[ 0 ].domain,
 		rules = 'array';
 
@@ -5047,7 +4954,6 @@ Multipanel.prototype.xDomain = function( arr ) {
 	});
 	
 	return this;
-
 }; // end METHOD xDomain()
 
 /**
@@ -5055,9 +4961,9 @@ Multipanel.prototype.xDomain = function( arr ) {
 *	yDomain setter and getter. If an array is supplied, sets the instance yDomain. If no argument is supplied, gets the instance yDomain.
 *
 * @param {array} arr - 2-element array defining the yDomain
-* @returns {object|array} multipanel instance or yDomain
+* @returns {object|array} panel instance or yDomain
 */
-Multipanel.prototype.yDomain = function( arr ) {
+Panel.prototype.yDomain = function( arr ) {
 	var domain = this._config.scales[ 1 ].domain,
 		rules = 'array';
 
@@ -5075,7 +4981,6 @@ Multipanel.prototype.yDomain = function( arr ) {
 	});
 	
 	return this;
-
 }; // end METHOD yDomain()
 
 /**
@@ -5083,9 +4988,9 @@ Multipanel.prototype.yDomain = function( arr ) {
 *	xRange setter and getter. If an array is supplied, sets the instance xRange. If no argument is supplied, gets the instance xRange.
 *
 * @param {array} arr - 2-element array defining the xRange
-* @returns {object|array} multipanel instance or xRange
+* @returns {object|array} panel instance or xRange
 */
-Multipanel.prototype.xRange = function( arr ) {
+Panel.prototype.xRange = function( arr ) {
 	var range = this._config.scales[ 0 ].range,
 		rules = 'array';
 
@@ -5103,7 +5008,6 @@ Multipanel.prototype.xRange = function( arr ) {
 	});
 	
 	return this;
-
 }; // end METHOD xRange()
 
 /**
@@ -5111,9 +5015,9 @@ Multipanel.prototype.xRange = function( arr ) {
 *	yRange setter and getter. If an array is supplied, sets the instance yRange. If no argument is supplied, gets the instance yRange.
 *
 * @param {array} arr - 2-element array defining the yRange
-* @returns {object|array} multipanel instance or yRange
+* @returns {object|array} panel instance or yRange
 */
-Multipanel.prototype.yRange = function( arr ) {
+Panel.prototype.yRange = function( arr ) {
 	var range = this._config.scales[ 1 ].range,
 		rules = 'array';
 
@@ -5131,7 +5035,6 @@ Multipanel.prototype.yRange = function( arr ) {
 	});
 	
 	return this;
-
 }; // end METHOD yRange()
 
 /**
@@ -5140,9 +5043,9 @@ Multipanel.prototype.yRange = function( arr ) {
 *
 * @param {string} type - scale type; must be one of the following: linear, log, pow, category10, category20, category20b, category20c.
 * @param {number} value - (optional) scale dependent parameter; e.g., if type=log, value=10 sets the base to 10.
-* @returns {object|string} multipanel instance or the x-scale type
+* @returns {object|string} panel instance or the x-scale type
 */
-Multipanel.prototype.xScale = function( type, value ) {
+Panel.prototype.xScale = function( type, value ) {
 	var self = this;
 
 	if ( !arguments.length || !type ) {
@@ -5168,7 +5071,6 @@ Multipanel.prototype.xScale = function( type, value ) {
 	});
 
 	return this;
-
 }; // end METHOD xScale()
 
 /**
@@ -5177,9 +5079,9 @@ Multipanel.prototype.xScale = function( type, value ) {
 *
 * @param {string} type - scale type; must be one of the following: linear, log, pow, category10, category20, category20b, category20c.
 * @param {number} value - (optional) scale dependent parameter; e.g., if type=log, value=10 sets the base to 10.
-* @returns {object|string} multipanel instance or the y-scale type
+* @returns {object|string} panel instance or the y-scale type
 */
-Multipanel.prototype.yScale = function( type, value ) {
+Panel.prototype.yScale = function( type, value ) {
 	var self = this;
 
 	if ( !arguments.length || !type ) {
@@ -5205,7 +5107,6 @@ Multipanel.prototype.yScale = function( type, value ) {
 	});
 
 	return this;
-
 }; // end METHOD yScale()
 
 /**
@@ -5215,61 +5116,114 @@ Multipanel.prototype.yScale = function( type, value ) {
 * @param {string} type - scale type; must be one of the following: linear, log, pow, category10, category20, category20b, category20c.
 * @param {number} value - (optional) scale dependent parameter; e.g., if type=log, value=10 sets the base to 10.
 * @param {function} clbk - callback to invoke after validation and getting the specified scale. Function should take two arguments: [ errors, scale ].
-* @returns {object} multipanel instance
+* @returns {object} panel instance
 */
-Multipanel.prototype.scale = function( type, value, clbk ) {
-	var rules = 'string|matches[linear,log,pow,category10,category20,category20b,category20c]',
-		scales = {
-			'linear': linear,
-			'log': log,
-			'pow': pow,
-			'category10': category10,
-			'category20': category20,
-			'category20b': category20b,
-			'category20c': category20c
-		};
+Panel.prototype.scale = function( type, value, clbk ) {
+	var self = this,
+		rules = 'string|matches[linear,log,pow,category10,category20,category20b,category20c]';
 
 	Validator( type, rules, function onErrors( errors ) {
 		if ( errors ) {
 			clbk( errors );
 			return;
 		}
-		clbk( null, scales[ type ]() );
+		clbk( null, self._scales[ type ]() );
 	});
 
 	return this;
-
-	function linear() {
-		return d3.scale.linear();
-	}
-	function log() {
-		return d3.scale.log().base( value );
-	}
-	function pow() {
-		return d3.scale.pow().exponent( value );
-	}
-	function category10() {
-		return d3.scale.category10();
-	}
-	function category20() {
-		return d3.scale.category20();
-	}
-	function category20b() {
-		return d3.scale.category20b();
-	}
-	function category20c() {
-		return d3.scale.category20c();
-	}
 }; // end METHOD scale()
+
+/**
+* PROPERTY: _scales
+*	Collection of scale methods.
+*/
+Panel.prototype._scales = {};
+
+/**
+* METHOD: linear()
+*	Returns a linear scale.
+*
+* @private
+* @returns {function} d3 linear scale
+*/
+Panel.prototype._scales.linear = function() {
+	return d3.scale.linear();
+}; // end METHOD linear()
+
+/**
+* METHOD: log()
+*	Returns a log scale.
+*
+* @private
+* @returns {function} d3 log scale
+*/
+Panel.prototype._scales.log = function() {
+	return d3.scale.log().base( value );
+}; // end METHOD log()
+
+/**
+* METHOD: pow()
+*	Returns a power scale.
+*
+* @private
+* @returns {function} d3 power scale
+*/
+Panel.prototype._scales.pow = function() {
+	return d3.scale.pow().exponent( value );
+}; // end METHOD pow()
+
+/**
+* METHOD: category10()
+*	Returns a categorical (10) scale.
+*
+* @private
+* @returns {function} d3 category scale
+*/
+Panel.prototype._scales.category10 = function() {
+	return d3.scale.category10();
+}; // end METHOD category10()
+
+/**
+* METHOD: category20()
+*	Returns a categorical (20) scale.
+*
+* @private
+* @returns {function} d3 category scale
+*/
+Panel.prototype._scales.category20 = function() {
+	return d3.scale.category20();
+}; // end METHOD category20()
+
+/**
+* METHOD: category20b()
+*	Returns a categorical (20) scale.
+*
+* @private
+* @returns {function} d3 category scale
+*/
+Panel.prototype._scales.category20b = function() {
+	return d3.scale.category20b();
+}; // end METHOD category20b()
+
+/**
+* METHOD: category20c()
+*	Returns a categorical (20) scale.
+*
+* @private
+* @returns {function} d3 category scale
+*/
+Panel.prototype._scales.category20c = function() {
+	return d3.scale.category20c();
+}; // end METHOD category20c()
 
 /**
 * METHOD: background( bool )
 *	Background display setter and getter. If a boolean is provided, sets the background display. If no boolean is provided, gets the background display. If false, when graphs are created, no background is created.
 *
 * @param {boolean} bool - boolean flag indicating whether to create a background.
-* @returns {object|boolean} multipanel instance or background display
+* @returns {object|boolean} panel instance or background display
 */
-Multipanel.prototype.background = function( bool ) {
+Panel.prototype.background = function( bool ) {
 	var self = this,
 		rules = 'boolean';
 
@@ -5287,17 +5241,16 @@ Multipanel.prototype.background = function( bool ) {
 	})();
 
 	return this;
-
 }; // end METHOD background()
 
 /**
 * METHOD: position( value )
-*	Convenience method to set multple position values. If a value is supplied, defines the multipanel position. If no value is supplied, returns the multipanel position.
+*	Convenience method to set multple position values. If a value is supplied, defines the panel position. If no value is supplied, returns the panel position.
 *
 * @param {object} value - object with the following properties: left, top. All values assigned to properties should be numbers.
-* @returns {object|object} multipanel instance or position object
+* @returns {object|object} panel instance or position object
 */
-Multipanel.prototype.position = function( value ) {
+Panel.prototype.position = function( value ) {
 	var self = this,
 		rules = 'object|has_properties[left,top]';
 
@@ -5322,23 +5275,21 @@ Multipanel.prototype.position = function( value ) {
 				}
 			}
 		}
-
 		// Set the value:
 		self._config.position = value;
 	});
 	
 	return this;
-
 }; // end METHOD position()
 
 /**
 * METHOD: left( value )
-*	Position-left setter and getter. If a value is supplied, defines the multipanel position-left. If no value is supplied, returns the multipanel position-left.
+*	Position-left setter and getter. If a value is supplied, defines the panel position-left. If no value is supplied, returns the panel position-left.
 *
-* @param {number} value - desired multipanel position-left.
-* @returns {object|number} - multipanel instance or position left value
+* @param {number} value - desired panel position-left.
+* @returns {object|number} - panel instance or position left value
 */
-Multipanel.prototype.left = function( value ) {
+Panel.prototype.left = function( value ) {
 	var position = this._config.position,
 		rules = 'number';
 
@@ -5355,17 +5306,16 @@ Multipanel.prototype.left = function( value ) {
 	});
 
 	return this;
-
 }; // end METHOD left()
 
 /**
 * METHOD: top( value )
-*	Position-top setter and getter. If a value is supplied, defines the multipanel position-top. If no value is supplied, returns the multipanel position-top.
+*	Position-top setter and getter. If a value is supplied, defines the panel position-top. If no value is supplied, returns the panel position-top.
 *
-* @param {number} value - desired multipanel position-top.
-* @returns {object|number} - multipanel instance or position top value
+* @param {number} value - desired panel position-top.
+* @returns {object|number} - panel instance or position top value
 */
-Multipanel.prototype.top = function( value ) {
+Panel.prototype.top = function( value ) {
 	var position = this._config.position,
 		rules = 'number';
 
@@ -5382,17 +5332,16 @@ Multipanel.prototype.top = function( value ) {
 	});
 
 	return this;
-
 }; // end METHOD top()
 
 /**
 * METHOD: data( data )
-*	Multipanel data setter and getter. If data is supplied, sets the multipanel's current active dataset. If no data is supplied, returns the multipanel's datasets.
+*	Panel data setter and getter. If data is supplied, sets the panel's current active dataset. If no data is supplied, returns the panel's datasets.
 *
 * @param {array} data - array of data instances
-* @returns {object|object} - multipanel instance or multipanel datasets
+* @returns {object|object} - panel instance or panel datasets
 */
-Multipanel.prototype.data = function( data ) {
+Panel.prototype.data = function( data ) {
 	var self = this,
 		rules = 'array';
 
@@ -5415,7 +5364,6 @@ Multipanel.prototype.data = function( data ) {
 	});
 	
 	return this;
-
 }; // end METHOD data()
 
 /**
@@ -5423,9 +5371,9 @@ Multipanel.prototype.data = function( data ) {
 *	x-axis label setter and getter. If a value is supplied, sets the x-axis label. If no value is supplied, returns the instance x-axis label.
 *
 * @param {string} value - x-axis label
-* @returns {object|string} multipanel instance or x-axis label
+* @returns {object|string} panel instance or x-axis label
 */
-Multipanel.prototype.xLabel = function( value ) {
+Panel.prototype.xLabel = function( value ) {
 	var self = this,
 		rules = 'string';
 
@@ -5442,7 +5390,6 @@ Multipanel.prototype.xLabel = function( value ) {
 	});
 
 	return this;
-
 }; // end METHOD xLabel()
 
 /**
@@ -5450,9 +5397,9 @@ Multipanel.prototype.xLabel = function( value ) {
 *	y-axis label setter and getter. If a value is supplied, sets the y-axis label. If no value is supplied, returns the instance y-axis label.
 *
 * @param {string} value - y-axis label
-* @returns {object|string} multipanel instance or y-axis label
+* @returns {object|string} panel instance or y-axis label
 */
-Multipanel.prototype.yLabel = function( value ) {
+Panel.prototype.yLabel = function( value ) {
 	var self = this,
 		rules = 'string';
 
@@ -5469,7 +5416,6 @@ Multipanel.prototype.yLabel = function( value ) {
 	});
 
 	return this;
-
 }; // end METHOD yLabel()
 
 /**
@@ -5477,9 +5423,9 @@ Multipanel.prototype.yLabel = function( value ) {
 *	x-axis number of ticks setter and getter. If a value is supplied, sets the desired x-axis tick number. If no value is supplied, returns the desired instance x-axis tick number. Note: the requested tick number is treated as a suggestion. Actual tick numbers will vary.
 *
 * @param {string} value - x-axis tick number
-* @returns {object|string} multipanel instance or x-axis tick number
+* @returns {object|string} panel instance or x-axis tick number
 */
-Multipanel.prototype.xNumTicks = function( value ) {
+Panel.prototype.xNumTicks = function( value ) {
 	var self = this,
 		rules = 'number';
 
@@ -5500,7 +5446,6 @@ Multipanel.prototype.xNumTicks = function( value ) {
 	}
 
 	return this;
-
 }; // end METHOD xNumTicks()
 
 /**
@@ -5508,9 +5453,9 @@ Multipanel.prototype.xNumTicks = function( value ) {
 *	y-axis number of ticks setter and getter. If a value is supplied, sets the desired y-axis tick number. If no value is supplied, returns the desired instance y-axis tick number. Note: the requested tick number is treated as a suggestion. Actual tick numbers will vary.
 *
 * @param {string} value - y-axis tick number
-* @returns {object|string} multipanel instance or y-axis tick number
+* @returns {object|string} panel instance or y-axis tick number
 */
-Multipanel.prototype.yNumTicks = function( value ) {
+Panel.prototype.yNumTicks = function( value ) {
 	var self = this,
 		rules = 'number';
 
@@ -5531,7 +5476,6 @@ Multipanel.prototype.yNumTicks = function( value ) {
 	}
 
 	return this;
-
 }; // end METHOD yNumTicks()
 
 /**
@@ -5539,9 +5483,9 @@ Multipanel.prototype.yNumTicks = function( value ) {
 *	x-axis tick padding setter and getter. Defines the pixel space between a tick and a tick label. If a value is supplied, sets the x-axis tick padding. If no value is supplied, returns the instance x-axis tick padding.
 *
 * @param {number} value - x-axis tick padding
-* @returns {object|number} - multipanel instance or x-axis tick padding
+* @returns {object|number} - panel instance or x-axis tick padding
 */
-Multipanel.prototype.xTickPadding = function( value ) {
+Panel.prototype.xTickPadding = function( value ) {
 	var self = this,
 		rules = 'number';
 
@@ -5558,7 +5502,6 @@ Multipanel.prototype.xTickPadding = function( value ) {
 	});
 
 	return this;
-
 }; // end METHOD xTickPadding()
 
 /**
@@ -5566,9 +5509,9 @@ Multipanel.prototype.xTickPadding = function( value ) {
 *	y-axis tick padding setter and getter. Defines the pixel space between a tick and a tick label. If a value is supplied, sets the y-axis tick padding. If no value is supplied, returns the instance y-axis tick padding.
 *
 * @param {number} value - y-axis tick padding
-* @returns {object|number} - multipanel instance or y-axis tick padding
+* @returns {object|number} - panel instance or y-axis tick padding
 */
-Multipanel.prototype.yTickPadding = function( value ) {
+Panel.prototype.yTickPadding = function( value ) {
 	var self = this,
 		rules = 'number';
 
@@ -5585,7 +5528,6 @@ Multipanel.prototype.yTickPadding = function( value ) {
 	});
 
 	return this;
-
 }; // end METHOD yTickPadding()
 
 /**
@@ -5593,9 +5535,9 @@ Multipanel.prototype.yTickPadding = function( value ) {
 *	x-axis tick rotation setter and getter. Rotation is relative to a horizontal axis (i.e., think unit circle). If a value is supplied, sets the x-axis tick rotation. If no value is supplied, returns the instance x-axis tick rotation.
 *
 * @param {number} value - x-axis tick rotation
-* @returns {object|number} - multipanel instance or x-axis tick rotation
+* @returns {object|number} - panel instance or x-axis tick rotation
 */
-Multipanel.prototype.xTickRotation = function( value ) {
+Panel.prototype.xTickRotation = function( value ) {
 	var self = this,
 		rules = 'number';
 
@@ -5612,7 +5554,6 @@ Multipanel.prototype.xTickRotation = function( value ) {
 	});
 
 	return this;
-
 }; // end METHOD xTickRotation()
 
 /**
@@ -5622,7 +5563,7 @@ Multipanel.prototype.xTickRotation = function( value ) {
 * @param {number} value - y-axis tick rotation
 * @returns {object|number} - instance object or y-axis tick rotation
 */
-Multipanel.prototype.yTickRotation = function( value ) {
+Panel.prototype.yTickRotation = function( value ) {
 	var self = this,
 		rules = 'number';
 
@@ -5639,7 +5580,6 @@ Multipanel.prototype.yTickRotation = function( value ) {
 	});
 
 	return this;
-
 }; // end METHOD xTickRotation()
 
 /**
@@ -5649,7 +5589,7 @@ Multipanel.prototype.yTickRotation = function( value ) {
 * @param {number} value - x-axis inner tick size
 * @returns {object|number} - instance object or x-axis inner tick size
 */
-Multipanel.prototype.xInnerTickSize = function( value ) {
+Panel.prototype.xInnerTickSize = function( value ) {
 	var self = this,
 		rules = 'number';
 
@@ -5666,7 +5606,6 @@ Multipanel.prototype.xInnerTickSize = function( value ) {
 	});
 
 	return this;
-
 }; // end METHOD xInnerTickSize()
 
 /**
@@ -5676,7 +5615,7 @@ Multipanel.prototype.xInnerTickSize = function( value ) {
 * @param {number} value - y-axis inner tick size
 * @returns {object|number} - instance object or y-axis inner tick size
 */
-Multipanel.prototype.yInnerTickSize = function( value ) {
+Panel.prototype.yInnerTickSize = function( value ) {
 	var self = this,
 		rules = 'number';
 
@@ -5693,7 +5632,6 @@ Multipanel.prototype.yInnerTickSize = function( value ) {
 	});
 
 	return this;
-
 }; // end METHOD xInnerTickSize()
 
 /**
@@ -5703,7 +5641,7 @@ Multipanel.prototype.yInnerTickSize = function( value ) {
 * @param {number} value - x-axis outer tick size
 * @returns {object|number} - instance object or x-axis outer tick size
 */
-Multipanel.prototype.xOuterTickSize = function( value ) {
+Panel.prototype.xOuterTickSize = function( value ) {
 	var self = this,
 		rules = 'number';
 
@@ -5720,7 +5658,6 @@ Multipanel.prototype.xOuterTickSize = function( value ) {
 	});
 
 	return this;
-
 }; // end METHOD xOuterTickSize()
 
 /**
@@ -5730,7 +5667,7 @@ Multipanel.prototype.xOuterTickSize = function( value ) {
 * @param {number} value - y-axis outer tick size
 * @returns {object|number} - instance object or y-axis outer tick size
 */
-Multipanel.prototype.yOuterTickSize = function( value ) {
+Panel.prototype.yOuterTickSize = function( value ) {
 	var self = this,
 		rules = 'number';
 
@@ -5747,7 +5684,6 @@ Multipanel.prototype.yOuterTickSize = function( value ) {
 	});
 
 	return this;
-
 }; // end METHOD yOuterTickSize()
 
 /**
@@ -5758,7 +5694,7 @@ Multipanel.prototype.yOuterTickSize = function( value ) {
 * @param {boolean} flg - (optional) flag indicating if time formatting should be used
 * @returns {object|string} instance object or x-axis tick format
 */
-Multipanel.prototype.xTickFormat = function( value, flg ) {
+Panel.prototype.xTickFormat = function( value, flg ) {
 	var self = this,
 		rules;
 
@@ -5782,7 +5718,6 @@ Multipanel.prototype.xTickFormat = function( value, flg ) {
 	});
 	
 	return this;
-
 }; // end METHOD xTickFormat()
 
 /**
@@ -5793,7 +5728,7 @@ Multipanel.prototype.xTickFormat = function( value, flg ) {
 * @param {boolean} flg - (optional) flag indicating if time formatting should be used
 * @returns {object|string} instance object or y-axis tick format
 */
-Multipanel.prototype.yTickFormat = function( value, flg ) {
+Panel.prototype.yTickFormat = function( value, flg ) {
 	var self = this,
 		rules;
 
@@ -5817,7 +5752,6 @@ Multipanel.prototype.yTickFormat = function( value, flg ) {
 	});
 	
 	return this;
-
 }; // end METHOD yTickFormat()
 
 /**
@@ -5827,7 +5761,7 @@ Multipanel.prototype.yTickFormat = function( value, flg ) {
 * @param {boolean} bool - boolean flag indicating whether to display x-tick labels.
 * @returns {object|boolean} instance object or x-tick label display
 */
-Multipanel.prototype.xTickDisplay = function( bool ) {
+Panel.prototype.xTickDisplay = function( bool ) {
 	var self = this,
 		rules = 'boolean';
 
@@ -5845,7 +5779,6 @@ Multipanel.prototype.xTickDisplay = function( bool ) {
 	})();
 
 	return this;
-
 }; // end METHOD xTickDisplay()
 
 /**
@@ -5855,7 +5788,7 @@ Multipanel.prototype.xTickDisplay = function( bool ) {
 * @param {boolean} bool - boolean flag indicating whether to display y-tick labels.
 * @returns {object|boolean} instance object or x-tick label display
 */
-Multipanel.prototype.yTickDisplay = function( bool ) {
+Panel.prototype.yTickDisplay = function( bool ) {
 	var self = this,
 		rules = 'boolean';
 
@@ -5873,7 +5806,6 @@ Multipanel.prototype.yTickDisplay = function( bool ) {
 	})();
 
 	return this;
-
 }; // end METHOD yTickDisplay()
 
 /**
@@ -5883,7 +5815,7 @@ Multipanel.prototype.yTickDisplay = function( bool ) {
 * @param {string} value - tick direction; must be either 'in', 'out', or 'both'
 * @returns {object|string} instance object or x-axis tick direction
 */
-Multipanel.prototype.xTickDirection = function( value ) {
+Panel.prototype.xTickDirection = function( value ) {
 	var self = this,
 		rules = 'matches[in,out,both]';
 
@@ -5900,7 +5832,6 @@ Multipanel.prototype.xTickDirection = function( value ) {
 	});
 
 	return this;
-
 }; // end METHOD xTickDirection()
 
 /**
@@ -5910,7 +5841,7 @@ Multipanel.prototype.xTickDirection = function( value ) {
 * @param {string} value - tick direction; must be either 'in', 'out', or 'both'
 * @returns {object|string} instance object or y-axis tick direction
 */
-Multipanel.prototype.yTickDirection = function( value ) {
+Panel.prototype.yTickDirection = function( value ) {
 	var self = this,
 		rules = 'matches[in,out,both]';
 
@@ -5927,7 +5858,6 @@ Multipanel.prototype.yTickDirection = function( value ) {
 	});
 
 	return this;
-
 }; // end METHOD yTickDirection()
 
 /**
@@ -5937,7 +5867,7 @@ Multipanel.prototype.yTickDirection = function( value ) {
 * @param {string} value - orientation; must be either 'bottom' or 'top'
 * @returns {object|string} instance object or x-axis orientation
 */
-Multipanel.prototype.xAxisOrient = function( value ) {
+Panel.prototype.xAxisOrient = function( value ) {
 	var self = this,
 		rules = 'matches[bottom,top]';
 
@@ -5954,7 +5884,6 @@ Multipanel.prototype.xAxisOrient = function( value ) {
 	});
 
 	return this;
-
 }; // end METHOD xAxisOrient()
 
 /**
@@ -5964,7 +5893,7 @@ Multipanel.prototype.xAxisOrient = function( value ) {
 * @param {string} value - orientation; must be either 'left' or 'right'
 * @returns {object|string} instance object or y-axis orientation
 */
-Multipanel.prototype.yAxisOrient = function( value ) {
+Panel.prototype.yAxisOrient = function( value ) {
 	var self = this,
 		rules = 'matches[left,right]';
 
@@ -5981,7 +5910,6 @@ Multipanel.prototype.yAxisOrient = function( value ) {
 	});
 
 	return this;
-
 }; // end METHOD yAxisOrient()
 
 /**
@@ -5991,7 +5919,7 @@ Multipanel.prototype.yAxisOrient = function( value ) {
 * @param {boolean} bool - boolean flag indicating whether to display an x-axis.
 * @returns {object|boolean} instance object or x-axis display
 */
-Multipanel.prototype.xAxisDisplay = function( bool ) {
+Panel.prototype.xAxisDisplay = function( bool ) {
 	var self = this,
 		rules = 'boolean';
 
@@ -6009,7 +5937,6 @@ Multipanel.prototype.xAxisDisplay = function( bool ) {
 	})();
 
 	return this;
-
 }; // end METHOD xAxisDisplay()
 
 /**
@@ -6019,7 +5946,7 @@ Multipanel.prototype.xAxisDisplay = function( bool ) {
 * @param {boolean} bool - boolean flag indicating whether to display a y-axis.
 * @returns {object|boolean} instance object or y-axis display
 */
-Multipanel.prototype.yAxisDisplay = function( bool ) {
+Panel.prototype.yAxisDisplay = function( bool ) {
 	var self = this,
 		rules = 'boolean';
 
@@ -6037,39 +5964,453 @@ Multipanel.prototype.yAxisDisplay = function( bool ) {
 	})();
 
 	return this;
-
 }; // end METHOD yAxisDisplay()
 
 /**
 * METHOD: parent()
-*	Returns the multipanel parent.
+*	Returns the panel parent.
 *
 * @returns {object} parent instance
 */
-Multipanel.prototype.parent = function() {
+Panel.prototype.parent = function() {
 	return this._parent;
 }; // end METHOD parent()
 
 /**
 * METHOD: config()
-*	Returns the multipanel configuration as a JSON blob.
+*	Returns the panel configuration as a JSON blob.
 * 
 * @returns {object} configuration blob
 */
-Multipanel.prototype.config = function() {
+Panel.prototype.config = function() {
 	// Prevent direct tampering with the config object:
 	return JSON.parse( JSON.stringify( this._config ) );
 }; // end METHOD config()
 
 /**
 * METHOD: children()
-*	Returns the multipanel children.
+*	Returns the panel children.
 *
-* @returns {object} multipanel children
+* @returns {object} panel children
 */
-Multipanel.prototype.children = function() {
+Panel.prototype.children = function() {
 	return this._children;
 }; // end METHOD children()
+
+// MUTLIPANEL //
+
+/**
+* FUNCTION: Multipanel( canvas )
+*	Multipanel constructor. Creates a new multipanel instance.
+*
+* @constructor
+* @param {object} canvas - parent canvas instance
+* @returns {object} multipanel instance
+*/
+function Multipanel( canvas ) {
+
+	Panel.call( this, canvas );
+
+	this._config.padding.top = 25;
+	this._config.padding.left = 40;
+
+	this._config.rows = 1;
+	this._config.cols = 1;
+
+	this._config.headers = [];
+	this._config.labels = [];
+
+	// REGISTER //
+	if ( canvas._config.hasOwnProperty( 'panel' ) ) {
+		canvas._config.panel.push( this._config );
+	} else {
+		canvas._config.panel = [ this._config ];
+	}
+	if ( canvas._children.hasOwnProperty( 'panel' ) ) {
+		canvas._children.panel.push( this );
+	} else {
+		canvas._children.panel = [ this ];
+	}
+
+	return this;
+
+} // end FUNCTION Multipanel()
+
+/**
+* PROTOTYPE: panel
+*	Multipanel extends the panel class.
+*/
+Multipanel.prototype = Object.create( Panel.prototype );
+Multipanel.prototype.constructor = Multipanel;
+
+/**
+* METHOD: create()
+*	Creates a new multipanel element and appends to a canvas element.
+*
+* @returns {object} multipanel instance
+*/
+Multipanel.prototype.create = function() {
+	var config = this._config,
+		selection = this._parent._root,
+		position = config.position,
+		width = config.width,
+		height = config.height,
+		padding = config.padding,
+		gutter = config.gutter,
+		numRows = config.rows,
+		numCols = config.cols,
+		graphWidth, graphHeight,
+		left, top,
+		graph, axes,
+		row, col,
+		total = this._data.length,
+		xAxisFLG, yAxisFLG;
+
+	// Check!
+	if ( total > numRows*numCols ) {
+		throw new Error( 'create()::data number exceeds grid size. Total: ' + total + '; Grid: ' + numRows + 'x' + numCols + '.' );
+	}
+
+	// Create the multipanel element:
+	this._root = selection.append( 'svg:g' )
+		.attr( 'property', 'panel' )
+		.attr( 'class', 'panel' )
+		.attr( 'transform', 'translate(' + position.left + ',' + position.top + ')' );
+
+	// FIXME: make graph dimension calculation robust.
+
+	// Compute graph dimensions: (NOTE: 54 is a fudge factor to allow for ticks and labels; depending on font-size, tick padding, and tick sizes, this may not be correct.)
+	graphWidth = Math.floor( ( width-gutter-padding.left*(numCols-1) ) / numCols );
+	graphHeight = Math.floor( ( height-54-padding.top*(numRows-1) ) / numRows );
+
+	config.scales[ 0 ].range.max = graphWidth;
+	config.scales[ 1 ].range.max = graphHeight;
+
+	// Create the graphs and axes in an NxM grid...
+	for ( var i = 0; i < total; i++ ) {
+
+		// Get the row and column number:
+		row = Math.floor( i / numCols );
+		col = i % numCols;
+
+		// Formatting flags:
+		xAxisFLG = false;
+		if ( row === numRows-1 ) {
+			xAxisFLG = true;
+		}
+		yAxisFLG = false;
+		if ( col === 0 ) {
+			yAxisFLG = true;
+		}
+
+		// Graph vertical position:
+		top = (graphHeight+padding.top) * row;
+
+		// Graph horizontal position:
+		left = (graphWidth+padding.left) * col;
+
+		// Graph:
+		graph = this._graph( graphWidth, graphHeight, left, top, this._data[ i ] );
+
+		// Axes:
+		axes = this._axes( graph, xAxisFLG, yAxisFLG );
+	} // end FOR i
+
+	// Create column headers and row labels:
+	if ( config.headers.length ) {
+		this._headers( graphWidth );
+	}
+	if ( config.labels.length ) {
+		this._labels( graphHeight );
+	}
+
+	return this;
+}; // end METHOD create()
+
+/**
+* METHOD: _graph( width, height, left, top, data )
+*	Creates and configures a graph instance.
+*
+* @private
+* @param {number} graph width
+* @param {number} graph height
+* @param {number} left displacement
+* @param {number} top displacement
+* @param {Data} data instance
+* @returns {Graph} graph instance
+*/
+Multipanel.prototype._graph = function( width, height, left, top, data ) {
+	var graph = new Graph( this ),
+		config = this._config;
+
+	graph.width( width )
+		.height( height )
+		.position({
+			'left': left,
+			'top': top
+		})
+		.xMin( config.scales[ 0 ].domain.min )
+		.xMax( config.scales[ 0 ].domain.max )
+		.yMin( config.scales[ 1 ].domain.min )
+		.yMax( config.scales[ 1 ].domain.max )
+		.xRange([
+			config.scales[ 0 ].range.min,
+			config.scales[ 0 ].range.max
+		])
+		.yRange([
+			config.scales[ 1 ].range.max,
+			config.scales[ 1 ].range.min
+		])
+		.xScale( config.scales[ 0 ].type )
+		.yScale( config.scales[ 1 ].type )
+		.background( config.background )
+		.data( data );
+
+	return graph.create();
+}; // end METHOD _graph()
+
+/**
+* METHOD: _axes( parent, xFLG, yFLG )
+*	Creates and configures an axes instance.
+*
+* @private
+* @param {Graph} parent - graph instance
+* @param {boolean} xFLG - x-axis flag
+* @param {boolean} yFLG - y-axis flag
+* @returns {Axes} axes instance
+*/
+Multipanel.prototype._axes = function createAxes( graph, xAxisFLG, yAxisFLG ) {
+	var axes = new Axes( graph ),
+		config = this._config;
+
+	// Configure the axes:
+	axes.yLabel( config.axes[ 1 ].label )
+		.yTickFormat( config.axes[ 1 ].ticks.format )
+		.xNumTicks( config.axes[ 0 ].ticks.num )
+		.yNumTicks( config.axes[ 1 ].ticks.num )
+		.xTickPadding( config.axes[ 0 ].ticks.padding )
+		.yTickPadding( config.axes[ 1 ].ticks.padding )
+		.xTickRotation( config.axes[ 0 ].ticks.rotation )
+		.yTickRotation( config.axes[ 1 ].ticks.rotation )
+		.xInnerTickSize( config.axes[ 0 ].ticks.innerSize )
+		.yInnerTickSize( config.axes[ 1 ].ticks.innerSize )
+		.xOuterTickSize( config.axes[ 0 ].ticks.outerSize )
+		.yOuterTickSize( config.axes[ 1 ].ticks.outerSize )
+		.xTickDirection( config.axes[ 0 ].ticks.direction )
+		.yTickDirection( config.axes[ 1 ].ticks.direction )
+		.xTickDisplay( xAxisFLG )
+		.yTickDisplay( config.axes[ 1 ].ticks.display )
+		.xAxisOrient( config.axes[ 0 ].orient )
+		.yAxisOrient( config.axes[ 1 ].orient )
+		.xAxisDisplay( config.axes[ 0 ].display );
+
+	// Show x-axis tick labels:
+	if ( xAxisFLG ) {
+		axes.xLabel( config.axes[ 0 ].label )
+			.xTickFormat( config.axes[ 0 ].ticks.format );
+	} else {
+		axes.xLabel( '' )
+			.xTickFormat( '' );
+	}
+	if ( yAxisFLG ) {
+		axes.yAxisDisplay( config.axes[ 1 ].display );
+	} else  {
+		axes.yAxisDisplay( false );
+	}
+
+	// Create the axes:
+	return axes.create();
+}; // end METHOD _axes()
+
+/**
+* METHOD: _headers( width )
+*	Creates column headers.
+*
+* @private
+* @param {number} width - graph width
+* @returns {object} object instance
+*/
+Multipanel.prototype._headers = function( width ) {
+	var config = this._config,
+		numCols = config.cols,
+		headers = config.headers,
+		padding = config.padding.left,
+		annotations, label;
+
+	// Check!!
+	if ( numCols !== headers.length ) {
+		console.warn( 'create()::column number does not equal header number.' );
+		numCols = Math.min( numCols, headers.length );
+	}
+
+	// Instantiate a new annotations generator and configure:
+	annotations = new Annotations( this );
+
+	// Create the annotations element:
+	annotations.create();
+
+	for ( var i = 0; i < numCols; i++ ) {
+		// Instantiate a new text instance and configure:
+		label = annotations.text()
+			.width( width )
+			.height( 100 )
+			.top( -35 )
+			.left( (width+padding)*i );
+
+		// Add a text annotation:
+		label.create( '<span class="col-header">' + headers[ i ] + '</span>');
+	} // end FOR i
+
+	return this;
+}; // end FUNCTION _headers()
+
+/**
+* METHOD: _labels( height )
+*	Creates row labels.
+*
+* @private
+* @param {number} height - graph height
+* @returns {object} object instance
+*/
+Multipanel.prototype._labels = function( height ) {
+	var config = this._config,
+		numRows = config.rows,
+		labels = config.labels,
+		width = config.width,
+		padding = config.padding.top,
+		gutter = config.gutter,
+		annotations, label;
+
+	// Check!!
+	if ( numRows !== labels.length ) {
+		console.warn( 'create()::row number does not equal label number.' );
+		numRows = Math.min( numRows, labels.length );
+	}
+
+	// Instantiate a new annotations generator and configure:
+	annotations = new Annotations( this );
+
+	// Create the annotations element:
+	annotations.create();
+
+	for ( var i = 0; i < numRows; i++ ) {
+		// Instantiate a new text instance and configure:
+		label = annotations.text()
+			.width( gutter-20 )
+			.height( 100 )
+			.top( height*(i+0.5) + padding*i )
+			.left( width-gutter+20 );
+
+		// Add a text annotation:
+		label.create( '<span class="row-label">'+ labels[ i ] + '</span>');
+	} // end FOR i
+
+	return this;
+}; // end FUNCTION _headers()
+
+/**
+* METHOD: rows( value )
+*	Number of rows setter and getter. If a value is supplied, defines the number of rows. If no value is supplied, returns the number of rows.
+*
+* @param {number} value - number of rows.
+* @returns {object|number} - panel instance or number of rows
+*/
+Multipanel.prototype.rows = function( value ) {
+	var self = this,
+		rules = 'number';
+
+	if ( !arguments.length ) {
+		return this._config.rows;
+	}
+
+	Validator( value, rules, function set( errors ) {
+		if ( errors ) {
+			console.error( errors );
+			throw new Error( 'rows()::invalid input argument.' );
+		}
+		self._config.rows = value;
+	});
+
+	return this;
+}; // end METHOD rows()
+
+/**
+* METHOD: cols( value )
+*	Number of columns setter and getter. If a value is supplied, defines the number of columns. If no value is supplied, returns the number of columns.
+*
+* @param {number} value - number of columns.
+* @returns {object|number} - panel instance or number of columns
+*/
+Multipanel.prototype.cols = function( value ) {
+	var self = this,
+		rules = 'number';
+
+	if ( !arguments.length ) {
+		return this._config.cols;
+	}
+
+	Validator( value, rules, function set( errors ) {
+		if ( errors ) {
+			console.error( errors );
+			throw new Error( 'cols()::invalid input argument.' );
+		}
+		self._config.cols = value;
+	});
+
+	return this;
+}; // end METHOD cols()
+
+/**
+* METHOD: headers( arr )
+*	Column headers setter and getter. If a header array is supplied, sets the column headers. If no header array is supplied, retrieves the column headers.
+*
+* @param {array} arr - an array of headers (strings)
+* @returns {object|array} object instance or an array of headers
+*/
+Multipanel.prototype.headers = function ( arr ) {
+	var self = this,
+		rules = 'array';
+
+	if ( !arguments.length ) {
+		return this._config.headers;
+	}
+	
+	Validator( arr, rules, function set( errors ) {
+		if ( errors ) {
+			console.error( errors );
+			throw new Error( 'headers()::invalid input argument.' );
+		}
+		self._config.headers = arr;
+	});
+
+	return this;
+}; // end METHOD headers()
+
+/**
+* METHOD: labels( arr )
+*	Row labels setter and getter. If a label array is supplied, sets the row labels. If no label array is supplied, retrieves the row labels.
+*
+* @param {array} arr - an array of labels (strings)
+* @returns {object|array} object instance or an array of labels
+*/
+Multipanel.prototype.labels = function ( arr ) {
+	var self = this,
+		rules = 'array';
+
+	if ( !arguments.length ) {
+		return this._config.labels;
+	}
+	
+	Validator( arr, rules, function set( errors ) {
+		if ( errors ) {
+			console.error( errors );
+			throw new Error( 'labels()::invalid input argument.' );
+		}
+		self._config.labels = arr;
+	});
+
+	return this;
+}; // end METHOD labels()
 /**
 *
 *	HIST2C
@@ -6341,7 +6682,14 @@ var histc;
 
 // KDE //
 
-var KDE = function() {
+/**
+* FUNCTION: KDE()
+*	KDE constructor. Creates a new KDE instance.
+*
+* @constructor
+* @returns {object} KDE instance
+*/
+function KDE() {
 
 	this._kernel = pdf.normal( 0, 1 ); // standard normal
 	this._config = {
@@ -6359,7 +6707,7 @@ var KDE = function() {
 	};
 
 	return this;
-};
+} // end FUNCTION KDE()
 
 /**
 * METHOD: kernel( fcn )
@@ -6521,7 +6869,6 @@ KDE.prototype.min = function( value ) {
 	});
 	
 	return this;
-
 }; // end METHOD min()
 
 /**
@@ -6548,7 +6895,6 @@ KDE.prototype.max = function( value ) {
 	});
 	
 	return this;
-
 }; // end METHOD max()
 
 /**
@@ -6577,7 +6923,6 @@ KDE.prototype.domain = function( arr ) {
 	});
 	
 	return this;
-
 }; // end METHOD domain()
 
 /**
@@ -6606,7 +6951,6 @@ KDE.prototype.points = function( value ) {
 	});
 	
 	return this;
-
 }; // end METHOD points()
 
 // TODO: use dfft to speed KDE calculation.
@@ -6683,6 +7027,9 @@ KDE.prototype.config = function() {
 
 // PDF //
 
+/**
+* @namespace pdf
+*/
 var pdf = {
 		'version': '0.0.0' // semvar
 	};
@@ -7061,6 +7408,9 @@ var Validator;
 
 // VECTOR //
 
+/**
+* @namespace Vector
+*/
 var Vector = {
 		'version': '0.0.0' // semvar
 	};
@@ -7128,7 +7478,7 @@ Vector.stdev = function( vector ) {
 * @returns {number} median value
 */
 Vector.median = function( vector ) {
-	var value, id, vec;
+	var id, vec;
 
 	// Create a copy of the input vector:
 	vec = vector.slice();
@@ -7148,7 +7498,6 @@ Vector.median = function( vector ) {
 
 	// Even number of elements, so must take the mean of the two middle values:
 	return ( vec[ id-1 ] + vec[ id ] ) / 2.0;
-
 }; // end METHOD median()
 
 /**
@@ -7220,7 +7569,6 @@ Vector.linspace = function( min, max, increment ) {
 	for ( var i = 1; i < numElements - 1; i++ ) {
 		vec[ i ] = min + increment*i;
 	}
-
 	return vec;
 }; // end METHOD linspace()
 
@@ -7332,8 +7680,8 @@ xfig.annotations = function( parent ) {
 	if ( !parent ) {
 		throw new Error( 'annotations()::parent instance not provided. Unable to initialize annotations constructor.' );
 	}
-	if ( !( parent instanceof Canvas ) && !( parent instanceof Graph ) && !( parent instanceof Multipanel ) ) {
-		throw new Error( 'annotations()::invalid input parameter. Input argument must be ether a Canvas, Graph, or Multipanel instance.' );
+	if ( !( parent instanceof Canvas ) && !( parent instanceof Graph ) && !( parent instanceof Panel ) ) {
+		throw new Error( 'annotations()::invalid input parameter. Input argument must be ether a Canvas, Graph, or Panel instance.' );
 	}
 	return new Annotations( parent );
 };

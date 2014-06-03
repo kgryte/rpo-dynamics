@@ -67,7 +67,7 @@
 		multipanel = xfig.multipanel( canvas )
 			.width( width )
 			.height( height )
-			.padding( 25 )
+			.paddingTop( 25 )
 			.position({
 				'left': left,
 				'top': top
@@ -83,6 +83,8 @@
 
 		// Bind the data instance to the multipanel:
 		multipanel.data( Data )
+			.rows( Data.length )
+			.cols( 1 )
 			.xMin( Data[0].min( function ( d ) { return d[ 0 ]; } ) )
 			.xMax( Data[0].max( function ( d ) { return d[ 0 ]; } ) )
 			.yMin( 0 )

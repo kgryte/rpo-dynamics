@@ -62,7 +62,9 @@
 		multipanel = xfig.multipanel( canvas )
 			.width( width )
 			.height( height )
-			.padding( 25 )
+			.paddingTop( 25 )
+			.rows( data.length )
+			.cols( 1 )
 			.position({
 				'left': left,
 				'top': top
