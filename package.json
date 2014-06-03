@@ -81,6 +81,10 @@
     {
       "type": "MIT",
       "url": "http://www.opensource.org/licenses/MIT"
+    },
+    {
+      "type": "Creative Commons Attribution 4.0 License",
+      "url": "http://creativecommons.org/licenses/by/4.0/"
     }
   ]
 }
