@@ -127,19 +127,21 @@
 			*/
 			function next() {
 				if ( ++counter === 3 ) {
-					figure( Data, function onFigure( error, html ) {
-						if ( error ) {
-							onError( response, error );
-							return;
-						}
-						response.writeHead( 200, {
-							'Content-Type': 'text/html'
-						});
-						response.write( html );
-						response.end();
-					});
+					figure( Data, onFigure );
 				}
 			} // end FUNCTION next()
+
+			function onFigure( error, html ) {
+				if ( error ) {
+					onError( response, error );
+					return;
+				}
+				response.writeHead( 200, {
+					'Content-Type': 'text/html'
+				});
+				response.write( html );
+				response.end();
+			}
 		});
 
 		// Callback:

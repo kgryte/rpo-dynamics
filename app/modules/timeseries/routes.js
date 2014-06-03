@@ -90,24 +90,28 @@
 			var condition = request.params.condition;
 
 			// Get data:
-			getData( 'timeseries', [ condition ], 'uncorrected.efficiency', 'timeseries', function onData( error, data ) {
+			getData( 'timeseries', [ condition ], 'uncorrected.efficiency', 'timeseries', onData );
+
+			function onData( error, data ) {
 				if ( error ) {
 					onError( response, error );
 					return;
 				}
 
-				figure( data[ condition ], function onFigure( error, html ) {
-					if ( error ) {
-						onError( response, error );
-						return;
-					}
-					response.writeHead( 200, {
-						'Content-Type': 'text/html'
-					});
-					response.write( html );
-					response.end();
+				figure( data[ condition ], onFigure );
+			}
+
+			function onFigure( error, html ) {
+				if ( error ) {
+					onError( response, error );
+					return;
+				}
+				response.writeHead( 200, {
+					'Content-Type': 'text/html'
 				});
-			});
+				response.write( html );
+				response.end();
+			}
 		});
 
 		// Callback:

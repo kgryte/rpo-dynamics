@@ -21,7 +21,7 @@
 *
 *
 *	HISTORY:
-*		- 2014/04/21: Created. [AReines].
+*		- 2014/06/02: Created. [AReines].
 *
 *
 *	DEPENDENCIES:
@@ -84,58 +84,19 @@
 
 		// NOTE: the 'this' context is the application.
 
-		// Summary figure route for a particular condition:
-		this.get( '/summary/:condition', function onRequest( request, response ) {
-
-			var condition = request.params.condition,
-				counter = 0,
-				Data = new Array( 4 );
+		// Matrix:
+		this.get( '/matrix', function onRequest( request, response ) {
 
 			// Get data:
-			getData( 'summary', [ condition ], 'uncorrected.efficiency', 'kde', function onData( error, data ) {
-				if ( error ) {
-					onError( response, error );
-					return;
-				}
-				Data[ 0 ] = data;
-				next();
-			});
-			getData( 'summary', [ condition ], 'uncorrected.efficiency', 'timeseries-histogram', function onData( error, data ) {
-				if ( error ) {
-					onError( response, error );
-					return;
-				}
-				Data[ 1 ] = data;
-				next();
-			});
-			getData( 'summary', [ condition ], 'uncorrected.efficiency', 'means', function onData( error, data ) {
-				if ( error ) {
-					onError( response, error );
-					return;
-				}
-				Data[ 2 ] = data;
-				next();
-			});
-			getData( 'timeseries', [ condition ], 'uncorrected.efficiency', 'timeseries', function onData( error, data ) {
-				if ( error ) {
-					onError( response, error );
-					return;
-				}
-				Data[ 3 ] = data;
-				next();
-			});
+			getData( 'summary', [ '*' ], 'uncorrected.efficiency', 'kde', onData );
 
-			return;
-
-			/**
-			* FUNCTION: next()
-			*	Callback to invoke after successfully loading data.
-			*/
-			function next() {
-				if ( ++counter === 4 ) {
-					figure( Data, onFigure );
+			function onData( error, data ) {
+				if ( error ) {
+					onError( response, error );
+					return;
 				}
-			} // end FUNCTION next()
+				figure( data, onFigure );
+			}
 
 			function onFigure( error, html ) {
 				if ( error ) {

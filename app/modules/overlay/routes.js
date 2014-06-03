@@ -91,23 +91,27 @@
 				condition2 = request.params.condition2;
 
 			// Get data:
-			getData( 'summary', [ condition1, condition2 ], 'uncorrected.efficiency', 'kde', function onData( error, data ) {
+			getData( 'summary', [ condition1, condition2 ], 'uncorrected.efficiency', 'kde', onData );
+
+			function onData( error, data ) {
 				if ( error ) {
 					onError( response, error );
 					return;
 				}
-				figure( data, function onFigure( error, html ) {
-					if ( error ) {
-						onError( response, error );
-						return;
-					}
-					response.writeHead( 200, {
-						'Content-Type': 'text/html'
-					});
-					response.write( html );
-					response.end();
+				figure( data, onFigure );
+			}
+
+			function onFigure( error, html ) {
+				if ( error ) {
+					onError( response, error );
+					return;
+				}
+				response.writeHead( 200, {
+					'Content-Type': 'text/html'
 				});
-			});
+				response.write( html );
+				response.end();
+			}
 		});
 
 		// Callback:
