@@ -72,12 +72,13 @@ TODO
 1.  Multiple timeseries -->  dynamically resize based on parent size (wrap in container); ability to sort based on mean, variance --> sort in-browser using data attributes: data-mean, data-variance, etc. --> see isotope.js
 2. 	Small-multiple timeseries-histogram across all conditions
 3. 	Repeats comparision (multipanel, or avg hist with variance overlay)
-4.  Scatterplot matrix-style figure but with KDE overlays
-5. 	
+4.  Individual metric KDEs; similar to multiple timeseries. On hover, overlay avg KDE (aggregate all KDEs and calculate mean).
+5. 	Sort matrix KDE figure using correlation (see Bostock example); more similar two KDEs are, the higher the correlation should be. Similar to chi-squared goodness-of-fit
 6. 	Schematic (break into individual components)
 7. 	Box-and-whisker plots via descriptive stats files. --> can create a timeseries-histogram like figure, either horizontally or vertically oriented; preference at this point is E on Y-Axis and molecules on X-Axis, in contrast to timeseries-histogram.
 8. 	Contour plot
 9. 	Hist2d MVA
+10. Stacked
 
 
 ### UI
