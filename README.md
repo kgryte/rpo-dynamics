@@ -111,6 +111,12 @@ http://127.0.0.1:1337/matrix
 returns a figure cross-comparing all condition distributions. The distributions are calculated as KDEs.
 
 ```
+http://127.0.0.1:1337/stacked/:id
+```
+
+returns a figure comparing a condition set `id`, e.g., `10011000`, distribution to all other condition distributions. All distributions are calculated as KDEs.
+
+```
 http://127.0.0.1:1337/figures/2
 ```
 
