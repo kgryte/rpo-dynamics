@@ -57,6 +57,12 @@ $ git pull origin master
 Application routes and their response:
 
 ```
+http://127.0.0.1:1337
+```
+
+is the base application URL. The resource includes a table describing each condition. When a table row is clicked, the browser navigates to the corresponding condition's summary figure (see below).
+
+```
 http://127.0.0.1:1337/conditions
 ```
 
