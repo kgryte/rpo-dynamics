@@ -117,31 +117,31 @@ http://127.0.0.1:1337/matrix
 returns a figure cross-comparing all condition distributions. The distributions are calculated as KDEs.
 
 ```
-http://127.0.0.1:1337/matrix/:filter
+http://127.0.0.1:1337/submatrix/:filter
 ```
 
 returns a figure cross-comparing all distributions for conditions matching the `:filter`, .e.g, `10******`. Numeric characters specify the permitted values. Wildcard characters `*` specify that any condition value is acceptable. In the example, `10` specifies to find all conditions which used the delta jaw mutant and which allowed RPo formation. Because the character specifying the DNA construct is a wildcard, all delta jaw mutant conditions match this criteria; similarly for the remaining conditions. If, for example, the filter was `10*****1`, then only those conditions which used the delta jaw mutant, allowed RPo formation, and were repeat 1 would be used to create the matrix figure.
 
 ```
-http://127.0.0.1:1337/stacked/:id
+http://127.0.0.1:1337/stack/:id
 ```
 
 returns a figure comparing a condition set `id`, e.g., `10011000`, distribution to all other condition distributions. All distributions are calculated as KDEs.
 
 ```
-http://127.0.0.1:1337/figures/2
+http://127.0.0.1:1337/figure/2
 ```
 
 returns manuscript Figure 2. The figure includes raw intensity timeseries, a corresponding FRET efficiency timeseries, and two KDEs for control conditions `00001000` and `00001100`.
 
 ```
-http://127.0.0.1:1337/figures/3
+http://127.0.0.1:1337/figure/3
 ```
 
 returns manuscript Figure 3. The figure includes FRET efficiency timeseries for conditions `00001000`, `00101000`, and (...quFRET...).
 
 ```
-http://127.0.0.1:1337/figures/4
+http://127.0.0.1:1337/figure/4
 ```
 
 returns manuscript Figure 4. The figure includes KDEs for conditions `00001000`, `00011000`, `00101000`, `00111000`. The first two conditions correspond to wild-type RNAP and DNA at 21C and 37C, respectively. The latter two conditions correspond to wild-type RNAP and pre-melted DNA at 21C and 37C, respectively.

@@ -94,8 +94,8 @@
 			response.end();
 		});
 
-		// Figures route:
-		this.get( '/figures/:id', function onRequest( request, response ) {
+		// Figure route:
+		this.get( '/figure/:id', function onRequest( request, response ) {
 			var id = request.params.id;
 
 			// CHECK!!!

@@ -84,8 +84,8 @@
 
 		// NOTE: the 'this' context is the application.
 
-		// Matrix:
-		this.get( '/stacked/:condition', function onRequest( request, response ) {
+		// Stack:
+		this.get( '/stack/:condition', function onRequest( request, response ) {
 
 			var condition = request.params.condition,
 				d = {};

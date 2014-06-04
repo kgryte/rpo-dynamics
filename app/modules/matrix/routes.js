@@ -158,7 +158,7 @@
 		});
 
 		// Sub-matrix:
-		this.get( '/matrix/:id', function onRequest( request, response ) {
+		this.get( '/submatrix/:id', function onRequest( request, response ) {
 
 			var id = request.params.id,
 				ids = getConditions( id );
