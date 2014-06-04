@@ -3,23 +3,113 @@
 	<head>
 		<title>RPo Dynamics</title>
 
-		<!-- Stylesheets -->
-		<link type='text/css' rel='stylesheet' href='http://fonts.googleapis.com/css?family=Cabin' >
-		<link rel="stylesheet" type="text/css" href="/css/styles.css">
+		<meta charset="utf-8">
+    	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+    	<meta name="viewport" content="width=device-width, initial-scale=1">
+    	<meta name="description" content="RNA polymerase open complex dynamics.">
+    	<meta name="author" content="Athan Reines">
+
+    	<!-- Stylesheets -->
+		<link rel='stylesheet' type='text/css' href='http://fonts.googleapis.com/css?family=Cabin'>
+		<link rel="stylesheet" type="text/css" href="css/bootstrap/bootstrap.min.css">
+		<link rel="stylesheet" type="text/css" href="css/bootstrap/bootstrap-dashboard.css">
+		<link rel="stylesheet" type="text/css" href="css/home.css">
 	</head>
 	<body>
 
-		<div class="main"></div>
+		<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+			<div class="container-fluid">
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+						<span class="sr-only">Toggle navigation</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+					<a class="navbar-brand" href="#">RPo Dynamics</a>
+				</div>
+				<div class="navbar-collapse collapse">
+					<!-- <ul class="nav navbar-nav navbar-right">
+						<li><a href="#">Dashboard</a></li>
+						<li><a href="#">Settings</a></li>
+						<li><a href="#">Profile</a></li>
+						<li><a href="#">Help</a></li>
+					</ul> -->
+					<!-- <form class="navbar-form navbar-right">
+						<input type="text" class="form-control" placeholder="Search...">
+					</form> -->
+				</div>
+			</div>
+		</div>
+
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-sm-12 col-sm-offset-0 col-md-12 col-md-offset-0 main">
+					<!-- <h1 class="page-header">Overview</h1>
+
+					<div class="row placeholders">
+						<div class="col-xs-6 col-sm-3 placeholder">
+							<img data-src="" class="img-responsive" alt="Generic placeholder thumbnail">
+							<h4>Label</h4>
+							<span class="text-muted">Description...</span>
+						</div>
+						<div class="col-xs-6 col-sm-3 placeholder">
+							<img data-src="" class="img-responsive" alt="Generic placeholder thumbnail">
+							<h4>Label</h4>
+							<span class="text-muted">Description...</span>
+						</div>
+						<div class="col-xs-6 col-sm-3 placeholder">
+							<img data-src="" class="img-responsive" alt="Generic placeholder thumbnail">
+							<h4>Label</h4>
+							<span class="text-muted">Description...</span>
+						</div>
+						<div class="col-xs-6 col-sm-3 placeholder">
+							<img data-src="" class="img-responsive" alt="Generic placeholder thumbnail">
+							<h4>Label</h4>
+							<span class="text-muted">Description...</span>
+						</div>
+					</div>
+ -->
+					<h2 class="sub-header">Conditions</h2>
+					<div class="table-responsive">
+						<table class="table table-striped">
+							<thead>
+								<tr>
+									<th>ID</th>
+									<% var header; %>
+									<% for ( var i = 0; i < headers.length; i++ ) { %>
+									<% header = headers[ i ]; %>
+									<th><%= header %></th>
+									<% } %>
+								</tr>
+							</thead>
+							<tbody>
+								<% var row, datum; %>
+								<% for ( var j = 0; j < rows.length; j++ ) { %>
+								<% row = rows[ j ]; %>
+								<tr>
+									<% for ( var k = 0; k < row.length; k++ ) { %>
+									<% datum = row[ k ]; %>
+									<td><%= datum %></td>
+									<% } %>
+								</tr>
+								<% } %>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
 
 		<!-- Scripts -->
-		<script type="text/javascript" src="/js/lib/d3.min.js"></script>
-		<script type="text/javascript" src="/js/lib/lodash.min.js"></script>
-		<script type="text/javascript" src="/js/lib/jquery.min.js"></script>
-		<script type="text/javascript" src="/js/lib/jquery-ui.min.js"></script>
+		<script type="text/javascript" src="js/lib/d3.min.js"></script>
+		<script type="text/javascript" src="js/lib/lodash.min.js"></script>
+		<script type="text/javascript" src="js/lib/jquery.min.js"></script>
+		<script type="text/javascript" src="js/lib/jquery-ui.min.js"></script>
+		<script type="text/javascript" src="js/bootstrap/bootstrap.min.js"></script>
 
+		<script type="text/javascript" src="js/lib/xfig.min.js"></script>
 
-		<script type="text/javascript" src="/js/lib/xfig.min.js"></script>
-
-		<script type="text/javascript" src="/js/script.js"></script>
+		<script type="text/javascript" src="js/script.js"></script>
 	</body>
 </html>

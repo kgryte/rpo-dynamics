@@ -72,7 +72,7 @@
 		var ids = [ '00001000', '00101000' ];
 
 		// Initialize a DOM:
-		DOM( partials.index, function onWindow( error, window ) {
+		DOM( partials.figure, function onWindow( error, window ) {
 			var document = window.document,
 				selection;
 
