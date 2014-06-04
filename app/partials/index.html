@@ -74,7 +74,7 @@
 					<div class="table-responsive">
 						<table class="table table-striped">
 							<thead>
-								<tr>
+								<tr class="column-names">
 									<th>ID</th>
 									<% var header; %>
 									<% for ( var i = 0; i < headers.length; i++ ) { %>
@@ -87,7 +87,7 @@
 								<% var row, datum; %>
 								<% for ( var j = 0; j < rows.length; j++ ) { %>
 								<% row = rows[ j ]; %>
-								<tr>
+								<tr class="condition" data-id="<%= row[ 0 ] %>" >
 									<% for ( var k = 0; k < row.length; k++ ) { %>
 									<% datum = row[ k ]; %>
 									<td><%= datum %></td>

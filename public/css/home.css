@@ -48,3 +48,6 @@ header {
 	margin-top: 75px;
 }
 
+.table .condition {
+	cursor: pointer;
+}

@@ -60,7 +60,7 @@ Application routes and their response:
 http://127.0.0.1:1337/conditions
 ```
 
-provides a mapping between encoded directory names and their decoded description. For example, encoded key `10001000` corresponds to condition `mutant rpo wt rt antibody none 20ms 0`.
+provides a mapping (as JSON) between encoded directory names and their decoded description. For example, encoded key `10001000` corresponds to condition `mutant rpo wt rt antibody none 20ms 0`.
 
 ```
 http://127.0.0.1:1337/conditions/:id
@@ -72,7 +72,7 @@ returns a description of the condition set represented by `:id`. For example, id
 http://127.0.0.1:1337/encoding
 ```
 
-provides the model underlying encoding-decoding. Included in the model is a description of each model element.
+provides the model underlying encoding-decoding as a JSON object. Included in the model is a description of each model element.
 
 ```
 http://127.0.0.1:1337/summary/:id

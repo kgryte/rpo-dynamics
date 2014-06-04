@@ -1,27 +1,31 @@
 
 
-
-
-(function(){
+(function() {
 	'use strict';
 
-	// FIGURE //
+	var rows = document.querySelectorAll( '.table .condition' );
 
-	var figures = document.querySelectorAll( 'figure' );
-
-	for ( var f = 0; f < figures.length; f++ ) {
-		figures[ f ].classList.add( 'clearfix' );
+	for ( var i = 0; i < rows.length; i++ ) {
+		rows[ i ].addEventListener( 'click', onClick );
 	}
 
-	// SORTABILITY //
+	return;
 
-	var selections = document.querySelectorAll( '[data-sortable="1"]' );
+	/**
+	* FUNCTION: onClick( event )
+	*	Event handler for clicking on rows in the condition table.
+	*
+	* @param {object} event - event object
+	*/
+	function onClick( event ) {
+		var parent = event.target.parentNode,
+			id = parent.getAttribute( 'data-id' ),
 
-	for ( var i = 0; i < selections.length; i++ ) {
-		$( selections[ i ] ).sortable({
-			'delay': 150,
-			'items': '.canvas'
-		});
-	} // end FOR i
+			// TODO: do not hardcode by extract baseurl from current url
+
+			url = 'http://127.0.0.1:1337/summary/' + id;
+		window.open( url, '_blank' );
+		event.preventDefault();
+	} // end FUNCTION onClick()
 
 })();
