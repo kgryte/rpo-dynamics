@@ -24,7 +24,7 @@ TODO
 10. Remove jQuery dependence and move to ui-component sortable --> more difficult than expected; only want sort on drop; not during drag.
 11. Add prefix argument to getData module to target a particular file(s). Similar to ids. Allow ['*'], or [1,2,3,8,9]. Accordingly, three prefixes in filter.
 12. Use async module, rather than queue
-13. 
+13. add favicon
 14. Update code documentation; e.g., document manifests (top-of-file)
 
 
@@ -81,6 +81,7 @@ TODO
 10. Sort stat based on distribution similarity (corr, chi-squared)
 11. Matrix plot: hover to highlight graph and show condition names
 12. Matrix routes: /matrix/1*001*11 where comparison is between those condition encodings matching the selector. Wildcards match any
+13. Condition summary: bar graphs showing individual means and stdev, timeseries histogram, box-and-whisker plots, MVA 
 
 
 ### UI
