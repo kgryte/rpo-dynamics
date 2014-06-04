@@ -84,7 +84,7 @@ TODO
 10. Sort stat based on distribution similarity (corr, chi-squared)
 11. Matrix plot: hover to highlight graph and show condition names
 12. Matrix routes: /matrix/1*001*11 where comparison is between those condition encodings matching the selector. Wildcards match any
-13. Condition summary: bar graphs showing individual means and stdev, timeseries histogram, box-and-whisker plots, MVA 
+13. Condition summary: bar graphs showing individual means and stdev, box-and-whisker plots, MVA 
 
 
 ### UI
