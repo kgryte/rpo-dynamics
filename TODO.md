@@ -29,6 +29,8 @@ TODO
 15. Make main app page Angularjs app. 
 16. Sortable/Searchable/Filterable table (datagrid?)
 17. Create figure page: type --> condition --> compare --> condition. Breadcrumb-like; after choose type, condition is revealed, then compare, etc.
+18. Change stacked URL to stacks.
+19. Make matrix/:id route submatrices/:filter
 
 
 
@@ -85,6 +87,8 @@ TODO
 11. Matrix plot: hover to highlight graph and show condition names
 12. Matrix routes: calculate figure canvas size more intelligently.
 13. Condition summary: bar graphs showing individual means and stdev, box-and-whisker plots, MVA 
+14. Matrix plot: color code the headers/labels
+20. Timeseries-histogram overlay --> use rgba and set transparency. Scale is then [0,1]. Hold colors constant. 
 
 
 ### UI
