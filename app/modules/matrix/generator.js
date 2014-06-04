@@ -67,6 +67,8 @@
 			datasets = Object.keys( data ),
 			ratio = datasets.length / 22;
 
+		// TODO: remove the ratio hack. Calculate more intelligently.
+
 		// [1] Instantiate a new figure generator:
 		figure = xfig.figure();
 

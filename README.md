@@ -117,6 +117,12 @@ http://127.0.0.1:1337/matrix
 returns a figure cross-comparing all condition distributions. The distributions are calculated as KDEs.
 
 ```
+http://127.0.0.1:1337/matrix/:filter
+```
+
+returns a figure cross-comparing all distributions for conditions matching the `:filter`, .e.g, `10******`. Numeric characters specify the permitted values. Wildcard characters `*` specify that any condition value is acceptable. In the example, `10` specifies to find all conditions which used the delta jaw mutant and which allowed RPo formation. Because the character specifying the DNA construct is a wildcard, all delta jaw mutant conditions match this criteria; similarly for the remaining conditions. If, for example, the filter was `10*****1`, then only those conditions which used the delta jaw mutant, allowed RPo formation, and were repeat 1 would be used to create the matrix figure.
+
+```
 http://127.0.0.1:1337/stacked/:id
 ```
 
