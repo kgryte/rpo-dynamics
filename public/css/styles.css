@@ -23,3 +23,17 @@ header {
 .table .condition {
 	cursor: pointer;
 }
+
+/* Reset cell background-color */
+.table-striped > tbody > tr:nth-child(odd) > td {
+	background-color: transparent;
+}
+
+/* Instead, set row background-color */
+.table-striped > tbody > tr:nth-child(odd) {
+	background-color: #f9f9f9;
+}
+
+.table .condition:hover {
+	background-color: rgba(0,0,255,0.1);
+}
