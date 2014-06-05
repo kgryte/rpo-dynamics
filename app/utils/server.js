@@ -71,19 +71,16 @@
 
 		// Begin listening for HTTP requests:
 		server.listen( PORT, function onError( error ) {
-
 			// Check for an error!
 			if ( error ) {
 				// Pass the error to the callback...
 				return clbk( error );
 			}
-
 			// Log that the server is running...
 			console.info( 'INFO:' + process.title + ':server initialized. Server is listening for requests on port: ' + PORT + '...' );
 
 			// Callback:
 			clbk();
-
 		});
 
 	}; // end FUNCTION createServer()
