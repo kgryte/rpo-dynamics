@@ -17,11 +17,15 @@ header {
 
 .main {
 	position: relative;
-	margin-top: 75px;
+	margin-top: 60px;
 }
 
 .table .condition {
 	cursor: pointer;
+}
+
+.table th {
+	font-weight: bold;
 }
 
 /* Reset cell background-color */
