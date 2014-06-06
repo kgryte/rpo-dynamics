@@ -63,15 +63,12 @@
 	*
 	*/
 	var generator = function( document, selection, data, clbk ) {
-		var dataset, kde, hist, means, timeseries, figure, canvas;
+		var kde, hist, means, timeseries, figure, canvas;
 
-		// Get the dataset name: (should be only one)
-		dataset = Object.keys( data[ 0 ] )[ 0 ];
-
-		kde = data[ 0 ][ dataset ];
-		hist = data[ 1 ][ dataset ][ 0 ];
-		means = data[ 2 ][ dataset ][ 0 ];
-		timeseries = data[ 3 ][ dataset ];
+		kde = data[ 0 ];
+		hist = data[ 1 ][ 0 ];
+		means = data[ 2 ][ 0 ];
+		timeseries = data[ 3 ];
 
 		// [1] Instantiate a new figure generator:
 		figure = xfig.figure();

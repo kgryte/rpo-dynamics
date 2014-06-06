@@ -99,6 +99,12 @@ http://127.0.0.1:1337/distributions/
 returns a figure containing a [kernel density estimate](http://en.wikipedia.org/wiki/Kernel_density_estimation) (KDE) for each condition set. 
 
 ```
+http://127.0.0.1:1337/distributions/10011000
+```
+
+returns all distributions for condition set `id`; e.g., `10011000`. The average distribution across all datasets is superimposed on the individual distributions. The distribution order matches the file order in the data directories.
+
+```
 http://127.0.0.1:1337/distributions/10011000/compare/00011000
 ```
 

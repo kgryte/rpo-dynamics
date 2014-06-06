@@ -76,7 +76,7 @@ TODO
 1.  Multiple timeseries -->  dynamically resize based on parent size (wrap in container); ability to sort based on mean, variance --> sort in-browser using data attributes: data-mean, data-variance, etc. --> see isotope.js
 2. 	Small-multiple timeseries-histogram across all conditions
 3. 	Repeats comparision (multipanel, or avg hist with variance overlay)
-4.  Individual metric KDEs; similar to multiple timeseries. On hover, overlay avg KDE (summary KDE / N).
+4.  Individual metric KDEs. On click, toggle overlay avg KDE.
 5. 	Sort matrix KDE figure using RMSE (see Bostock example). Chi-squared goodness-of-fit (Cramer's V, deviance)
 6. 	Schematic (break into individual components)
 7. 	Box-and-whisker plots via descriptive stats files. --> can create a timeseries-histogram like figure, either horizontally or vertically oriented; preference at this point is E on Y-Axis and molecules on X-Axis, in contrast to timeseries-histogram.
@@ -85,9 +85,9 @@ TODO
 10. Sort stat based on distribution similarity (corr, chi-squared)
 11. Matrix/Submatrix plot: hover to highlight graph and show condition names
 12. Matrix routes: calculate figure canvas size more intelligently.
-13. Condition summary: bar graphs showing individual means and stdev, box-and-whisker plots, MVA 
-14. 
-20. Timeseries-histogram overlay --> use rgba and set transparency. Scale is then [0,1]. Hold colors constant. 
+13. Condition summary: bar graphs showing individual means and stdev, box-and-whisker plots (median, min, max, quantiles), MVA 
+14. Multiple timeseries --> multiple metrics [ 'uncorrected.efficiency', 'uncorrected.stoichiometry' ]. --> provide toggle at top (legend), allowing hide and display
+15. Timeseries-histogram overlay --> use rgba and set transparency. Scale is then [0,1]. Hold colors constant. 
 
 
 ### UI

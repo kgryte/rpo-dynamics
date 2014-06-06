@@ -50,17 +50,20 @@
 
 .panel .graph .area,
 .graph[data-graph-type="kde"] .area,
-.graph[data-graph-type="kde-overlay"] .area {
+.graph[data-graph-type="kde-overlay"] .area,
+.graph[data-graph-type="kde-individual"] .area {
 	opacity: 0.35;
 }
 
 .panel .graph .area[data-label="data 0"],
-.graph[data-graph-type="kde-overlay"] .area[data-label="data 0"] {
+.graph[data-graph-type="kde-overlay"] .area[data-label="data 0"],
+.graph[data-graph-type="kde-individual"] .area[data-label="data 0"] {
 	fill: #F17CB0;
 }
 
 .panel .graph .area[data-label="data 1"],
-.graph[data-graph-type="kde-overlay"] .area[data-label="data 1"] {
+.graph[data-graph-type="kde-overlay"] .area[data-label="data 1"],
+.graph[data-graph-type="kde-individual"] .area[data-label="data 1"] {
 	fill: #5DA5DA;
 }
 

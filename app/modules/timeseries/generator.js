@@ -83,7 +83,7 @@
 			canvas.create();
 
 			// [2.1] Create a new line chart:
-			Line( canvas, [ data[ i ] ], 400, 260, 90, 80, i+1 );
+			Line( canvas, [ data[i] ], 400, 260, 90, 80, i+1 );
 
 		} // end FOR i
 
