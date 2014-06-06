@@ -45,16 +45,30 @@
 
 	// MODULES //
 
-	var // Main application:
-		app = require( './../app' ),
+	var // Package information:
+		pkginfo = require( 'pkginfo' ),
 
-		// Package information:
-		pkginfo = require( 'pkginfo' );
+		// Express middleware:
+		express = require( 'express' ),
+
+		// Main application:
+		main = require( './../app' );
+
 
 	// PROCESS //
 
 	process.title = pkginfo.read( require.main ).package.name;
-	console.info( 'INFO:'+ process.title + ':node process id: ' + process.pid + '...' );
+	console.info( 'INFO:' + process.title + ':node process id: ' + process.pid + '...' );
+
+	
+	// VIRTUAL HOST SERVER //
+
+	var app = express();
+
+	app.use( express.vhost( 'r.po', main ) )
+		.listen( 8000 );
+
+	console.info( 'INFO:' + process.title + ':server initialized. Virtual host server is listening for requests on port: 8000...' );
 
 })();
 
