@@ -72,10 +72,7 @@
 		// Create the graph:
 		graph.create( 'timeseries-histogram' );
 
-		// [2] Instantiate a new data generator and configure:
-		data = xfig.data( data );
-
-		// Sort the datasets based on their means:
+		// [2] Sort the datasets based on their means:
 		means = means.map( function ( d, i ) {
 			return [ d, i ];
 		});
