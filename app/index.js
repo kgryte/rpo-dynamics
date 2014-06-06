@@ -82,6 +82,19 @@
 	app.phase( server );
 	
 
+	// BOOT //
+
+	// Boot the application...
+	app.boot( function onError( error ) {
+		// Check if we encountered an error while booting...
+		if ( error ) {
+			console.log( error.message );
+			console.log( error.stack );
+			return process.exit( -1 );
+		}
+	});
+	
+
 	// EXPORTS //
 
 	// Expose the application:

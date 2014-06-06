@@ -56,18 +56,6 @@
 	process.title = pkginfo.read( require.main ).package.name;
 	console.info( 'INFO:'+ process.title + ':node process id: ' + process.pid + '...' );
 
-	// BOOT //
-
-	// Boot the application...
-	app.boot( function onError( error ) {
-		// Check if we encountered an error while booting...
-		if ( error ) {
-			console.log( error.message );
-			console.log( error.stack );
-			return process.exit( -1 );
-		}
-	});
-
 })();
 
 
