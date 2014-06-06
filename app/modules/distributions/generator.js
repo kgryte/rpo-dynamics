@@ -55,6 +55,20 @@
 		KDE = require( './charts/kde.js' );
 
 
+	// FUNCTIONS //
+
+	/**
+	* FUNCTION: yValue( d )
+	*	y-value accessor.
+	*
+	* @param {array} d - datum
+	* @returns {number} y-value
+	*/
+	function yValue( d ) {
+		return d[ 1 ];
+	} // end FUNCTION yValue()
+
+
 	// GENERATOR //
 
 	/**
@@ -62,7 +76,9 @@
 	*
 	*/
 	var generator = function( document, selection, data, clbk ) {
-		var figure, datasets, d, canvas;
+		var figure, datasets, canvas,
+			Data = [], dat,
+			yMax = Number.NEGATIVE_INFINITY, max;
 
 		// [1] Instantiate a new figure generator:
 		figure = xfig.figure();
@@ -77,10 +93,20 @@
 		// [2] Get the datasets:
 		datasets = Object.keys( data );
 
-		// [3] Create a separate canvas for each dataset and create the KDE charts:
-		for ( var i = 0; i < datasets.length; i++ ) {
+		// [3] For each dataset, instantiate a new data generator and configure...
+		for ( var d = 0; d < datasets.length; d++ ) {
+			dat = data[ datasets[d] ];
+			Data.push( xfig.data( dat ) );
+			max = Data[ d ].max( yValue );
+			if ( max > yMax ) {
+				yMax = max;
+			}
+		}
 
-			d = data[ datasets[ i ] ];
+		yMax += yMax * 0.05;
+		
+		// [4] Create a separate canvas for each dataset and create the KDE charts...
+		for ( var i = 0; i < Data.length; i++ ) {
 
 			// [3.0] Instantiate a new canvas generator and configure:
 			canvas = xfig.canvas( figure )
@@ -91,7 +117,7 @@
 			canvas.create();
 
 			// [3.1] Create a new KDE chart:
-			KDE( canvas, d, 400, 260, 90, 80, mapping[ datasets[ i ] ] );
+			KDE( canvas, Data[ i ], yMax, 400, 260, 90, 80, mapping[ datasets[i] ] );
 
 		} // end FOR i
 
