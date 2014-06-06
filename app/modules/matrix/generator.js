@@ -63,7 +63,7 @@
 	*/
 	var generator = function( document, selection, data, clbk ) {
 		var figure, canvas,
-			labels = [],
+			headers = [], labels = [],
 			datasets = Object.keys( data ),
 			ratio = datasets.length / 22;
 
@@ -85,11 +85,14 @@
 
 		// [3] Decode the datasets:
 		for ( var i = 0; i < datasets.length; i++ ) {
-			labels.push( mapping[ datasets[ i ] ] );
+			headers.push( '<span class="pink">' + mapping[ datasets[i] ] + '</span>' );
+		}
+		for ( var j = 0; j < datasets.length; j++ ) {
+			labels.push( '<span class="blue">' + mapping[ datasets[j] ] + '</span>' );
 		}
 
 		// [4] Create a new Multipanel chart:
-		Multipanel( canvas, data, 11900*ratio, 7900*ratio, 90, 80, labels );
+		Multipanel( canvas, data, 11900*ratio, 7900*ratio, 90, 80, headers, labels );
 
 		// Finished:
 		clbk();

@@ -18,7 +18,7 @@ TODO
 5. 	Add quantile calculation to figure.io/vector.io
 6. 	Metrics: specify value precision (ensure 0.229999 --> 0.2300, not 0.2299) --> link to significant figures
 7. 	Valid JSON gulp task --> data files
-8. 	User cluster to reduce request response time (?)...or move computation to workers
+8. 	Use cluster to reduce request response time (?)...or move computation to workers
 9. 	Makefile
 	- Make calculating all metrics/statistics part of the build process?
 10. Remove jQuery dependence and move to ui-component sortable --> more difficult than expected; only want sort on drop; not during drag.
@@ -83,10 +83,10 @@ TODO
 8. 	Contour plot
 9. 	Hist2d MVA
 10. Sort stat based on distribution similarity (corr, chi-squared)
-11. Matrix plot: hover to highlight graph and show condition names
+11. Matrix/Submatrix plot: hover to highlight graph and show condition names
 12. Matrix routes: calculate figure canvas size more intelligently.
 13. Condition summary: bar graphs showing individual means and stdev, box-and-whisker plots, MVA 
-14. Matrix plot: color code the headers/labels
+14. 
 20. Timeseries-histogram overlay --> use rgba and set transparency. Scale is then [0,1]. Hold colors constant. 
 
 

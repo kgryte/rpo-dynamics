@@ -52,10 +52,10 @@
 	// MULTIPANEL //
 
 	/**
-	* FUNCTION: multipanel( canvas, data, width, height, left, top, labels )
+	* FUNCTION: multipanel( canvas, data, width, height, left, top, headers, labels )
 	*
 	*/
-	var multipanel = function( canvas, data, width, height, left, top, labels ) {
+	var multipanel = function( canvas, data, width, height, left, top, headers, labels ) {
 		var multipanel,
 			Data = [],
 			datasets,
@@ -104,7 +104,7 @@
 			.xLabel( 'E' )
 			.yLabel( 'density [a.u.]' )
 			.yNumTicks( 4 )
-			.headers( labels )
+			.headers( headers )
 			.labels( labels );
 
 		// Create the multipanel:
