@@ -44,7 +44,7 @@ $ npm start
 
 The application should be listening on PORT 1337. If you have other applications using this port, you can change the port in `app/utils/server.js`.
 
-To ensure that local repository is uptodate, pull the remote repository, merging any changes.
+To ensure that local repository is up-to-date, pull the remote repository, merging any changes.
 
 ``` bash
 $ git pull origin master
@@ -151,6 +151,39 @@ http://127.0.0.1:1337/figure/4
 ```
 
 returns manuscript Figure 4. The figure includes KDEs for conditions `00001000`, `00011000`, `00101000`, `00111000`. The first two conditions correspond to wild-type RNAP and DNA at 21C and 37C, respectively. The latter two conditions correspond to wild-type RNAP and pre-melted DNA at 21C and 37C, respectively.
+
+
+### Virtual Host
+
+If you would prefer to not use `http://127.0.0.1:1337/` as your local URL, the application is configured to support [virtual hosts](http://en.wikipedia.org/wiki/Virtual_hosting). In the terminal (on Mac OS X and Linux),
+
+``` bash
+$ sudo nano /etc/hosts
+```
+
+Add an entry at the bottom of the list.
+
+```
+127.0.0.1 	r.po
+```
+
+Hit `Ctrl+x` and 'y'. Assuming you have started the node process (`npm start`), you can now access all figures at the following base URL:
+
+```
+http://r.po:8000/
+```
+
+Note, however, that, if you wish to access the figures from another computer other than the one on which the server is running, neither `127.0.0.1` nor `r.po` will work from the external computer. You will need to determine your IP address. In the terminal,
+
+``` bash
+$ ifconfig
+```
+
+And search for the IP; e.g., `198.68.0.192`. In which case, another computer would access the figures at
+
+```
+http://198.68.0.192:1337/
+```
 
 
 ### Images
