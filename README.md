@@ -167,7 +167,7 @@ Add an entry at the bottom of the list.
 127.0.0.1 	r.po
 ```
 
-Hit `Ctrl+x` and 'y'. Assuming you have started the node process (`npm start`), you can now access all figures at the following base URL:
+Hit `Ctrl+x` and `y`. Assuming you have started the node process (`npm start`), you can now access all figures at the following base URL:
 
 ```
 http://r.po:8000/
@@ -179,7 +179,7 @@ Note, however, that, if you wish to access the figures from another computer oth
 $ ifconfig
 ```
 
-And search for the IP; e.g., `198.68.0.192`. In which case, another computer would access the figures at
+and search for the IP; e.g., `198.68.0.192`. In the example, another computer would access the figures at
 
 ```
 http://198.68.0.192:1337/
