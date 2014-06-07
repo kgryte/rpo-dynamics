@@ -30,6 +30,7 @@ TODO
 16. Sortable/Searchable/Filterable table (datagrid?)
 17. Create figure page: type --> condition --> compare --> condition. Breadcrumb-like; after choose type, condition is revealed, then compare, etc.
 18. Sassify the stylesheets (update README)
+19. Add /etc/hosts config --> vhost
 
 
 
@@ -88,6 +89,8 @@ TODO
 13. Condition summary: bar graphs showing individual means and stdev, box-and-whisker plots (median, min, max, quantiles), MVA 
 14. Multiple timeseries --> multiple metrics [ 'uncorrected.efficiency', 'uncorrected.stoichiometry' ]. --> provide toggle at top (legend), allowing hide and display
 15. Timeseries-histogram overlay --> use rgba and set transparency. Scale is then [0,1]. Hold colors constant. 
+16. ES histogram small multiple
+17. Summary ES histogram
 
 
 ### UI
