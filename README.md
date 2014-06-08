@@ -167,10 +167,16 @@ Add an entry at the bottom of the list.
 127.0.0.1 	r.po
 ```
 
-Hit `Ctrl+x` and `y`. Assuming you have started the node process (`npm start`), you can now access all figures at the following base URL:
+Hit `Ctrl+x` and `y`. Assuming you have started the node process (`npm start`), you can now access all figures using the following base URL:
 
 ```
 http://r.po:8000/
+```
+
+For example,
+
+```
+http://r.po:8000/distributions
 ```
 
 Note, however, that, if you wish to access the figures from another computer other than the one on which the server is running, neither `127.0.0.1` nor `r.po` will work from the other computer. You will need to determine your IP address. In the terminal,
@@ -185,7 +191,7 @@ and search for the IP; e.g., `198.68.0.192`. In the example, another computer wo
 http://198.68.0.192:1337/
 ```
 
-One caveat to external access is your external IP address may be masked by a VPN or Firewall. In which case, for computer access outside your local area network, you will need to host the application on a public host.
+One caveat to external access is your external IP address may be masked by a VPN or Firewall. In which case, for computer access outside your local area network, you will need to host the application on a public server.
 
 
 ### Images
