@@ -75,7 +75,7 @@ TODO
 ### Figures
 
 1.  Multiple timeseries -->  dynamically resize based on parent size (wrap in container); ability to sort based on mean, variance --> sort in-browser using data attributes: data-mean, data-variance, etc. --> see isotope.js
-2. 	Small-multiple timeseries-histogram across all conditions
+2. 	
 3. 	Repeats comparision (multipanel, or avg hist with variance overlay)
 4.  Individual metric KDEs. On click, toggle overlay avg KDE.
 5. 	Sort matrix KDE figure using RMSE (see Bostock example). Chi-squared goodness-of-fit (Cramer's V, deviance)

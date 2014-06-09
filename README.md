@@ -120,7 +120,7 @@ returns a figure overlaying the distribution for one condition set, .e.g, `00011
 http://127.0.0.1:1337/timeseries-histograms
 ```
 
-returns a figure containing a timeseries histogram for each condition set. Each histogram is arranged in descending order.
+returns a figure containing a timeseries histogram for each condition set. Each histogram is arranged in descending order according to the condition's mean value.
 
 ```
 http://127.0.0.1:1337/matrix
