@@ -117,6 +117,12 @@ http://127.0.0.1:1337/distributions/:id/overlay/:id
 returns a figure overlaying the distribution for one condition set, .e.g, `00011000`, on top of another condition set's distribution, e.g., `10011000`. The distributions are calculated as KDEs. 
 
 ```
+http://127.0.0.1:1337/timeseries-histograms
+```
+
+returns a figure containing a timeseries histogram for each condition set. Each histogram is arranged in descending order.
+
+```
 http://127.0.0.1:1337/matrix
 ```
 
