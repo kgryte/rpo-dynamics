@@ -30,7 +30,7 @@ TODO
 16. Sortable/Searchable/Filterable table (datagrid?)
 17. Create figure page: type --> condition --> compare --> condition. Breadcrumb-like; after choose type, condition is revealed, then compare, etc.
 18. Sassify the stylesheets (update README)
-19. 
+19. Add example (screenshot) figures to README.
 
 
 
