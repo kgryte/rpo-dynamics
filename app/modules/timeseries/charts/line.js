@@ -74,12 +74,7 @@
 		graph.create( 'line' );
 
 		// [2] Instantiate a new data generator and configure:
-		data = xfig.data( data )
-			.x( function ( d ) { return d[ 0 ]; } )
-			.y( function ( d ) { return d[ 1 ]; } );
-
-		// Format the data:
-		data.format( 2 );
+		data = xfig.data( data );
 
 		// Bind the data instance to the graph:
 		graph.data( data )
