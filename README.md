@@ -87,6 +87,12 @@ http://127.0.0.1:1337/summary/:id
 returns a summary figure for condition set `id`; e.g., `10011000`. Note that the selected timeseries which are displayed are randomly chosen on figure generation. Hence, each figure request (browser refresh) will display a different timeseries collection. The ability to fix which timeseries are displayed may be addressed in the future. For now, consider such randomness a feature, as each request is a random data sample. In which case, we can better state that a particular behavior's "representativeness" is reflected in how frequently the behavior appears in the figure. Obviously, the elephant in the room is how representative the sampled collection is of its parent's collection. We do not address the elephant here.
 
 ```
+http://127.0.0.1:1337/summary/histogram/:id
+```
+
+returns a summary histogram for condition set `id`; e.g., `10011000`. This figure is included for completeness, as histograms are commonly used to view distributions. Histograms are not included elsewhere, however, as KDEs are preferrable. KDEs are dependant on a single parameter, the kernel bandwidth, rather than bin width and edge location as is the case for histograms.
+
+```
 http://127.0.0.1:1337/timeseries/:id
 ```
 
