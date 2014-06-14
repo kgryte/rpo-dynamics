@@ -90,6 +90,8 @@
 			var Data = new Array( 2 ),
 				counter = 0;
 
+			response.setTimeout( 0 );
+
 			// Get data:
 			getData( 'summary', [ '*' ], 'uncorrected.efficiency', 'timeseries-histogram', function onData( error, data ) {
 				if ( error ) {
