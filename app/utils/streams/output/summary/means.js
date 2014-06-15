@@ -121,7 +121,6 @@
 	* @returns {object} Transform instance
 	*/
 	function Transform() {
-
 		this.type = 'means';
 		this.name = '';
 

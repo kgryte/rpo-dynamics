@@ -1,11 +1,11 @@
 /**
 *
-*	STREAM: stats
+*	STREAM: outliers
 *
 *
 *
 *	DESCRIPTION:
-*		- Calculates descriptive statistics, including count, min, max, sum, mean, median, variance.
+*		- Computes mean values for each condition set and finds outliers among the conditions.
 *
 *
 *	API:
@@ -21,7 +21,7 @@
 *
 *
 *	HISTORY:
-*		- 2014/05/22: Created. [AReines].
+*		- 2014/06/14: Created. [AReines].
 *
 *
 *	DEPENDENCIES:
@@ -47,7 +47,7 @@
 	var // Event emitter:
 		eventEmitter = require( 'events' ).EventEmitter,
 
-		// Event-stream module:
+		// Event stream module:
 		eventStream = require( 'event-stream' ),
 
 		// Flow streams:
@@ -125,7 +125,7 @@
 	} // end FUNCTION objectify()
 
 
-	// REDUCE //
+	// STREAM //
 
 	/**
 	* FUNCTION: Stream()
@@ -134,21 +134,16 @@
 	* @returns {object} Stream instance
 	*/
 	function Stream() {
-		this.type = 'stats';
+		this.type = 'outliers';
 		this.name = '';
 
-		// Create stats reduce stream generators:
-		this._reducers = {
-			'count': flow.count(),
-			'min': flow.min(),
-			'max': flow.max(),
-			'sum': flow.sum(),
+		// Create stats and filter stream generators:
+		this._streams = {
 			'median': flow.median(),
-			'quantiles': flow.quantiles(),
-			'mean': flow.mean(),
-			'variance': flow.variance(),
-			'skewness': flow.skewness(),
-			'kurtosis': flow.kurtosis(),
+			'quartiles': flow.quantiles(),
+			'iqr': flow.iqr(),
+			'mild_outliers': flow.mOutliers(),
+			'extreme_outliers': flow.eOutliers()
 		};
 
 		// ACCESSORS:
@@ -157,13 +152,13 @@
 		};
 
 		return this;
-	} // end FUNCTION stream()
+	} // end FUNCTION transform()
 
 	/**
 	* METHOD: metric( metric )
 	*	Metric setter and getter. If a metric instance is supplied, sets the metric. If no metric is supplied, returns the instance metric value function.
 	*
-	* @param {object} metric - an object with a 'value' method; see constructor for basic example. If the metric has a name property, sets the stream name.
+	* @param {object} metric - an object with a 'value' method; see constructor for basic example. If the metric has a name property, sets the transform name.
 	* @returns {object|object} instance object or instance metric
 	*/
 	Stream.prototype.metric = function ( metric ) {
@@ -175,30 +170,11 @@
 		}
 		// Extract the method to calculate the metric value and bind the metric context:
 		this._value = metric.value.bind( metric );
-		// If the metric has a name, set the stream name:
+		// If the metric has a name, set the transform name:
 		this.name = ( metric.name ) ? metric.name : '';
-		// Return the stream instance:
+		// Return the transform instance:
 		return this;
 	}; // end METHOD metric()
-
-	/**
-	* METHOD: reducer( name, reducer )
-	*	Reduce stream generator setter and getter. If no arguments are supplied, returns a list of reduce stream generators. If a name and reducer are supplied, adds the reducer to a reduce stream generator dictionary.
-	*
-	* @param {string} name - reduce stream generator name; e.g., correlation
-	* @param {object} reducer - reduce stream generator. Generator should have a 'stream' method.
-	* returns {object|array} instance object or reduce generator list
-	*/
-	Stream.prototype.reducer = function( name, reducer ) {
-		if ( !arguments.length ) {
-			return Object.keys( this._reducers );
-		}
-		if ( arguments.length < 2 ) {
-			throw new Error( 'insufficient input arguments. Must supply both a generator name and an object having a \'stream\' method.' );
-		}
-		this._reducers[ name ] = reducer;
-		return this;
-	}; // end METHOD reducer()
 
 	/**
 	* METHOD: transform()
@@ -213,7 +189,7 @@
 		*	Defines the data transformation.
 		*
 		* @param {object} data - JSON stream data
-		* @returns {value} transformed data
+		* @returns {array} transformed data
 		*/
 		return function transform( data ) {
 			return val( data );
@@ -221,51 +197,84 @@
 	}; // end METHOD transform()
 
 	/**
-	* METHOD: stream()
-	*	Returns a JSON data reduce stream for calculating stats reductions.
+	* METHOD: stream( data )
+	*	Returns a stream pipeline for extracting outliers.
 	*
-	* @returns {array} array of streams: [ input_stream, output_stream ]
+	* @param {array} data - array of data arrays
+	* @returns {stream} output stream
 	*/
-	Stream.prototype.stream = function() {
-		var transform, rStream, pStream, mStream, oStream,
-			reducers = this._reducers,
+	Stream.prototype.stream = function( data ) {
+		var flows = this._streams,
+			mean,
+			dStream, transform, mStream,
+			mPipeline, mPipelines = [],
+			cStream1,
 			keys, name,
-			pipelines = [];
+			fStream,
+			fPipeline, fPipelines = [],
+			cStream2, oStream;
 
-		// Create the input transform stream:
-		transform = flow.transform( this.transform() );
+		// Instantiate a new mean instance and configure:
+		mean = flow.mean();
 
-		// Get the reduce stream names:
-		keys = Object.keys( reducers );
+		// For each dataset, compute its mean...
+		for ( var i = 0; i < data.length; i++ ) {
+
+			// [1] Create a readable data stream:
+			dStream = eventStream.readArray( data[ i ] );
+
+			// Create an input transform stream:
+			transform = flow.transform( this.transform() );
+
+			// [2] Create a mean reduction stream:
+			mStream = mean.stream();
+
+			// [3] Create a stream pipeline:
+			mPipeline = eventStream.pipeline(
+				dStream,
+				transform,
+				mStream
+			);
+
+			// Append the pipeline to our list of pipelines:
+			mPipelines.push( mPipeline );
+
+		} // end FOR i
+
+		// [4] Create a single merged stream from pipeline output:
+		cStream1 = eventStream.merge.apply( {}, mPipelines );
+
+		// Get the flow stream names:
+		keys = Object.keys( flows );
 
 		// Create stream pipelines...
-		for ( var i = 0; i < keys.length; i++ ) {
-			name = keys[ i ];
+		for ( var j = 0; j < keys.length; j++ ) {
+			name = keys[ j ];
 
-			// Create a new reduce stream:
-			rStream = reducers[ name ].stream();
+			// [5] Create a new flow stream:
+			fStream = flows[ name ].stream();
 
-			// Create a stream pipeline:
-			pStream = eventStream.pipeline(
-				transform,
-				rStream,
+			// [6] Create a new flow stream pipeline:
+			fPipeline = eventStream.pipeline(
+				cStream1,
+				fStream,
 				keyify( name )
 			);
 
 			// Append the pipeline to a list:
-			pipelines.push( pStream );
+			fPipelines.push( fPipeline );
 
-		} // end FOR i
+		} // end FOR j
 
-		// Create a single merged stream from pipeline output:
-		mStream = eventStream.merge.apply( {}, pipelines );
+		// [7] Create a single merged stream from pipelined output:
+		cStream2 = eventStream.merge.apply( {}, fPipelines );
 
-		// Wait for all streams to finish before making an object:
-		oStream = mStream.pipe( eventStream.wait() )
+		// [8] Wait for all streams to finish before making an object:
+		oStream = cStream2.pipe( eventStream.wait() )
 			.pipe( objectify() );
 
-		// Return the input and output streams:
-		return [ transform, oStream ];
+		// Return the output stream:
+		return oStream;
 	}; // end METHOD stream()
 
 

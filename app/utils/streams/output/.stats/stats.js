@@ -21,7 +21,7 @@
 *
 *
 *	HISTORY:
-*		- 2014/05/25: Created. [AReines].
+*		- 2014/05/22: Created. [AReines].
 *
 *
 *	DEPENDENCIES:
@@ -51,10 +51,7 @@
 		eventStream = require( 'event-stream' ),
 
 		// Flow streams:
-		flow = require( 'flow.io' ),
-
-		// Element-wise dataset concatentation:
-		concat = require( './../../../concat.js' );
+		flow = require( 'flow.io' );
 
 
 	// INIT //
@@ -225,29 +222,19 @@
 	}; // end METHOD transform()
 
 	/**
-	* METHOD: stream( data )
+	* METHOD: stream()
 	*	Returns a JSON data reduce stream for calculating stats reductions.
 	*
-	* @param {array} data - array of data arrays
-	* @returns {stream} output stream
+	* @returns {array} array of streams: [ input_stream, output_stream ]
 	*/
-	Stream.prototype.stream = function( data ) {
-		var dStream, transform, tStream, rStream, pStream, mStream, oStream,
+	Stream.prototype.stream = function() {
+		var transform, rStream, pStream, mStream, oStream,
 			reducers = this._reducers,
 			keys, name,
 			pipelines = [];
 
-		// Concatenate all datasets:
-		data = concat( data );
-
-		// Create a readable data stream:
-		dStream = eventStream.readArray( data );
-
 		// Create the input transform stream:
 		transform = flow.transform( this.transform() );
-
-		// Pipe the data stream to the transform:
-		tStream = dStream.pipe( transform );
 
 		// Get the reduce stream names:
 		keys = Object.keys( reducers );
@@ -261,7 +248,7 @@
 
 			// Create a stream pipeline:
 			pStream = eventStream.pipeline(
-				tStream,
+				transform,
 				rStream,
 				keyify( name )
 			);
@@ -278,8 +265,8 @@
 		oStream = mStream.pipe( eventStream.wait() )
 			.pipe( objectify() );
 
-		// Return the output stream:
-		return oStream;
+		// Return the input and output streams:
+		return [ transform, oStream ];
 	}; // end METHOD stream()
 
 

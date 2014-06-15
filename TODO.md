@@ -15,6 +15,7 @@ TODO
 	- package.json
 	- use path module
 	- absolute path for bootable
+	- etc/init to app/init
 5. 	Add quantile calculation to figure.io/vector.io
 6. 	Metrics: specify value precision (ensure 0.229999 --> 0.2300, not 0.2299) --> link to significant figures
 7. 	Valid JSON gulp task --> data files
@@ -31,6 +32,7 @@ TODO
 17. Create figure page: type --> condition --> compare --> condition. Breadcrumb-like; after choose type, condition is revealed, then compare, etc.
 18. Sassify the stylesheets (update README)
 19. Add example (screenshot) figures to README.
+20. Build files should be written to build directory
 
 
 
@@ -54,7 +56,7 @@ TODO
 4. 	Online autocorrelation
 5. 	Hist2d --> similar to stats stream, but binarysearch one direction pipe to next binarysearch etc. Should be able to histnd by chaining configured streams together.
 6.  
-7. 	
+7. 	iqr, moutliers, eoutliers
 8.  
 9. 	Online histogram update
 	- Init stream with counts array
