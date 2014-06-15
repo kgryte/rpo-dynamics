@@ -175,7 +175,7 @@
 	* @returns {object} Stream instance
 	*/
 	function Stream() {
-		this.type = 'outliers-mean';
+		this.type = 'outliers-means';
 		this.name = '';
 
 		// Create stats and filter stream generators:
