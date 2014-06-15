@@ -80,6 +80,47 @@
 	} // end FUNCTION resetMaxListeners()
 
 	/**
+	* FUNCTION: indexify( idx )
+	*	Returns a transform function which binds an index to streamed data.
+	*
+	* @param {number} idx - datum index
+	* @returns {function} data transformation function
+	*/
+	function indexify( idx ) {
+		/**
+		* FUNCTION: transform( data )
+		*	Defines the data transformation.
+		*
+		* @param {number} data - streamed data
+		* @returns {array} 2-element array: [ idx, data ]
+		*/
+		return function transform( data ) {
+			return [ idx, data ];
+		}; // end FUNCTION transform()
+	} // end FUNCTION indexify()
+
+	/**
+	* FUNCTION: reorderify()
+	*	Returns a reduction function which reorders streamed data.
+	*
+	* @param {number} numData - data stream length
+	* @returns {function} data reduction function
+	*/
+	function reorderify() {
+		/**
+		* FUNCTION: reduce( acc, data )
+		*	Defines the data reduction.
+		*
+		* @param {array} acc - accumulated array
+		* @param {array} data - streamed 2-element data array
+		* @returns {array} reduced data as a 1-d array
+		*/return function reduce( data, d ) {
+			data[ d[0] ] = d[ 1 ];
+			return data;
+		}; // end FUNCTION transform()
+	} // end FUNCTION reorderify()
+
+	/**
 	* FUNCTION: keyify( key )
 	*	Returns a JSON transform stream to create a key-value string.
 	*
@@ -134,16 +175,16 @@
 	* @returns {object} Stream instance
 	*/
 	function Stream() {
-		this.type = 'outliers';
+		this.type = 'outliers-mean';
 		this.name = '';
 
 		// Create stats and filter stream generators:
 		this._streams = {
 			'median': flow.median(),
-			'quartiles': flow.quantiles(),
+			'quartiles': flow.quantiles().quantiles( 4 ),
 			'iqr': flow.iqr(),
-			'mild_outliers': flow.mOutliers(),
-			'extreme_outliers': flow.eOutliers()
+			'mild_outliers': flow.mOutliers().index( true ),
+			'extreme_outliers': flow.eOutliers().index( true )
 		};
 
 		// ACCESSORS:
@@ -206,9 +247,9 @@
 	Stream.prototype.stream = function( data ) {
 		var flows = this._streams,
 			mean,
-			dStream, transform, mStream,
+			dStream, transform, mStream, iStream,
 			mPipeline, mPipelines = [],
-			cStream1,
+			cStream1, rStream, aStream,
 			keys, name,
 			fStream,
 			fPipeline, fPipelines = [],
@@ -229,11 +270,15 @@
 			// [2] Create a mean reduction stream:
 			mStream = mean.stream();
 
-			// [3] Create a stream pipeline:
+			// [3] Create a transform stream to index the reduced stream:
+			iStream = flow.transform( indexify( i ) );
+
+			// [4] Create a stream pipeline:
 			mPipeline = eventStream.pipeline(
 				dStream,
 				transform,
-				mStream
+				mStream,
+				iStream
 			);
 
 			// Append the pipeline to our list of pipelines:
@@ -241,8 +286,15 @@
 
 		} // end FOR i
 
-		// [4] Create a single merged stream from pipeline output:
+		// [5] Create a single merged stream from pipeline output:
 		cStream1 = eventStream.merge.apply( {}, mPipelines );
+
+		// [6] Create a stream to reorder (sort) the merged output:
+		rStream = flow.reduce( reorderify(), new Array( data.length ) );
+
+		// [7] Create an array stream from the ordered output:
+		aStream = cStream1.pipe( rStream )
+			.pipe( flow.array() );
 
 		// Get the flow stream names:
 		keys = Object.keys( flows );
@@ -251,12 +303,12 @@
 		for ( var j = 0; j < keys.length; j++ ) {
 			name = keys[ j ];
 
-			// [5] Create a new flow stream:
+			// [8] Create a new flow stream:
 			fStream = flows[ name ].stream();
 
-			// [6] Create a new flow stream pipeline:
+			// [9] Create a new flow stream pipeline:
 			fPipeline = eventStream.pipeline(
-				cStream1,
+				aStream,
 				fStream,
 				keyify( name )
 			);
@@ -266,10 +318,10 @@
 
 		} // end FOR j
 
-		// [7] Create a single merged stream from pipelined output:
+		// [10] Create a single merged stream from pipelined output:
 		cStream2 = eventStream.merge.apply( {}, fPipelines );
 
-		// [8] Wait for all streams to finish before making an object:
+		// [11] Wait for all streams to finish before making an object:
 		oStream = cStream2.pipe( eventStream.wait() )
 			.pipe( objectify() );
 
