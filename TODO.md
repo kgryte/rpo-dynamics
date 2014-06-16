@@ -56,7 +56,7 @@ TODO
 4. 	Online autocorrelation
 5. 	Hist2d --> similar to stats stream, but binarysearch one direction pipe to next binarysearch etc. Should be able to histnd by chaining configured streams together.
 6.  
-7. 	iqr, moutliers, eoutliers
+7. 	find whisker values
 8.  
 9. 	Online histogram update
 	- Init stream with counts array
