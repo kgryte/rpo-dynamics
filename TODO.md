@@ -27,12 +27,13 @@ TODO
 12. Use async module, rather than queue
 13. add favicon
 14. Update code documentation; e.g., document manifests (top-of-file)
-15. Make main app page Angularjs app. 
+15. Make main app page Angularjs app.
 16. Sortable/Searchable/Filterable table (datagrid?)
 17. Create figure page: type --> condition --> compare --> condition. Breadcrumb-like; after choose type, condition is revealed, then compare, etc.
 18. Sassify the stylesheets (update README)
 19. Add example (screenshot) figures to README.
 20. Build files should be written to build directory
+21. Use graceful-fs NPM module, rather than utility library
 
 
 
