@@ -34,6 +34,7 @@ TODO
 19. Add example (screenshot) figures to README.
 20. Build files should be written to build directory
 21. Use graceful-fs NPM module, rather than utility library
+22. Match new flow.io API
 
 
 
