@@ -60,7 +60,7 @@
     "mkdirp": "~0.5.0",
     "through": "~2.3.4",
     "stream-combiner": "~0.2.0",
-    "flow.io": "git://github.com/kgryte/flow.io.git",
+    "flow.io": "~0.0.0",
     "figure.io": "~0.0.1"
   },
   "devDependencies": {
