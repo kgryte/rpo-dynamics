@@ -61,7 +61,8 @@
     "through": "~2.3.4",
     "stream-combiner": "~0.2.0",
     "flow.io": "~1.0.0",
-    "figure.io": "~0.0.1"
+    "figure.io": "~0.0.1",
+    "vector-linspace": "~0.0.0"
   },
   "devDependencies": {
     "gulp": "~3.6.0",

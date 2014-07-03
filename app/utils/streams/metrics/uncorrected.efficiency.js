@@ -52,8 +52,6 @@
 	*/
 	function Metric() {
 
-		this.name = 'uncorrected.efficiency';
-
 		// ACCESSORS //
 		this._yValue0 = function( d ) {
 			return d.y[ 0 ];
@@ -64,6 +62,12 @@
 
 		return this;
 	} // end FUNCTION metric()
+
+	/**
+	* ATTRIBUTE: name
+	*	Metric name.
+	*/
+	Metric.prototype.name = 'uncorrected.efficiency';
 
 	/**
 	* METHOD: y0( fcn )
@@ -118,6 +122,8 @@
 
 	// EXPORTS //
 
-	module.exports = Metric;
+	module.exports = function createMetric(){
+		return new Metric();
+	};
 
 })();

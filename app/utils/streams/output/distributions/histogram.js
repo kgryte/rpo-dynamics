@@ -48,49 +48,50 @@
 		pipeline = require( 'stream-combiner' ),
 
 		// Flow streams:
-		flow = require( 'flow.io' );
+		flow = require( 'flow.io' ),
 
+		// Linearly spaced vectors:
+		linspace = require( 'vector-linspace' );
 
 	// FUNCTIONS //
 
 	/**
-	* FUNCTION: linspace( min, max, increment )
-	*	Generate a linearly spaced vector.
+	* FUNCTION: map( fcn )
+	*	Returns a data transformation function.
 	*
-	* @param {number} min - min defines the vector lower bound
-	* @param {number} max - max defines the vector upper bound
-	* @param {number} increment - distance between successive vector elements
-	* @returns {array} a 1-dimensional array
+	* @private
+	* @param {function} fcn - function which performs the map transform
+	* @returns {function} data transformation function
 	*/
-	function linspace( min, max, increment ) {
-		var numElements, vec = [];
+	function map( fcn ) {
+		/**
+		* FUNCTION: map( data )
+		*	Defines the data transformation.
+		*
+		* @private
+		* @param {*} data - stream data
+		* @returns {array} transformed data
+		*/
+		return function map( data ) {
+			return fcn( data );
+		};
+	} // end FUNCTION map()
 
-		numElements = Math.round( ( ( max - min ) / increment ) ) + 1;
 
-		vec[ 0 ] = min;
-		vec[ numElements - 1] = max;
-
-		for ( var i = 1; i < numElements - 1; i++ ) {
-			vec[ i ] = min + increment*i;
-		}
-		return vec;
-	} // end FUNCTION linspace()
-
-
-	// TRANSFORM //
+	// STREAM //
 
 	/**
-	* FUNCTION: Transform()
-	*	Transform constructor.
+	* FUNCTION: Stream()
+	*	Stream constructor.
 	*
-	* @returns {object} Transform instance
+	* @constructor
+	* @returns {object} Stream generator instance
 	*/
-	function Transform() {
+	function Stream() {
 
-		this.type = 'histogram';
 		this.name = '';
 
-		// this._edges = linspace( -0.01, 1.01, 0.02 );
+		this._edges = linspace( -0.01, 1.01, 52 );
 
 		// ACCESSORS:
 		this._value = function( d ) {
@@ -98,16 +99,22 @@
 		};
 
 		return this;
-	} // end FUNCTION transform()
+	} // end FUNCTION Stream()
+
+	/**
+	* ATTRIBUTE: type
+	*	Defines the stream type.
+	*/
+	Stream.prototype.type = 'histogram';
 
 	/**
 	* METHOD: metric( metric )
 	*	Metric setter and getter. If a metric instance is supplied, sets the metric. If no metric is supplied, returns the instance metric value function.
 	*
-	* @param {object} metric - an object with a 'value' method; see constructor for basic example. If the metric has a name property, sets the transform name.
+	* @param {object} metric - an object with a 'value' method; see constructor for basic example. If the metric has a name property, sets the stream name.
 	* @returns {object|object} instance object or instance metric
 	*/
-	Transform.prototype.metric = function ( metric ) {
+	Stream.prototype.metric = function ( metric ) {
 		if ( !arguments.length ) {
 			return this._value;
 		}
@@ -116,51 +123,38 @@
 		}
 		// Extract the method to calculate the metric value and bind the metric context:
 		this._value = metric.value.bind( metric );
-		// If the metric has a name, set the transform name:
+		// If the metric has a name, set the stream name:
 		this.name = ( metric.name ) ? metric.name : '';
-		// Return the transform instance:
+		// Return the stream instance:
 		return this;
 	}; // end METHOD metric()
 
 	/**
-	* METHOD: transform()
-	*	Returns a data transformation function.
-	*
-	* @returns {function} data transformation function
-	*/
-	Transform.prototype.transform = function() {
-		var val = this._value;
-		/**
-		* FUNCTION: transform( data )
-		*	Defines the data transformation.
-		*
-		* @param {object} data - JSON stream data
-		* @returns {array} transformed data
-		*/
-		return function transform( data ) {
-			return val( data );
-		};
-	}; // end METHOD transform()
-
-	/**
 	* METHOD: stream()
 	*	Returns a JSON data transform stream for calculating the statistic.
+	*
+	* @returns {stream} histogram stream
 	*/
-	Transform.prototype.stream = function() {
-		var transform, histc, hStream, pStream;
+	Stream.prototype.stream = function() {
+		var mTransform, mStream, histc, hStream, pStream;
 
-		// Create the input transform stream:
-		transform = flow.transform( this.transform() );
+		// Create a map transform generator and configure:
+		mTransform = flow.map()
+			.map( map( this._value ) );
+		
+		//Create the input transform stream:
+		mStream = mTransform.stream();
 
 		// Create a histogram counts stream generator and configure:
-		histc = flow.histc();
+		histc = flow.histc()
+			.edges( this._edges );
 
 		// Create a histogram stream:
 		hStream = histc.stream();
 
 		// Create a stream pipeline:
 		pStream = pipeline(
-			transform,
+			mStream,
 			hStream
 		);
 
@@ -171,6 +165,8 @@
 
 	// EXPORTS //
 
-	module.exports = Transform;
+	module.exports = function createStream() {
+		return new Stream();
+	};
 
 })();

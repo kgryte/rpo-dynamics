@@ -50,11 +50,11 @@
 		// Path module:
 		path = require( 'path' ),
 
-		// Write-to-file stream:
-		writeStream = require( 'flow.io' ).write,
+		// Flow streams:
+		flow = require( 'flow.io' ),
 
 		// Hash of metric generators:
-		Metrics = require( './../../metrics' );
+		METRICS = require( './../../metrics' );
 
 
 	// VARIABLES //
@@ -77,21 +77,19 @@
 
 	(function init() {
 
-		var files, keys, name, metric, metrics = [], filepath, Transform, transform;
+		var files, keys, name, metric, metrics = [], filepath, tStream, transform;
 
 		// Get the file names:
 		files = fs.readdirSync( __dirname )
 			.filter( filter );
 
 		// Get the metric names:
-		keys = Object.keys( Metrics );
+		keys = Object.keys( METRICS );
 
 		// Instantiate new metric generators:
 		for ( var m = 0; m < keys.length; m++ ) {
 			name = keys[ m ];
-
-			metric = new Metrics[ name ]();
-
+			metric = METRICS[ name ]();
 			metrics.push( metric );
 		}
 
@@ -104,13 +102,13 @@
 				filepath = path.join( __dirname, files[ i ] );
 
 				// Get the transform generator:
-				Transform = require( filepath );
+				tStream = require( filepath );
 
 				// For each metric, create transform streams...
 				for ( var j = 0; j < metrics.length; j++ ) {
 
 					// Instantiate a new transform stream generator:
-					transform = new Transform();
+					transform = tStream();
 
 					// Configure the transform:
 					transform.metric( metrics[ j ] );
@@ -127,20 +125,26 @@
 	})();
 
 
-	// STREAM //
+	// STREAMS //
 
 	/**
-	* FUNCTION: stream( data, dir, prefix, clbk )
+	* FUNCTION: streams( dStream, dir, prefix, clbk )
 	*	Takes a readable JSON data stream and calculates stats. Calculated stats are written to file.
 	*
-	* @param {stream} data - JSON data stream
+	* @param {stream} dStream - JSON data stream
 	* @param {string} dir - file output directory
 	* @param {string} prefix - filename prefix; e.g., 'my-favorite-timeseries-name'
 	* @param {function} clbk - (optional) callback to invoke after writing all streams.
 	*/
-	function stream( data, dir, prefix, clbk ) {
-		var transform, filename, filepath, write,
+	function streams( dStream, dir, prefix, clbk ) {
+		var transform, writeStream, stringify,
+			filename, filepath,
+			wStream, sStream,
 			total = STREAMS.length, counter = 0;
+
+		// Create a stream generators:
+		writeStream = flow.write();
+		stringify = flow.stringify();
 
 		// Cycle through each stream...
 		for ( var i = 0; i < total; i++ ) {
@@ -153,12 +157,17 @@
 
 			filepath = path.join( dir, filename );
 
+			// Create the stringifier:
+			sStream = stringify.stream();
+
 			// Create the write stream:
-			write = writeStream( filepath, onEnd );
+			wStream = writeStream.path( filepath )
+				.stream( onEnd );
 
 			// Pipe the JSON data to the transform stream and write to file:
-			data.pipe( transform.stream() )
-				.pipe( write );
+			dStream.pipe( transform.stream() )
+				.pipe( sStream )
+				.pipe( wStream );
 				
 		} // end FOR i
 
@@ -175,11 +184,11 @@
 				}
 			}
 		} // end FUNCTION onEnd()
-	} // end FUNCTION stream()
+	} // end FUNCTION streams()
 
 
 	// EXPORTS //
 
-	module.exports = stream;
+	module.exports = streams;
 
 })();

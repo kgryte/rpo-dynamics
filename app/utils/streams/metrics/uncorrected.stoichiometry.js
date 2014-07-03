@@ -52,8 +52,6 @@
 	*/
 	function Metric() {
 
-		this.name = 'uncorrected.stoichiometry';
-
 		// ACCESSORS:
 		this._yValue0 = function( d ) {
 			return d.y[ 0 ];
@@ -67,6 +65,12 @@
 
 		return this;
 	} // end FUNCTION metric()
+
+	/**
+	* ATTRIBUTE: name
+	*	Metric name.
+	*/
+	Metric.prototype.name = 'uncorrected.stoichiometry';
 
 	/**
 	* METHOD: y0( fcn )
@@ -140,6 +144,8 @@
 
 	// EXPORTS //
 
-	module.exports = Metric;
+	module.exports = function createMetric(){
+		return new Metric();
+	};
 
 })();
