@@ -50,11 +50,11 @@
 		// Path module:
 		path = require( 'path' ),
 
-		// Write-to-file stream:
-		writeStream = require( 'flow.io' ).write,
+		// Flow streams:
+		flow = require( 'flow.io' ),
 
 		// Hash of metric generators:
-		Metrics = require( './../../metrics' );
+		METRICS = require( './../../metrics' );
 
 
 	// VARIABLES //
@@ -77,21 +77,19 @@
 
 	(function init() {
 
-		var files, keys, name, metric, metrics = [], filepath, Transform, transform;
+		var files, keys, name, metric, metrics = [], filepath, tStream, transform;
 
 		// Get the file names:
 		files = fs.readdirSync( __dirname )
 			.filter( filter );
 
 		// Get the metric names:
-		keys = Object.keys( Metrics );
+		keys = Object.keys( METRICS );
 
 		// Instantiate new metric generators:
 		for ( var m = 0; m < keys.length; m++ ) {
 			name = keys[ m ];
-
-			metric = new Metrics[ name ]();
-
+			metric = METRICS[ name ]();
 			metrics.push( metric );
 		}
 
@@ -104,19 +102,19 @@
 				filepath = path.join( __dirname, files[ i ] );
 
 				// Get the transform generator:
-				Transform = require( filepath );
+				transform = require( filepath );
 
 				// For each metric, create transform streams...
 				for ( var j = 0; j < metrics.length; j++ ) {
 
 					// Instantiate a new transform stream generator:
-					transform = new Transform();
+					tStream = transform();
 
 					// Configure the transform:
-					transform.metric( metrics[ j ] );
+					tStream.metric( metrics[ j ] );
 
 					// Include the file in our streams list:
-					STREAMS.push( transform );
+					STREAMS.push( tStream );
 
 				} // end FOR j
 
@@ -130,23 +128,26 @@
 	// STREAM //
 
 	/**
-	* FUNCTION: stream( data, dir, clbk )
+	* FUNCTION: streams( data, dir, clbk )
 	*	Takes a data collection and calculates summary statistics. Calculated summary statistics are written to file.
 	*
 	* @param {array} data - array of data arrays
 	* @param {string} dir - file output directory
 	* @param {function} clbk - (optional) callback to invoke after writing all streams.
 	*/
-	function stream( data, dir, clbk ) {
-		var transform, write,
+	function streams( data, dir, clbk ) {
+		var transform, writeStream,
 			filename, filepath,
+			wStream,
 			total = STREAMS.length,
 			counter = 0;
+
+		// Create a stream generators:
+		writeStream = flow.write();
 
 		// Cycle through each stream...
 		for ( var i = 0; i < total; i++ ) {
 		
-			// Instantiate a stream instance and configure:
 			transform = STREAMS[ i ];
 
 			// Generate the output filename:
@@ -155,11 +156,12 @@
 			filepath = path.join( dir, filename );
 
 			// Create the write stream:
-			write = writeStream( filepath, onEnd );
+			wStream = writeStream.path( filepath )
+				.stream( onEnd );
 
-			// Pipe the transform stream to file:
+			// Create a new transform stream and pipe the transform stream to file:
 			transform.stream( data )
-				.pipe( write );
+				.pipe( wStream );
 
 		} // end FOR i
 
@@ -176,11 +178,11 @@
 				}
 			}
 		} // end FUNCTION onEnd()
-	} // end FUNCTION stream()
+	} // end FUNCTION streams()
 
 
 	// EXPORTS //
 
-	module.exports = stream;
+	module.exports = streams;
 
 })();

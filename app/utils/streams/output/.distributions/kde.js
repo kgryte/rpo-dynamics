@@ -44,27 +44,49 @@
 
 	// MODULES //
 
-	var // Event stream module:
-		eventStream = require( 'event-stream' ),
-
-		// Element-wise dataset concatentation:
-		concat = require( './../../../concat.js' ),
+	var // Stream combiner:
+		pipeline = require( 'stream-combiner' ),
 
 		// Flow streams:
 		flow = require( 'flow.io' );
 
 
-	// TRANSFORM //
+	// FUNCTIONS //
 
 	/**
-	* FUNCTION: Transform()
-	*	Transform constructor.
+	* FUNCTION: map( fcn )
+	*	Returns a data transformation function.
 	*
-	* @returns {object} Transform instance
+	* @private
+	* @param {function} fcn - function which performs the map transform
+	* @returns {function} data transformation function
 	*/
-	function Transform() {
+	function map( fcn ) {
+		/**
+		* FUNCTION: map( data )
+		*	Defines the data transformation.
+		*
+		* @private
+		* @param {*} data - stream data
+		* @returns {array} transformed data
+		*/
+		return function map( data ) {
+			return fcn( data );
+		};
+	} // end FUNCTION map()
 
-		this.type = 'kde';
+
+	// STREAM //
+
+	/**
+	* FUNCTION: Stream()
+	*	Stream constructor.
+	*
+	* @constructor
+	* @returns {object} Stream generator instance
+	*/
+	function Stream() {
+
 		this.name = '';
 
 		// TODO: include these methods here, in the histogram, and in the KDE stream.
@@ -79,16 +101,22 @@
 		};
 
 		return this;
-	} // end FUNCTION transform()
+	} // end FUNCTION Stream()
+
+	/**
+	* ATTRIBUTE: type
+	*	Defines the stream type.
+	*/
+	Stream.prototype.type = 'kde';
 
 	/**
 	* METHOD: metric( metric )
 	*	Metric setter and getter. If a metric instance is supplied, sets the metric. If no metric is supplied, returns the instance metric value function.
 	*
-	* @param {object} metric - an object with a 'value' method; see constructor for basic example. If the metric has a name property, sets the transform name.
+	* @param {object} metric - an object with a 'value' method; see constructor for basic example. If the metric has a name property, sets the stream name.
 	* @returns {object|object} instance object or instance metric
 	*/
-	Transform.prototype.metric = function ( metric ) {
+	Stream.prototype.metric = function ( metric ) {
 		if ( !arguments.length ) {
 			return this._value;
 		}
@@ -104,54 +132,30 @@
 	}; // end METHOD metric()
 
 	/**
-	* METHOD: transform()
-	*	Returns a data transformation function.
+	* METHOD: stream()
+	*	Returns a JSON data transform stream for calculating the statistic.
 	*
-	* @returns {function} data transformation function
+	* @returns {stream} stream instance
 	*/
-	Transform.prototype.transform = function() {
-		var val = this._value;
-		/**
-		* FUNCTION: transform( data )
-		*	Defines the data transformation.
-		*
-		* @param {object} data - JSON stream data
-		* @returns {array} transformed data
-		*/
-		return function transform( data ) {
-			return val( data );
-		};
-	}; // end METHOD transform()
+	Stream.prototype.stream = function() {
+		var mTransform, mStream, kde, kStream, pStream;
 
-	/**
-	* METHOD: stream( data )
-	*	Returns a transform stream for calculating the statistic.
-	*
-	* @param {array} data - array of data arrays
-	* @returns {stream} output statistic stream
-	*/
-	Transform.prototype.stream = function( data ) {
-		var dStream, transform, kde, kStream, pStream;
+		// Create a map stream generator and configure:
+		mTransform = flow.map()
+			.map( map( this._value ) );
 
-		// Concatenate all datasets:
-		data = concat( data );
-
-		// Create a readable data stream:
-		dStream = eventStream.readArray( data );
-
-		// Create the input transform stream:
-		transform = flow.transform( this.transform() );
+		// Create an input transform stream:
+		mStream = mTransform.stream();
 
 		// Create a KDE stream generator and configure:
 		kde = flow.kde();
 
-		// Create a KDE streams:
+		// Create a KDE stream:
 		kStream = kde.stream();
 
 		// Create a stream pipeline:
-		pStream = eventStream.pipeline(
-			dStream,
-			transform,
+		pStream = pipeline(
+			mStream,
 			kStream
 		);
 
@@ -162,6 +166,8 @@
 
 	// EXPORTS //
 
-	module.exports = Transform;
+	module.exports = function createStream() {
+		return new Stream();
+	};
 
 })();

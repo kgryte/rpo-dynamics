@@ -65,6 +65,8 @@
 	/**
 	* FUNCTION: setMaxListeners()
 	*	Sets the maximum number of event emitter listeners.
+	*
+	* @private
 	*/
 	function setMaxListeners() {
 		// WARNING: this may have unintended side-effects. Dangerous, as this temporarily changes the global state for all modules, not just this module.
@@ -74,6 +76,8 @@
 	/**
 	* FUNCTION: resetMaxListeners()
 	*	Resets the maximum number of event emitter listeners.
+	*
+	* @private
 	*/
 	function resetMaxListeners() {
 		eventEmitter.prototype._maxListeners = 11;
@@ -83,6 +87,7 @@
 	* FUNCTION: indexify( idx )
 	*	Returns a transform function which binds an index to streamed data.
 	*
+	* @private
 	* @param {number} idx - datum index
 	* @returns {function} data transformation function
 	*/
@@ -91,6 +96,7 @@
 		* FUNCTION: transform( data )
 		*	Defines the data transformation.
 		*
+		* @private
 		* @param {number} data - streamed data
 		* @returns {array} 2-element array: [ idx, data ]
 		*/
@@ -100,35 +106,29 @@
 	} // end FUNCTION indexify()
 
 	/**
-	* FUNCTION: reorderify()
-	*	Returns a reduction function which reorders streamed data.
+	* FUNCTION: reorderify( acc, data )
+	*	Defines the data reduction.
 	*
-	* @param {number} numData - data stream length
-	* @returns {function} data reduction function
+	* @private
+	* @param {array} acc - accumulated array
+	* @param {array} data - streamed 2-element data array
+	* @returns {array} reduced data as a 1-d array
 	*/
-	function reorderify() {
-		/**
-		* FUNCTION: reduce( acc, data )
-		*	Defines the data reduction.
-		*
-		* @param {array} acc - accumulated array
-		* @param {array} data - streamed 2-element data array
-		* @returns {array} reduced data as a 1-d array
-		*/return function reduce( data, d ) {
-			data[ d[0] ] = d[ 1 ];
-			return data;
-		}; // end FUNCTION transform()
+	function reorderify( data, d ) {
+		data[ d[0] ] = d[ 1 ];
+		return data;
 	} // end FUNCTION reorderify()
 
 	/**
 	* FUNCTION: keyify( key )
 	*	Returns a JSON transform stream to create a key-value string.
 	*
+	* @private
 	* @param {string} key - key name
 	* @returns {stream} JSON transform stream
 	*/
 	function keyify( key ) {
-		return flow.transform( onData );
+		return flow.map().map( onData ).stream();
 		/**
 		* FUNCTION: onData( value )
 		*	Event handler. Creates a key-value string; .e.g, "key": value,
@@ -145,14 +145,16 @@
 	* FUNCTION: objectify()
 	*	Returns a JSON transform stream to create valid JSON from a comma-delimited sequence of key-value strings.
 	*
+	* @private
 	* @returns {stream} JSON transform stream
 	*/
 	function objectify() {
-		return flow.transform( onData );
+		return flow.map().map( onData ).stream();
 		/**
 		* FUNCTION: onData( keyvalstr )
 		*	Event handler. Wraps a key-value string in {} to create a stringified object.
 		*
+		* @private
 		* @param {string} keyvalstr - key-value string; e.g., "key1": value, "key2": value, ...
 		* @returns {string} key-value string wrapped in {} to create a stringified object
 		*/
@@ -165,6 +167,40 @@
 		}
 	} // end FUNCTION objectify()
 
+	/**
+	* FUNCTION: stringify( data )
+	*	Defines a data transformation. Converts an array to string format.
+	*
+	* @private
+	* @param {array} data - stream data
+	* @returns {string} transformed data
+	*/
+	function stringify( data ) {
+		return '[' + data.toString() + ']';
+	} // end FUNCTION stringify()
+
+	/**
+	* FUNCTION: map( fcn )
+	*	Returns a data transformation function.
+	*
+	* @private
+	* @param {function} fcn - function which performs the map transform
+	* @returns {function} data transformation function
+	*/
+	function map( fcn ) {
+		/**
+		* FUNCTION: map( data )
+		*	Defines the data transformation.
+		*
+		* @private
+		* @param {*} data - stream data
+		* @returns {number} transformed data
+		*/
+		return function map( data ) {
+			return fcn( data );
+		};
+	} // end FUNCTION map()
+
 
 	// STREAM //
 
@@ -172,10 +208,10 @@
 	* FUNCTION: Stream()
 	*	Stream constructor.
 	*
+	* @constructor
 	* @returns {object} Stream instance
 	*/
 	function Stream() {
-		this.type = 'outliers-means';
 		this.name = '';
 
 		// Create stats and filter stream generators:
@@ -193,7 +229,13 @@
 		};
 
 		return this;
-	} // end FUNCTION transform()
+	} // end FUNCTION Stream()
+
+	/**
+	* ATTRIBUTE: type
+	*	Defines the stream type.
+	*/
+	Stream.prototype.type = 'outliers-means';
 
 	/**
 	* METHOD: metric( metric )
@@ -218,26 +260,6 @@
 	}; // end METHOD metric()
 
 	/**
-	* METHOD: transform()
-	*	Returns a data transformation function.
-	*
-	* @returns {function} data transformation function
-	*/
-	Stream.prototype.transform = function() {
-		var val = this._value;
-		/**
-		* FUNCTION: transform( data )
-		*	Defines the data transformation.
-		*
-		* @param {object} data - JSON stream data
-		* @returns {array} transformed data
-		*/
-		return function transform( data ) {
-			return val( data );
-		};
-	}; // end METHOD transform()
-
-	/**
 	* METHOD: stream( data )
 	*	Returns a stream pipeline for extracting outliers.
 	*
@@ -247,16 +269,20 @@
 	Stream.prototype.stream = function( data ) {
 		var flows = this._streams,
 			mean,
-			dStream, transform, mStream, iStream,
+			mTransform, rTransform, aTransform,
+			dStream, mapStream, mStream, iStream,
 			mPipeline, mPipelines = [],
 			cStream1, rStream, aStream,
 			keys, name,
 			fStream,
 			fPipeline, fPipelines = [],
-			cStream2, oStream;
+			cStream2, sStream, oStream;
 
-		// Instantiate a new mean instance and configure:
+		// Instantiate new stream generators:
 		mean = flow.mean();
+		mTransform = flow.map();
+		rTransform = flow.reduce();
+		aTransform = flow.array();
 
 		// For each dataset, compute its mean...
 		for ( var i = 0; i < data.length; i++ ) {
@@ -265,18 +291,22 @@
 			dStream = eventStream.readArray( data[ i ] );
 
 			// Create an input transform stream:
-			transform = flow.transform( this.transform() );
+			mapStream = mTransform
+				.map( map( this._value ) )
+				.stream();
 
 			// [2] Create a mean reduction stream:
 			mStream = mean.stream();
 
 			// [3] Create a transform stream to index the reduced stream:
-			iStream = flow.transform( indexify( i ) );
+			iStream = mTransform
+				.map( indexify( i ) )
+				.stream();
 
 			// [4] Create a stream pipeline:
 			mPipeline = eventStream.pipeline(
 				dStream,
-				transform,
+				mapStream,
 				mStream,
 				iStream
 			);
@@ -290,11 +320,14 @@
 		cStream1 = eventStream.merge.apply( {}, mPipelines );
 
 		// [6] Create a stream to reorder (sort) the merged output:
-		rStream = flow.reduce( reorderify(), new Array( data.length ) );
+		rStream = rTransform
+			.reduce( reorderify() )
+			.acc( new Array( data.length ) )
+			.stream();
 
 		// [7] Create an array stream from the ordered output:
 		aStream = cStream1.pipe( rStream )
-			.pipe( flow.array() );
+			.pipe( aTransform.stream() );
 
 		// Get the flow stream names:
 		keys = Object.keys( flows );
@@ -306,10 +339,16 @@
 			// [8] Create a new flow stream:
 			fStream = flows[ name ].stream();
 
-			// [9] Create a new flow stream pipeline:
+			// [9] Create a stringify stream:
+			sStream = mapTransform
+				.map( stringify )
+				.stream();
+
+			// [10] Create a new flow stream pipeline:
 			fPipeline = eventStream.pipeline(
 				aStream,
 				fStream,
+				sStream,
 				keyify( name )
 			);
 
@@ -318,10 +357,10 @@
 
 		} // end FOR j
 
-		// [10] Create a single merged stream from pipelined output:
+		// [11] Create a single merged stream from pipelined output:
 		cStream2 = eventStream.merge.apply( {}, fPipelines );
 
-		// [11] Wait for all streams to finish before making an object:
+		// [12] Wait for all streams to finish before making an object:
 		oStream = cStream2.pipe( eventStream.wait() )
 			.pipe( objectify() );
 
@@ -332,6 +371,8 @@
 
 	// EXPORTS //
 
-	module.exports = Stream;
+	module.exports = function createStream() {
+		return new Stream();
+	};
 
 })();

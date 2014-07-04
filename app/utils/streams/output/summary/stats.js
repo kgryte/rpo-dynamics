@@ -5,7 +5,7 @@
 *
 *
 *	DESCRIPTION:
-*		- Calculates descriptive statistics, including count, min, max, sum, mean, median, variance.
+*		- Calculates descriptive statistics, including count, min, max, sum, mean, median, variance, ...
 *
 *
 *	API:

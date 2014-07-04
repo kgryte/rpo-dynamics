@@ -44,8 +44,11 @@
 
 	// MODULES //
 
-	var // Stream combiner:
-		pipeline = require( 'stream-combiner' ),
+	var // Event stream module:
+		eventStream = require( 'event-stream' ),
+
+		// Element-wise dataset concatentation:
+		concat = require( './../../../concat.js' ),
 
 		// Flow streams:
 		flow = require( 'flow.io' );
@@ -68,7 +71,7 @@
 		*
 		* @private
 		* @param {*} data - stream data
-		* @returns {array} transformed data
+		* @returns {number} transformed data
 		*/
 		return function map( data ) {
 			return fcn( data );
@@ -83,7 +86,7 @@
 	*	Stream constructor.
 	*
 	* @constructor
-	* @returns {object} Stream generator instance
+	* @returns {object} Stream instance
 	*/
 	function Stream() {
 
@@ -113,7 +116,7 @@
 	* METHOD: metric( metric )
 	*	Metric setter and getter. If a metric instance is supplied, sets the metric. If no metric is supplied, returns the instance metric value function.
 	*
-	* @param {object} metric - an object with a 'value' method; see constructor for basic example. If the metric has a name property, sets the stream name.
+	* @param {object} metric - an object with a 'value' method; see constructor for basic example. If the metric has a name property, sets the transform name.
 	* @returns {object|object} instance object or instance metric
 	*/
 	Stream.prototype.metric = function ( metric ) {
@@ -132,31 +135,43 @@
 	}; // end METHOD metric()
 
 	/**
-	* METHOD: stream()
-	*	Returns a JSON data transform stream for calculating the statistic.
+	* METHOD: stream( data )
+	*	Returns a transform stream for calculating the statistic.
 	*
-	* @returns {stream} stream instance
+	* @param {array} data - array of data arrays
+	* @returns {stream} output statistic stream
 	*/
-	Stream.prototype.stream = function() {
-		var mTransform, mStream, kde, kStream, pStream;
+	Stream.prototype.stream = function( data ) {
+		var dStream, mTransform, mStream, kde, kStream, sStream, pStream;
 
-		// Create a map stream generator and configure:
+		// Concatenate all datasets:
+		data = concat( data );
+
+		// Create a readable data stream:
+		dStream = eventStream.readArray( data );
+
+		// Create a map transform generator and configure:
 		mTransform = flow.map()
 			.map( map( this._value ) );
 
-		// Create an input transform stream:
+		// Create the input transform stream:
 		mStream = mTransform.stream();
 
 		// Create a KDE stream generator and configure:
 		kde = flow.kde();
 
-		// Create a KDE streams:
+		// Create a KDE stream:
 		kStream = kde.stream();
 
+		// Create a stream to stringify the results:
+		sStream = flow.stringify().stream();
+
 		// Create a stream pipeline:
-		pStream = pipeline(
+		pStream = eventStream.pipeline(
+			dStream,
 			mStream,
-			kStream
+			kStream,
+			sStream
 		);
 
 		// Return the pipeline:

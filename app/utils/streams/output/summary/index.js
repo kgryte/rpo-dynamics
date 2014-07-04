@@ -57,7 +57,7 @@
 		mkdirp = require( 'mkdirp' ),
 
 		// Summary streams:
-		summary = require( './streams.js' );
+		streams = require( './streams.js' );
 
 
 	// VARIABLES //
@@ -126,7 +126,7 @@
 	* @param {object} index - directory hash
 	* @param {function} clbk - (optional) callback to invoke after finishing all streams. Function should take one input argument: [ error ]. If no errors, error is null.
 	*/
-	function stream( dir_path, index, clbk ) {
+	function stream( dirpath, index, clbk ) {
 		var dirs, numDirs,
 			files, numFiles,
 			filepath,
@@ -149,7 +149,7 @@
 			for ( var j = 0; j < numFiles; j++ ) {
 
 				// Get the file path:
-				filepath = path.join( dir_path, dirs[ i ], files[ j ] );
+				filepath = path.join( dirpath, dirs[ i ], files[ j ] );
 
 				// Load the data file:
 				fs.readFile( filepath, 'utf8', onRead( j ) );
@@ -197,7 +197,7 @@
 
 					if ( ++counter === total ) {
 						// Send off the data to calculate transforms:
-						summary( DATA, path, clbk );
+						streams( DATA, path, clbk );
 					}
 				}; // end FUNCTION onData()
 			}; // end FUNCTION onData()
