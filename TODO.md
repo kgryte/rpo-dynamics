@@ -68,7 +68,7 @@ TODO
 	- With each new index,
 		- shift index array and push new index
 		- decrement/increment counts array bins
-10. 
+10. Upgrade to stream-combiner2
 
 
 ### Timeseries
