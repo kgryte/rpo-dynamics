@@ -50,14 +50,14 @@
 		// Path module:
 		path = require( 'path' ),
 
-		// Write-to-file stream:
-		writeStream = require( 'flow.io' ).write,
+		// Flow streams:
+		flow = require( 'flow.io' ),
 
 		// Hash of metric generators:
-		Metrics = require( './../../metrics' ),
+		METRICS = require( './../../metrics' ),
 
-		// Stats reducer:
-		Stats = require( './stats.js' );
+		// Stats reduce streams:
+		statsStreams = require( './stats.js' );
 
 
 	// VARIABLES //
@@ -68,25 +68,25 @@
 	// INIT //
 
 	(function init() {
-		var keys, name, metric, reduce;
+		var keys, name, metric, rStream;
 
-		keys = Object.keys( Metrics );
+		keys = Object.keys( METRICS );
 
 		for ( var i = 0; i < keys.length; i++ ) {
 
 			name = keys[ i ];
 
 			// [0] Instantiate a new metric generator:
-			metric = new Metrics[ name ]();
+			metric = METRICS[ name ]();
 
 			// [1] Instantiate a new stats reduce stream generator:
-			reduce = new Stats();
+			rStream = statsStreams();
 
 			// [2] Config the reduce:
-			reduce.metric( metric );
+			rStream.metric( metric );
 
 			// [3] Append to our streams list:
-			STREAMS.push( reduce );
+			STREAMS.push( rStream );
 
 		} // end FOR i
 		
@@ -96,22 +96,26 @@
 	// STREAM //
 
 	/**
-	* FUNCTION: stream( data, dir, prefix, clbk )
+	* FUNCTION: streams( dStream, dir, prefix, clbk )
 	*	Takes a readable JSON data stream and calculates stats. Calculated stats are written to file.
 	*
-	* @param {stream} data - JSON data stream
+	* @param {stream} dStream - JSON data stream
 	* @param {string} dir - file output directory
 	* @param {string} prefix - filename prefix; e.g., 'my-favorite-stats-name'
 	* @param {function} clbk - (optional) callback to invoke after writing all streams.
 	*/
-	function stream( data, dir, prefix, clbk ) {
-		var reduce, filename, filepath, write, ioStreams,
+	function streams( dStream, dir, prefix, clbk ) {
+		var reduce, rStream, writeStream, stringify,
+			filename, filepath,
+			wStream, sStream, ioStreams,
 			total = STREAMS.length, counter = 0;
+
+		// Create a stream generators:
+		writeStream = flow.write();
 
 		// Cycle through each stream...
 		for ( var i = 0; i < total; i++ ) {
 		
-			// Get the stats-metric reduction stream:
 			reduce = STREAMS[ i ];
 
 			// Generate the output filename:
@@ -119,17 +123,18 @@
 
 			filepath = path.join( dir, filename );
 
-			// Create the write stream:
-			write = writeStream( filepath, onEnd );
-
-			// Get the input/output streams:
+			// Get the stats-metric reduction input/output streams:
 			ioStreams = reduce.stream();
 
+			// Create the write stream:
+			wStream = writeStream.path( filepath )
+				.stream( onEnd );
+
 			// Pipe the JSON data to the input stream:
-			data.pipe( ioStreams[ 0 ] );
+			dStream.pipe( ioStreams[ 0 ] );
 
 			// Pipe the output stream to file:
-			ioStreams[ 1 ].pipe( write );
+			ioStreams[ 1 ].pipe( wStream );
 
 		} // end FOR i
 
@@ -146,11 +151,11 @@
 				}
 			}
 		} // end FUNCTION onEnd()
-	} // end FUNCTION stream()
+	} // end FUNCTION streams()
 
 
 	// EXPORTS //
 
-	module.exports = stream;
+	module.exports = streams;
 
 })();

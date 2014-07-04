@@ -5,7 +5,7 @@
 *
 *
 *	DESCRIPTION:
-*		- Calculates descriptive statistics, including count, min, max, sum, mean, median, variance.
+*		- Calculates descriptive statistics, including count, min, max, sum, mean, median, variance, ...
 *
 *
 *	API:
@@ -65,6 +65,8 @@
 	/**
 	* FUNCTION: setMaxListeners()
 	*	Sets the maximum number of event emitter listeners.
+	*
+	* @private
 	*/
 	function setMaxListeners() {
 		// WARNING: this may have unintended side-effects. Dangerous, as this temporarily changes the global state for all modules, not just this module.
@@ -74,6 +76,8 @@
 	/**
 	* FUNCTION: resetMaxListeners()
 	*	Resets the maximum number of event emitter listeners.
+	*
+	* @private
 	*/
 	function resetMaxListeners() {
 		eventEmitter.prototype._maxListeners = 11;
@@ -83,15 +87,17 @@
 	* FUNCTION: keyify( key )
 	*	Returns a JSON transform stream to create a key-value string.
 	*
+	* @private
 	* @param {string} key - key name
 	* @returns {stream} JSON transform stream
 	*/
 	function keyify( key ) {
-		return flow.transform( onData );
+		return flow.map().map( onData ).stream();
 		/**
 		* FUNCTION: onData( value )
 		*	Event handler. Creates a key-value string; .e.g, "key": value,
 		*
+		* @private
 		* @param {number|string} value - value to be assigned to key
 		* @returns {string} key-value string
 		*/
@@ -104,14 +110,17 @@
 	* FUNCTION: objectify()
 	*	Returns a JSON transform stream to create valid JSON from a comma-delimited sequence of key-value strings.
 	*
+	*
+	* @private
 	* @returns {stream} JSON transform stream
 	*/
 	function objectify() {
-		return flow.transform( onData );
+		return flow.map().map( onData ).stream();
 		/**
 		* FUNCTION: onData( keyvalstr )
 		*	Event handler. Wraps a key-value string in {} to create a stringified object.
 		*
+		* @private
 		* @param {string} keyvalstr - key-value string; e.g., "key1": value, "key2": value, ...
 		* @returns {string} key-value string wrapped in {} to create a stringified object
 		*/
@@ -124,6 +133,40 @@
 		}
 	} // end FUNCTION objectify()
 
+	/**
+	* FUNCTION: map( fcn )
+	*	Returns a data transformation function.
+	*
+	* @private
+	* @param {function} fcn - function to be applied to streamed data
+	* @returns {function} data transformation function
+	*/
+	function map( fcn ) {
+		/**
+		* FUNCTION: map( data )
+		*	Defines the data transformation.
+		*
+		* @private
+		* @param {object} data - JSON stream data
+		* @returns {value} transformed data
+		*/
+		return function map( data ) {
+			return fcn( data );
+		};
+	} // end METHOD map()
+
+	/**
+	* FUNCTION: stringify( data )
+	*	Defines a data transformation. Converts an array to string format.
+	*
+	* @private
+	* @param {array} data - stream data
+	* @returns {string} transformed data
+	*/
+	function stringify( data ) {
+		return '[' + data.toString() + ']';
+	} // end FUNCTION stringify()
+
 
 	// REDUCE //
 
@@ -131,10 +174,10 @@
 	* FUNCTION: Stream()
 	*	Stream constructor.
 	*
+	* @constructor
 	* @returns {object} Stream instance
 	*/
 	function Stream() {
-		this.type = 'stats';
 		this.name = '';
 
 		// Create stats reduce stream generators:
@@ -159,6 +202,12 @@
 
 		return this;
 	} // end FUNCTION stream()
+
+	/**
+	* ATTRIBUTE: type
+	*	Stream type.
+	*/
+	Stream.prototype.type = 'stats';
 
 	/**
 	* METHOD: metric( metric )
@@ -202,39 +251,26 @@
 	}; // end METHOD reducer()
 
 	/**
-	* METHOD: transform()
-	*	Returns a data transformation function.
-	*
-	* @returns {function} data transformation function
-	*/
-	Stream.prototype.transform = function() {
-		var val = this._value;
-		/**
-		* FUNCTION: transform( data )
-		*	Defines the data transformation.
-		*
-		* @param {object} data - JSON stream data
-		* @returns {value} transformed data
-		*/
-		return function transform( data ) {
-			return val( data );
-		};
-	}; // end METHOD transform()
-
-	/**
 	* METHOD: stream()
 	*	Returns a JSON data reduce stream for calculating stats reductions.
 	*
 	* @returns {array} array of streams: [ input_stream, output_stream ]
 	*/
 	Stream.prototype.stream = function() {
-		var transform, rStream, pStream, mStream, oStream,
+		var transform,
+			tStream, rStream, sStream, pStream, mStream, oStream,
 			reducers = this._reducers,
 			keys, name,
 			pipelines = [];
 
+		// TODO: convert to nested stream.
+
+		// Create a transform stream generator:
+		transform = flow.map();
+
 		// Create the input transform stream:
-		transform = flow.transform( this.transform() );
+		tStream = transform.map( map( this._value ) )
+			.stream();
 
 		// Get the reduce stream names:
 		keys = Object.keys( reducers );
@@ -246,12 +282,23 @@
 			// Create a new reduce stream:
 			rStream = reducers[ name ].stream();
 
-			// Create a stream pipeline:
-			pStream = eventStream.pipeline(
-				transform,
-				rStream,
-				keyify( name )
-			);
+			// Create a stream pipeline...
+			if ( name !== 'quantiles' ) {
+				pStream = eventStream.pipeline(
+					tStream,
+					rStream,
+					keyify( name )
+				);
+			} else {
+				sStream = transform.map( stringify )
+					.stream();
+				pStream = eventStream.pipeline(
+					tStream,
+					rStream,
+					sStream,
+					keyify( name )
+				);
+			}
 
 			// Append the pipeline to a list:
 			pipelines.push( pStream );
@@ -266,12 +313,14 @@
 			.pipe( objectify() );
 
 		// Return the input and output streams:
-		return [ transform, oStream ];
+		return [ tStream, oStream ];
 	}; // end METHOD stream()
 
 
 	// EXPORTS //
 
-	module.exports = Stream;
+	module.exports = function createStream() {
+		return new Stream();
+	};
 
 })();
