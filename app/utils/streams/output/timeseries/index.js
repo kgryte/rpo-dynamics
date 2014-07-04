@@ -57,7 +57,7 @@
 		flow = require( 'flow.io' ),
 
 		// Timeseries streams:
-		timeseries = require( './streams.js' );
+		streams = require( './streams.js' );
 
 
 	// VARIABLES //
@@ -128,32 +128,55 @@
 	* @param {object} index - directory hash
 	* @param {function} clbk - (optional) callback to invoke after finishing all streams. Function should take one input argument: [ error ]. If no errors, error is null.
 	*/
-	function stream( dir_path, index, clbk ) {
-		var dirs, files, total, file, filepath, data, counter = 0;
+	function stream( dirpath, index, clbk ) {
+		var readStream, parseStream,
+			dirs, dir, files, total, file, name, filepath, destpath, eClbk,
+			rStream, pStream, dStream,
+			counter = 0;
 
 		// Get the directories:
 		dirs = Object.keys( index );
 
+		// Create stream generators:
+		readStream = flow.read();
+		parseStream = flow.parse();
+
 		for ( var i = 0; i < dirs.length; i++ ) {
 
+			dir = dirs[ i ];
+
 			// Get the directory files:
-			files = index[ dirs[ i ] ];
+			files = index[ dir ];
 			total = files.length;
+
+			// Set the destination path:
+			destpath = path.join( DEST, dir );
 
 			for ( var j = 0; j < total; j++ ) {
 
+				file = files[ j ];
+
 				// Get the file path:
-				filepath = path.join( dir_path, dirs[ i ], files[ j ] );
+				filepath = path.join( dirpath, dir, file );
 
 				// Remove the extension from filename:
-				file = files[ j ].substr( 0, files[ j ].length-5 );
+				name = file.substr( 0, file.length-5 );
 
 				// Create the raw data readstream:
-				data = flow.read( filepath )
-					.pipe( flow.parse() );
+				rStream = readStream.path( filepath )
+					.stream();
+
+				// Create a JSON parse stream:
+				pStream = parseStream.stream();
+
+				// Create the data pipeline:
+				dStream = rStream.pipe( pStream );
+
+				// Get the 'on end' callback:
+				eClbk = onEnd( dir, j+1, total, done );
 
 				// Send the data off to calculate transforms:
-				timeseries( data, path.join( DEST, dirs[ i ] ), file, onEnd( dirs[ i ], j+1, total, done ) );
+				streams( dStream, destpath, name, eClbk );
 
 			} // end FOR j
 

@@ -54,10 +54,10 @@
 		flow = require( 'flow.io' ),
 
 		// Hash of metric generators:
-		Metrics = require( './../../metrics' ),
+		METRICS = require( './../../metrics' ),
 
 		// Timeseries transform:
-		Transform = require( './transform.js' );
+		transform = require( './timeseries.js' );
 
 
 	// VARIABLES //
@@ -68,25 +68,25 @@
 	// INIT //
 
 	(function init() {
-		var keys, name, metric, transform;
+		var keys, name, metric, tStream;
 
-		keys = Object.keys( Metrics );
+		keys = Object.keys( METRICS );
 
 		for ( var i = 0; i < keys.length; i++ ) {
 
 			name = keys[ i ];
 
 			// [0] Instantiate a new metric generator:
-			metric = new Metrics[ name ]();
+			metric = METRICS[ name ]();
 
 			// [1] Instantiate a new timeseries transform stream generator:
-			transform = new Transform();
+			tStream = transform();
 
 			// [2] Config the transform:
-			transform.metric( metric );
+			tStream.metric( metric );
 
 			// [3] Append to our streams list:
-			STREAMS.push( transform );
+			STREAMS.push( tStream );
 
 		} // end FOR i
 		
@@ -96,36 +96,48 @@
 	// STREAM //
 
 	/**
-	* FUNCTION: stream( data, dir, prefix, clbk )
+	* FUNCTION: streams( dStream, dir, prefix, clbk )
 	*	Takes a readable JSON data stream and calculates timeseries. Calculated timeseries are written to file.
 	*
-	* @param {stream} data - JSON data stream
+	* @param {stream} dStream - JSON data stream
 	* @param {string} dir - file output directory
 	* @param {string} prefix - filename prefix; e.g., 'my-favorite-timeseries-name'
 	* @param {function} clbk - (optional) callback to invoke after writing all streams.
 	*/
-	function stream( data, dir, prefix, clbk ) {
-		var transform, filename, filepath, write,
+	function streams( dStream, dir, prefix, clbk ) {
+		var transform, tStream, writeStream, stringify,
+			filename, filepath,
+			wStream, sStream,
 			total = STREAMS.length, counter = 0;
+
+		// Create a stream generators:
+		writeStream = flow.write();
+		stringify = flow.stringify();
 
 		// Cycle through each stream...
 		for ( var i = 0; i < total; i++ ) {
-		
-			// Get the timeseries metric transform stream:
-			transform = STREAMS[ i ];
 
+			transform = STREAMS[ i ];
+		
 			// Generate the output filename:
 			filename = prefix + '.' + transform.name + '.' + transform.type + '.json';
 
 			filepath = path.join( dir, filename );
 
+			// Get the timeseries metric transform stream:
+			tStream = transform.stream();
+
+			// Create the stringifier:
+			sStream = stringify.stream();
+
 			// Create the write stream:
-			write = flow.write( filepath, onEnd );
+			wStream = writeStream.path( filepath )
+				.stream( onEnd );
 
 			// Pipe the JSON data:
-			data.pipe( transform.stream() )
-				.pipe( flow.stringify() )
-				.pipe( write );
+			dStream.pipe( tStream )
+				.pipe( sStream )
+				.pipe( wStream );
 
 		} // end FOR i
 
@@ -142,11 +154,11 @@
 				}
 			}
 		} // end FUNCTION onEnd()
-	} // end FUNCTION stream()
+	} // end FUNCTION streams()
 
 
 	// EXPORTS //
 
-	module.exports = stream;
+	module.exports = streams;
 
 })();

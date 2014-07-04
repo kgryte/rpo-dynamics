@@ -102,19 +102,19 @@
 				filepath = path.join( __dirname, files[ i ] );
 
 				// Get the transform generator:
-				tStream = require( filepath );
+				transform = require( filepath );
 
 				// For each metric, create transform streams...
 				for ( var j = 0; j < metrics.length; j++ ) {
 
 					// Instantiate a new transform stream generator:
-					transform = tStream();
+					tStream = transform();
 
 					// Configure the transform:
-					transform.metric( metrics[ j ] );
+					tStream.metric( metrics[ j ] );
 
 					// Include the transform stream in our streams list:
-					STREAMS.push( transform );
+					STREAMS.push( tStream );
 
 				} // end FOR j
 
@@ -137,7 +137,7 @@
 	* @param {function} clbk - (optional) callback to invoke after writing all streams.
 	*/
 	function streams( dStream, dir, prefix, clbk ) {
-		var transform, writeStream, stringify,
+		var transform, tStream, writeStream, stringify,
 			filename, filepath,
 			wStream, sStream,
 			total = STREAMS.length, counter = 0;
@@ -148,14 +148,16 @@
 
 		// Cycle through each stream...
 		for ( var i = 0; i < total; i++ ) {
-		
-			// Get the distribution transform stream:
-			transform = STREAMS[ i ];
 
+			transform = STREAMS[ i ];
+		
 			// Generate the output filename:
 			filename = prefix + '.' + transform.name + '.' + transform.type + '.json';
 
 			filepath = path.join( dir, filename );
+
+			// Get the distribution transform stream:
+			tStream = transform.stream();
 
 			// Create the stringifier:
 			sStream = stringify.stream();
@@ -165,7 +167,7 @@
 				.stream( onEnd );
 
 			// Pipe the JSON data to the transform stream and write to file:
-			dStream.pipe( transform.stream() )
+			dStream.pipe( tStream )
 				.pipe( sStream )
 				.pipe( wStream );
 				

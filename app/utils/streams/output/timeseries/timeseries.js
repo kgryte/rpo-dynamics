@@ -44,21 +44,49 @@
 
 	// MODULES //
 
-	var // Flow transform stream:
-		transformer = require( 'flow.io' ).transform;
+	var // Flow map transform stream:
+		transform = require( 'flow.io' ).map;
 
-
-	// TRANSFORM //
+	// FUNCTIONS //
 
 	/**
-	* FUNCTION: Transform()
-	*	Transform constructor.
+	* FUNCTION: map( x, y )
+	*	Returns a data transformation function.
 	*
-	* @returns {object} Transform instance
+	* @private
+	* @param {function} x - x-value accessor
+	* @param {function} y - y-value accessor
+	* @returns {function} data transformation function
 	*/
-	function Transform() {
+	function map( x, y ) {
+		/**
+		* FUNCTION: map( data )
+		*	Defines the data transformation.
+		*
+		* @private
+		* @param {*} data - JSON stream data
+		* @returns {array} transformed data
+		*/
+		return function map( data ) {
+			return [
+				x( data ),
+				y( data )
+			];
+		};
+	} // end METHOD map()
 
-		this.type = 'timeseries';
+	
+	// STREAM //
+
+	/**
+	* FUNCTION: Stream()
+	*	Stream constructor.
+	*
+	* @constructor
+	* @returns {object} Stream instance
+	*/
+	function Stream() {
+
 		this.name = '';
 
 		// ACCESSORS:
@@ -70,7 +98,13 @@
 		};
 
 		return this;
-	} // end FUNCTION transform()
+	} // end FUNCTION Stream()
+
+	/**
+	* ATTRIBUTE: type
+	*	Defines the stream type.
+	*/
+	Stream.prototype.type = 'timeseries';
 
 	/**
 	* METHOD: x( fcn )
@@ -79,7 +113,7 @@
 	* @param {function} fcn - x-value accessor
 	* @returns {object|function} instance object or x-value accessor
 	*/
-	Transform.prototype.x = function ( fcn ) {
+	Stream.prototype.x = function ( fcn ) {
 		if ( !arguments.length ) {
 			return this._xValue;
 		}
@@ -94,7 +128,7 @@
 	* @param {object} metric - an object with a 'value' method; see constructor for basic example. If the metric has a name property, sets the transform name.
 	* @returns {object|object} instance object or instance metric
 	*/
-	Transform.prototype.metric = function ( metric ) {
+	Stream.prototype.metric = function ( metric ) {
 		if ( !arguments.length ) {
 			return this._yValue;
 		}
@@ -110,40 +144,22 @@
 	}; // end METHOD metric()
 
 	/**
-	* METHOD: transform()
-	*	Returns a data transformation function.
-	*
-	* @returns {function} data transformation function
-	*/
-	Transform.prototype.transform = function() {
-		var x = this._xValue,
-			y = this._yValue;
-		/**
-		* FUNCTION: transform( data )
-		*	Defines the data transformation.
-		*
-		* @param {object} data - JSON stream data
-		* @returns {array} transformed data
-		*/
-		return function transform( data ) {
-			return [
-				x( data ),
-				y( data )
-			];
-		};
-	}; // end METHOD transform()
-
-	/**
 	* METHOD: stream()
 	*	Returns a JSON data transform stream for calculating the timeseries transform.
+	*
+	* @returns {stream} transform stream
 	*/
-	Transform.prototype.stream = function() {
-		return transformer( this.transform() );
+	Stream.prototype.stream = function() {
+		var mapper = map( this._xValue, this._yValue );
+		return transform().map( mapper )
+			.stream();
 	}; // end METHOD stream()
 
 
 	// EXPORTS //
 
-	module.exports = Transform;
+	module.exports = function createStream() {
+		return new Stream();
+	};
 
 })();

@@ -70,7 +70,7 @@
 		*
 		* @private
 		* @param {*} data - stream data
-		* @returns {array} transformed data
+		* @returns {number} transformed data
 		*/
 		return function map( data ) {
 			return fcn( data );
