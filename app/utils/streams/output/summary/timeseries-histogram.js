@@ -48,38 +48,19 @@
 		eventStream = require( 'event-stream' ),
 
 		// Flow streams:
-		flow = require( 'flow.io' );
+		flow = require( 'flow.io' ),
+
+		// Linearly spaced vectors:
+		linspace = require( 'vector-linspace' );
 
 
 	// FUNCTIONS //
 
 	/**
-	* FUNCTION: linspace( min, max, increment )
-	*	Generate a linearly spaced vector.
-	*
-	* @param {number} min - min defines the vector lower bound
-	* @param {number} max - max defines the vector upper bound
-	* @param {number} increment - distance between successive vector elements
-	* @returns {array} a 1-dimensional array
-	*/
-	function linspace( min, max, increment ) {
-		var numElements, vec = [];
-
-		numElements = Math.round( ( ( max - min ) / increment ) ) + 1;
-
-		vec[ 0 ] = min;
-		vec[ numElements - 1] = max;
-
-		for ( var i = 1; i < numElements - 1; i++ ) {
-			vec[ i ] = min + increment*i;
-		}
-		return vec;
-	} // end FUNCTION linspace()
-
-	/**
 	* FUNCTION: indexify( idx )
 	*	Returns a transform function which binds an index to streamed data.
 	*
+	* @private
 	* @param {number} idx - datum index
 	* @returns {function} data transformation function
 	*/
@@ -88,6 +69,7 @@
 		* FUNCTION: transform( data )
 		*	Defines the data transformation.
 		*
+		* @private
 		* @param {number} data - streamed data
 		* @returns {array} 2-element array: [ idx, data ]
 		*/
@@ -97,75 +79,78 @@
 	} // end FUNCTION indexify()
 
 	/**
-	* FUNCTION: reorderify()
-	*	Returns a reduction function which reorders streamed data.
+	* FUNCTION: reorderify( acc, data )
+	*	Defines the data reduction.
 	*
-	* @param {number} numData - data stream length
-	* @returns {function} data reduction function
+	* @private
+	* @param {array} acc - accumulated array
+	* @param {array} data - streamed 2-element data array
+	* @returns {array} reduced data as a 1-d array
 	*/
-	function reorderify() {
-		/**
-		* FUNCTION: reduce( acc, data )
-		*	Defines the data reduction.
-		*
-		* @param {array} acc - accumulated array
-		* @param {array} data - streamed 2-element data array
-		* @returns {array} reduced data as a 1-d array
-		*/return function reduce( data, d ) {
-			data[ d[0] ] = d[ 1 ];
-			return data;
-		}; // end FUNCTION transform()
+	function reorderify( data, d ) {
+		data[ d[0] ] = d[ 1 ];
+		return data;
 	} // end FUNCTION reorderify()
 
 	/**
-	* FUNCTION: parse()
-	*	Returns a transform function to parse JSON streamed data.
+	* FUNCTION: parse( data )
+	*	Defines the data transformation.
+	*
+	* @private
+	* @param {array} data - streamed data
+	* @returns {string} parsed JSON data
 	*/
-	function parse() {
-		/**
-		* FUNCTION: transform( data )
-		*	Defines the data transformation.
-		*
-		* @param {array} data - streamed data
-		* @returns {string} parsed JSON data
-		*/
-		return function transform( data ) {
-			return JSON.parse( data );
-		}; // end FUNCTION transform()
+	function parse( data ) {
+		return JSON.parse( data );
 	} // end FUNCTION parse()
 
 	/**
-	* FUNCTION: stringify()
-	*	Returns a transform function to stringify streamed data.
+	* FUNCTION: stringify( data )
+	*	Defines the data transformation.
+	*
+	* @private
+	* @param {array} data - streamed data
+	* @returns {string} stringified data
 	*/
-	function stringify() {
-		/**
-		* FUNCTION: transform( data )
-		*	Defines the data transformation.
-		*
-		* @param {array} data - streamed data
-		* @returns {string} stringified data
-		*/
-		return function transform( data ) {
-			return JSON.stringify( data );
-		}; // end FUNCTION transform()
+	function stringify( data ) {
+		return JSON.stringify( data );
 	} // end FUNCTION stringify()
 
+	/**
+	* FUNCTION: map( fcn )
+	*	Returns a data transformation function.
+	*
+	* @private
+	* @param {function} fcn - function which performs the map transform
+	* @returns {function} data transformation function
+	*/
+	function map( fcn ) {
+		/**
+		* FUNCTION: map( data )
+		*	Defines the data transformation.
+		*
+		* @private
+		* @param {*} data - stream data
+		* @returns {number} transformed data
+		*/
+		return function map( data ) {
+			return fcn( data );
+		};
+	} // end FUNCTION map()
 
-	// TRANSFORM //
+
+	// STREAM //
 
 	/**
-	* FUNCTION: Transform()
-	*	Transform constructor.
+	* FUNCTION: Stream()
+	*	Stream constructor.
 	*
+	* @constructor
 	* @returns {object} Transform instance
 	*/
-	function Transform() {
-
-		this.type = 'timeseries-histogram';
+	function Stream() {
 		this.name = '';
-
-		// this._edges = linspace( -0.01, 1.01, 0.02 );
+		this._edges = linspace( -0.01, 1.01, 52 );
 
 		// ACCESSORS:
 		this._value = function( d ) {
@@ -173,7 +158,13 @@
 		};
 
 		return this;
-	} // end FUNCTION transform()
+	} // end FUNCTION Stream()
+
+	/**
+	* ATTRIBUTE: type
+	*	Defines the stream type.
+	*/
+	Stream.prototype.type = 'timeseries-histogram';
 
 	/**
 	* METHOD: metric( metric )
@@ -182,7 +173,7 @@
 	* @param {object} metric - an object with a 'value' method; see constructor for basic example. If the metric has a name property, sets the transform name.
 	* @returns {object|object} instance object or instance metric
 	*/
-	Transform.prototype.metric = function ( metric ) {
+	Stream.prototype.metric = function ( metric ) {
 		if ( !arguments.length ) {
 			return this._value;
 		}
@@ -198,37 +189,22 @@
 	}; // end METHOD metric()
 
 	/**
-	* METHOD: transform()
-	*	Returns a data transformation function.
-	*
-	* @returns {function} data transformation function
-	*/
-	Transform.prototype.transform = function() {
-		var val = this._value;
-		/**
-		* FUNCTION: transform( data )
-		*	Defines the data transformation.
-		*
-		* @param {object} data - JSON stream data
-		* @returns {array} transformed data
-		*/
-		return function transform( data ) {
-			return val( data );
-		};
-	}; // end METHOD transform()
-
-	/**
 	* METHOD: stream( data )
 	*	Returns a transform stream for calculating the statistic.
 	*
 	* @param {array} data - array of data arrays
 	* @returns {stream} output statistic stream
 	*/
-	Transform.prototype.stream = function( data ) {
-		var histc, dStream, transform, hStream, iStream, pStream, mStream, rStream, oStream, pipelines = [];
+	Stream.prototype.stream = function( data ) {
+		var histc, mTransform, rTransform,
+			dStream, mapStream, hStream, iStream, pStream, mStream, rStream, sStream, oStream,
+			pipelines = [];
 
-		// Create a histogram counts stream generator and configure:
-		histc = flow.histc();
+		// Create stream generators:
+		mTransform = flow.map();
+		rTransform = flow.reduce();
+		histc = flow.histc()
+			.edges( this._edges );
 
 		for ( var i = 0; i < data.length; i++ ) {
 
@@ -236,20 +212,23 @@
 			dStream = eventStream.readArray( data[ i ] );
 
 			// Create the input transform stream:
-			transform = flow.transform( this.transform() );
+			mapStream = mTransform
+				.map( map( this._value ) )
+				.stream();
 
 			// Create a histogram stream:
 			hStream = histc.stream();
 
 			// Create a transform stream to index the reduced stream:
-			iStream = flow.transform( indexify( i ) );
+			iStream = mTransform
+				.map( indexify( i ) )
+				.stream();
 
 			// Create a stream pipeline:
 			pStream = eventStream.pipeline(
 				dStream,
-				transform,
+				mapStream,
 				hStream,
-				flow.transform( parse() ),
 				iStream
 			);
 
@@ -262,11 +241,20 @@
 		mStream = eventStream.merge.apply( {}, pipelines );
 
 		// Create a stream to reorder (sort) the merged output:
-		rStream = flow.reduce( reorderify(), new Array( data.length ) );
+		rStream = rTransform
+			.reduce( reorderify )
+			.acc( new Array( data.length ) )
+			.stream();
+
+		// Create a transform stream to convert the output to a string:
+		sStream = mTransform
+			.map( stringify )
+			.stream();
 
 		// Create the output stream:
-		oStream = mStream.pipe( rStream )
-			.pipe( flow.transform( stringify() ) );
+		oStream = mStream
+			.pipe( rStream )
+			.pipe( sStream );
 
 		// Return the output stream:
 		return oStream;
@@ -275,6 +263,8 @@
 
 	// EXPORTS //
 
-	module.exports = Transform;
+	module.exports = function createStream() {
+		return new Stream();
+	};
 
 })();

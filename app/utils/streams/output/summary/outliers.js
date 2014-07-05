@@ -321,12 +321,13 @@
 
 		// [6] Create a stream to reorder (sort) the merged output:
 		rStream = rTransform
-			.reduce( reorderify() )
+			.reduce( reorderify )
 			.acc( new Array( data.length ) )
 			.stream();
 
 		// [7] Create an array stream from the ordered output:
-		aStream = cStream1.pipe( rStream )
+		aStream = cStream1
+			.pipe( rStream )
 			.pipe( aTransform.stream() );
 
 		// Get the flow stream names:
@@ -340,7 +341,7 @@
 			fStream = flows[ name ].stream();
 
 			// [9] Create a stringify stream:
-			sStream = mapTransform
+			sStream = mTransform
 				.map( stringify )
 				.stream();
 
@@ -361,7 +362,8 @@
 		cStream2 = eventStream.merge.apply( {}, fPipelines );
 
 		// [12] Wait for all streams to finish before making an object:
-		oStream = cStream2.pipe( eventStream.wait() )
+		oStream = cStream2
+			.pipe( eventStream.wait() )
 			.pipe( objectify() );
 
 		// Return the output stream:

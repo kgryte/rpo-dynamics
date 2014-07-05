@@ -92,9 +92,7 @@
 	* @returns {object} Stream instance
 	*/
 	function Stream() {
-
 		this.name = '';
-
 		this._edges = linspace( -0.01, 1.01, 52 );
 
 		// ACCESSORS:

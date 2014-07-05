@@ -89,7 +89,6 @@
 	* @returns {object} Stream instance
 	*/
 	function Stream() {
-
 		this.name = '';
 
 		// TODO: include these methods here, in the histogram, and in the KDE stream.

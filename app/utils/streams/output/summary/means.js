@@ -83,7 +83,8 @@
 	* @param {array} acc - accumulated array
 	* @param {array} data - streamed 2-element data array
 	* @returns {array} reduced data as a 1-d array
-	*/function reorderify( data, d ) {
+	*/
+	function reorderify( data, d ) {
 		data[ d[0] ] = d[ 1 ];
 		return data;
 	} // end FUNCTION reorderify()
@@ -233,7 +234,8 @@
 			.stream();
 
 		// Sort and convert merged output to a stringified object:
-		oStream = cStream.pipe( rStream )
+		oStream = cStream
+			.pipe( rStream )
 			.pipe( sStream );
 
 		// Return the output stream:

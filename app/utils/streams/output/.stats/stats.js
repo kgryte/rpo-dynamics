@@ -290,7 +290,8 @@
 					keyify( name )
 				);
 			} else {
-				sStream = transform.map( stringify )
+				sStream = transform
+					.map( stringify )
 					.stream();
 				pStream = eventStream.pipeline(
 					tStream,

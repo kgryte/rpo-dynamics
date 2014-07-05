@@ -156,7 +156,8 @@
 			filepath = path.join( dir, filename );
 
 			// Create the write stream:
-			wStream = writeStream.path( filepath )
+			wStream = writeStream
+				.path( filepath )
 				.stream( onEnd );
 
 			// Create a new transform stream and pipe the transform stream to file:

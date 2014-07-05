@@ -86,9 +86,7 @@
 	* @returns {object} Stream instance
 	*/
 	function Stream() {
-
 		this.name = '';
-
 		this._window = 20;
 
 		// ACCESSORS:
@@ -140,7 +138,8 @@
 		// Create a new transform generators:
 		transform = flow.map();
 		stringify = flow.stringify();
-		mva = flow.mva().window( this._window );
+		mva = flow.mva()
+			.window( this._window );
 
 		for ( var i = 0; i < data.length; i++ ) {
 
