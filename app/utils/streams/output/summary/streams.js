@@ -145,12 +145,6 @@
 		// Create a stream generators:
 		writeStream = flow.write();
 
-		var tStream = flow.map()
-			.map( function ( d ) {
-				console.log( 'writing to file\n\n\n\n\n' );
-				return d;
-			});
-
 		// Cycle through each stream...
 		for ( var i = 0; i < total; i++ ) {
 		
@@ -168,7 +162,6 @@
 
 			// Create a new transform stream and pipe the transform stream to file:
 			transform.stream( data )
-				.pipe( tStream.stream() )
 				.pipe( wStream );
 
 		} // end FOR i
