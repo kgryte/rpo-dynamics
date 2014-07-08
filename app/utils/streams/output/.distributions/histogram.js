@@ -76,6 +76,18 @@
 			return fcn( data );
 		};
 	} // end FUNCTION map()
+	
+	/**
+	* FUNCTION: stringify( data )
+	*	Defines the data transformation.
+	*
+	* @private
+	* @param {array} data - streamed data
+	* @returns {string} stringified data
+	*/
+	function stringify( data ) {
+		return JSON.stringify( data );
+	} // end FUNCTION stringify()
 
 
 	// STREAM //
@@ -136,7 +148,7 @@
 	* @returns {stream} histogram stream
 	*/
 	Stream.prototype.stream = function() {
-		var mTransform, mStream, histc, hStream, pStream;
+		var mTransform, mStream, histc, hStream, sStream, pStream;
 
 		// Create a map transform generator and configure:
 		mTransform = flow.map()
@@ -152,10 +164,16 @@
 		// Create a histogram stream:
 		hStream = histc.stream();
 
+		// Create a stream to stringify histogram data:
+		sStream = mTransform
+			.map( stringify )
+			.stream();
+
 		// Create a stream pipeline:
 		pStream = pipeline(
 			mStream,
-			hStream
+			hStream,
+			sStream
 		);
 
 		// Return the pipeline:

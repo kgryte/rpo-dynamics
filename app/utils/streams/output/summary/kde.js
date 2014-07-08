@@ -77,6 +77,18 @@
 			return fcn( data );
 		};
 	} // end FUNCTION map()
+	
+	/**
+	* FUNCTION: stringify( data )
+	*	Defines the data transformation.
+	*
+	* @private
+	* @param {array} data - streamed data
+	* @returns {string} stringified data
+	*/
+	function stringify( data ) {
+		return JSON.stringify( data );
+	} // end FUNCTION stringify()
 
 
 	// STREAM //
@@ -162,8 +174,10 @@
 		// Create a KDE stream:
 		kStream = kde.stream();
 
-		// Create a stream to stringify the results:
-		sStream = flow.stringify().stream();
+		// Create a stream to stringify KDE data:
+		sStream = mTransform
+			.map( stringify )
+			.stream();
 
 		// Create a stream pipeline:
 		pStream = eventStream.pipeline(

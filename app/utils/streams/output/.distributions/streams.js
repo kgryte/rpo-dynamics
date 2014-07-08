@@ -137,14 +137,13 @@
 	* @param {function} clbk - (optional) callback to invoke after writing all streams.
 	*/
 	function streams( dStream, dir, prefix, clbk ) {
-		var transform, tStream, writeStream, stringify,
+		var transform, tStream, writeStream,
 			filename, filepath,
-			wStream, sStream,
+			wStream,
 			total = STREAMS.length, counter = 0;
 
 		// Create a stream generators:
 		writeStream = flow.write();
-		stringify = flow.stringify();
 
 		// Cycle through each stream...
 		for ( var i = 0; i < total; i++ ) {
@@ -159,16 +158,12 @@
 			// Get the distribution transform stream:
 			tStream = transform.stream();
 
-			// Create the stringifier:
-			sStream = stringify.stream();
-
 			// Create the write stream:
 			wStream = writeStream.path( filepath )
 				.stream( onEnd );
 
 			// Pipe the JSON data to the transform stream and write to file:
 			dStream.pipe( tStream )
-				.pipe( sStream )
 				.pipe( wStream );
 				
 		} // end FOR i
