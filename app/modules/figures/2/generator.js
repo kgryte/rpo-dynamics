@@ -99,10 +99,7 @@
 		}
 
 		// Raw intensities:
-		d[ 0 ] = xfig.data( dat )
-			.x( function ( d ) { return d[0]; } )
-			.y( function ( d ) { return d[1]; } )
-			.format( 2 );
+		d[ 0 ] = xfig.data( dat );
 
 		// FRET:
 		d[ 1 ] = xfig.data( [ data[ 1 ][ dataset1 ][10] ] );
