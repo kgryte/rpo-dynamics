@@ -163,7 +163,8 @@
 				name = file.substr( 0, file.length-5 );
 
 				// Create the raw data readstream:
-				rStream = readStream.path( filepath )
+				rStream = readStream
+					.path( filepath )
 					.stream();
 
 				// Create a JSON parse stream:

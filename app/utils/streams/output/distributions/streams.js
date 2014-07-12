@@ -67,6 +67,8 @@
 	/**
 	* FUNCTION: filter( file )
 	*	Keep only JavaScript scripts and exclude the index.js file.
+	*
+	* @private
 	*/
 	function filter( file ) {
 		return file.substr( -3 ) === '.js' && file !== 'index.js' && file !== 'streams.js';
@@ -142,7 +144,7 @@
 			wStream,
 			total = STREAMS.length, counter = 0;
 
-		// Create a stream generators:
+		// Create stream generators:
 		writeStream = flow.write();
 
 		// Cycle through each stream...
@@ -159,11 +161,13 @@
 			tStream = transform.stream();
 
 			// Create the write stream:
-			wStream = writeStream.path( filepath )
+			wStream = writeStream
+				.path( filepath )
 				.stream( onEnd );
 
 			// Pipe the JSON data to the transform stream and write to file:
-			dStream.pipe( tStream )
+			dStream
+				.pipe( tStream )
 				.pipe( wStream );
 				
 		} // end FOR i

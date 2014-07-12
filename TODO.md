@@ -33,8 +33,9 @@ TODO
 18. Sassify the stylesheets (update README)
 19. Add example (screenshot) figures to README.
 20. Build files should be written to build directory
-21. Use graceful-fs NPM module, rather than utility library
+21. Makefile: build mva, build stats, build summaries, etc
 22. Match new flow.io API
+23. Make figure generation part of the build process: serialize JSDOM output and save to public directory.
 
 
 

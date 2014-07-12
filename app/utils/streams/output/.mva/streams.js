@@ -57,7 +57,7 @@
 		flow = require( 'flow.io' ),
 
 		// Hash of metric generators:
-		Metrics = require( './../../metrics' );
+		METRICS = require( './../../metrics' );
 
 
 	// VARIABLES //
@@ -70,6 +70,8 @@
 	/**
 	* FUNCTION: setMaxListeners()
 	*	Sets the maximum number of event emitter listeners.
+	*
+	* @private
 	*/
 	function setMaxListeners() {
 		// WARNING: this may have unintended side-effects. Dangerous, as this temporarily changes the global state for all modules, not just this module.
@@ -79,6 +81,8 @@
 	/**
 	* FUNCTION: resetMaxListeners()
 	*	Resets the maximum number of event emitter listeners.
+	*
+	* @private
 	*/
 	function resetMaxListeners() {
 		eventEmitter.prototype._maxListeners = 11;
@@ -87,6 +91,8 @@
 	/**
 	* FUNCTION: filter( file )
 	*	Keep only JavaScript scripts and exclude the index.js file.
+	*
+	* @private
 	*/
 	function filter( file ) {
 		return file.substr( -3 ) === '.js' && file !== 'index.js' && file !== 'streams.js';
@@ -100,21 +106,19 @@
 
 	(function init() {
 
-		var files, keys, name, metric, metrics = [], filepath, Transform, transform;
+		var files, keys, name, metric, metrics = [], filepath, tStream, transform;
 
 		// Get the file names:
 		files = fs.readdirSync( __dirname )
 			.filter( filter );
 
 		// Get the metric names:
-		keys = Object.keys( Metrics );
+		keys = Object.keys( METRICS );
 
 		// Instantiate new metric generators:
 		for ( var m = 0; m < keys.length; m++ ) {
 			name = keys[ m ];
-
-			metric = new Metrics[ name ]();
-
+			metric = METRICS[ name ]();
 			metrics.push( metric );
 		}
 
@@ -127,19 +131,19 @@
 				filepath = path.join( __dirname, files[ i ] );
 
 				// Get the transform generator:
-				Transform = require( filepath );
+				transform = require( filepath );
 
 				// For each metric, create transform streams...
 				for ( var j = 0; j < metrics.length; j++ ) {
 
 					// Instantiate a new transform stream generator:
-					transform = new Transform();
+					tStream = transform();
 
 					// Configure the transform:
-					transform.metric( metrics[ j ] );
+					tStream.metric( metrics[ j ] );
 
 					// Include the transform stream in our streams list:
-					STREAMS.push( transform );
+					STREAMS.push( tStream );
 
 				} // end FOR j
 
@@ -150,25 +154,31 @@
 	})();
 
 
-	// STREAM //
+	// STREAMS //
 
 	/**
-	* FUNCTION: stream( data, dir, prefix, clbk )
+	* FUNCTION: streams( dStream, dir, prefix, clbk )
 	*	Takes a readable JSON data stream and performs analysis. Analyses are written to file.
 	*
-	* @param {stream} data - JSON data stream
+	* @param {stream} dStream - JSON data stream
 	* @param {string} dir - file output directory
 	* @param {string} prefix - filename prefix; e.g., 'my-favorite-timeseries-name'
 	* @param {function} clbk - (optional) callback to invoke after writing all streams.
 	*/
-	function stream( data, dir, prefix, clbk ) {
-		var transform, filename, filepath, write,
+	function streams( dStream, dir, prefix, clbk ) {
+		var transform, tStream,
+			writeStream, stringify,
+			filename, filepath,
+			sStream, wStream,
 			total = STREAMS.length, counter = 0;
+
+		// Create stream generators:
+		writeStream = flow.write();
+		stringify = flow.stringify();
 
 		// Cycle through each stream...
 		for ( var i = 0; i < total; i++ ) {
 		
-			// Get the distribution transform stream:
 			transform = STREAMS[ i ];
 
 			// Generate the output filename:
@@ -176,13 +186,22 @@
 
 			filepath = path.join( dir, filename );
 
+			// Create the analysis transform stream:
+			tStream = transform.stream();
+
+			// Create the stringifier:
+			sStream = stringify.stream();
+
 			// Create the write stream:
-			write = flow.write( filepath, onEnd );
+			wStream = writeStream
+				.path( filepath )
+				.stream( onEnd );
 
 			// Pipe the JSON data to the transform stream and write to file:
-			data.pipe( transform.stream() )
-				.pipe( flow.stringify() )
-				.pipe( write );
+			dStream
+				.pipe( tStream )
+				.pipe( sStream )
+				.pipe( wStream );
 				
 		} // end FOR i
 
@@ -199,11 +218,11 @@
 				}
 			}
 		} // end FUNCTION onEnd()
-	} // end FUNCTION stream()
+	} // end FUNCTION streams()
 
 
 	// EXPORTS //
 
-	module.exports = stream;
+	module.exports = streams;
 
 })();

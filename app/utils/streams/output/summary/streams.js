@@ -136,7 +136,8 @@
 	* @param {function} clbk - (optional) callback to invoke after writing all streams.
 	*/
 	function streams( data, dir, clbk ) {
-		var transform, writeStream,
+		var transform, tStream,
+			writeStream,
 			filename, filepath,
 			wStream,
 			total = STREAMS.length,
