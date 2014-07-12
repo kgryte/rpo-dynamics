@@ -44,10 +44,7 @@
 
 	// MODULES //
 
-	var // Filesystem module:
-		fs = require( 'fs' ),
-
-		// Path module:
+	var // Path module:
 		path = require( 'path' ),
 
 		// Flow streams:
