@@ -107,4 +107,4 @@ TODO
 
 ### Bugs
 
-1. 	MVA streams
+1. 	Summary outlier streams are incorrectly formatted; should be array of arrays.
