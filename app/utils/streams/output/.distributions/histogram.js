@@ -97,7 +97,7 @@
 	*	Stream constructor.
 	*
 	* @constructor
-	* @returns {object} Stream generator instance
+	* @returns {Stream} Stream generator instance
 	*/
 	function Stream() {
 
@@ -124,7 +124,7 @@
 	*	Metric setter and getter. If a metric instance is supplied, sets the metric. If no metric is supplied, returns the instance metric value function.
 	*
 	* @param {object} metric - an object with a 'value' method; see constructor for basic example. If the metric has a name property, sets the stream name.
-	* @returns {object|object} instance object or instance metric
+	* @returns {Stream|object} Stream instance or instance metric
 	*/
 	Stream.prototype.metric = function ( metric ) {
 		if ( !arguments.length ) {

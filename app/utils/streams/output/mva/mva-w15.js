@@ -1,6 +1,6 @@
 /**
 *
-*	STREAM: MVA (window: 50)
+*	STREAM: MVA (window: 15)
 *
 *
 *
@@ -51,20 +51,42 @@
 		flow = require( 'flow.io' );
 
 
-	// TRANSFORM //
+	// FUNCTIONS //
 
 	/**
-	* FUNCTION: Transform()
-	*	Transform constructor.
+	* FUNCTION: map( fcn )
+	*	Returns a data transformation function.
 	*
-	* @returns {object} Transform instance
+	* @private
+	* @param {function} fcn - function which performs the map transform
+	* @returns {function} data transformation function
 	*/
-	function Transform() {
+	function map( fcn ) {
+		/**
+		* FUNCTION: map( data )
+		*	Defines the data transformation.
+		*
+		* @private
+		* @param {*} data - stream data
+		* @returns {number} transformed data
+		*/
+		return function map( data ) {
+			return fcn( data );
+		};
+	} // end FUNCTION map()
+	
+	
+	// STREAM //
 
-		this.type = 'mva-w50';
+	/**
+	* FUNCTION: Stream()
+	*	Stream constructor.
+	*
+	* @returns {Stream} Stream instance
+	*/
+	function Stream() {
 		this.name = '';
-
-		this._window = 50;
+		this._window = 15;
 
 		// ACCESSORS:
 		this._value = function( d ) {
@@ -72,16 +94,22 @@
 		};
 
 		return this;
-	} // end FUNCTION transform()
+	} // end FUNCTION Stream()
+
+	/**
+	* ATTRIBUTE: type
+	*	Defines the stream type.
+	*/
+	Stream.prototype.type = 'mva-w15';
 
 	/**
 	* METHOD: metric( metric )
 	*	Metric setter and getter. If a metric instance is supplied, sets the metric. If no metric is supplied, returns the instance metric value function.
 	*
 	* @param {object} metric - an object with a 'value' method; see constructor for basic example. If the metric has a name property, sets the transform name.
-	* @returns {object|object} instance object or instance metric
+	* @returns {Stream|object} Stream instance or instance metric
 	*/
-	Transform.prototype.metric = function ( metric ) {
+	Stream.prototype.metric = function ( metric ) {
 		if ( !arguments.length ) {
 			return this._value;
 		}
@@ -92,50 +120,36 @@
 		this._value = metric.value.bind( metric );
 		// If the metric has a name, set the transform name:
 		this.name = ( metric.name ) ? metric.name : '';
-		// Return the transform instance:
+		// Return the stream instance:
 		return this;
 	}; // end METHOD metric()
 
 	/**
-	* METHOD: transform()
-	*	Returns a data transformation function.
-	*
-	* @returns {function} data transformation function
-	*/
-	Transform.prototype.transform = function() {
-		var val = this._value;
-		/**
-		* FUNCTION: transform( data )
-		*	Defines the data transformation.
-		*
-		* @param {object} data - JSON stream data
-		* @returns {array} transformed data
-		*/
-		return function transform( data ) {
-			return val( data );
-		};
-	}; // end METHOD transform()
-
-	/**
 	* METHOD: stream()
 	*	Returns a JSON data transform stream for performing MVA.
+	*
+	* @returns {stream} transform stream
 	*/
-	Transform.prototype.stream = function() {
-		var transform, mva, mStream, pStream;
+	Stream.prototype.stream = function() {
+		var mTransform, tStream, mva, mStream, pStream;
 
 		// Create the input transform stream:
-		transform = flow.transform( this.transform() );
+		mTransform = flow.map()
+			.map( map( this._value ) );
+
+		// Create the input transform stream:
+		tStream = mTransform.stream();
 
 		// Create an MVA stream generator and configure:
-		mva = flow.mva();
-		mva.window( this._window );
+		mva = flow.mva()
+			.window( this._window );
 
 		// Create an MVA stream:
 		mStream = mva.stream();
 
 		// Create a stream pipeline:
 		pStream = pipeline(
-			transform,
+			tStream,
 			mStream
 		);
 
@@ -146,6 +160,8 @@
 
 	// EXPORTS //
 
-	module.exports = Transform;
+	module.exports = function createStream() {
+		return new Stream();
+	};
 
 })();
