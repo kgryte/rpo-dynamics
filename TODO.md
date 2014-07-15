@@ -35,7 +35,7 @@ TODO
 20. Build files should be written to build directory
 21. Makefile: build mva, build stats, build summaries, etc
 22. Match new flow.io API
-23. Make figure generation part of the build process: serialize JSDOM output and save to public directory.
+23. Make figure generation part of the build process: serialize JSDOM output and save to build directory.
 24. Make build process more intelligent; currently, hard to maintain. A better way?
 
 
